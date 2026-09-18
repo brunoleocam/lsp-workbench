@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { getLspCompletionSeedsMatching } from "./completion-seeds";
 import { functionsMatchingPrefix } from "./function-catalog";
+import { completeMembersAt } from "./application/complete-members";
+import { functionsMatchingPrefixForSystem } from "./domain/system-catalog";
 import {
   arredondarRewriteOptions,
   findCallSpan,
@@ -937,11 +939,14 @@ function quickFixCompletions(
 
 function functionCompletionItems(
   word: string,
-  wordRange: vscode.Range
+  wordRange: vscode.Range,
+  system: string = ""
 ): vscode.CompletionItem[] {
   if (!word || word.length < 1) return [];
   // Catálogo de funções (prioridade) + seeds estruturais (Definir, Se, …)
-  const fromCatalog = functionsMatchingPrefix(word);
+  const fromCatalog = system
+    ? functionsMatchingPrefixForSystem(word, system)
+    : functionsMatchingPrefix(word);
   const catalogLabels = new Set(fromCatalog.map((e) => e.label.toLowerCase()));
   const extras = getLspCompletionSeedsMatching(word).filter(
     (s) => !catalogLabels.has(s.label.toLowerCase())
@@ -1038,9 +1043,38 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         new vscode.Range(position, position);
       const word = document.getText(wordRange);
 
+      const memberSuggestions = completeMembersAt(document.getText(), linePrefix);
+      if (memberSuggestions.length) {
+        const memberItems = memberSuggestions.map((m, i) => {
+          const kind =
+            m.kind === "method"
+              ? vscode.CompletionItemKind.Method
+              : vscode.CompletionItemKind.Property;
+          const item = new vscode.CompletionItem(m.name, kind);
+          item.detail = m.detail;
+          item.documentation = new vscode.MarkdownString(m.documentation);
+          item.sortText = `0${String(i).padStart(2, "0")}`;
+          if (m.isSnippet) {
+            item.insertText = new vscode.SnippetString(m.insertText);
+          } else {
+            item.insertText = m.insertText;
+          }
+          return item;
+        });
+        return new vscode.CompletionList(memberItems, false);
+      }
+
       const qfItems = quickFixCompletions(document, line, word, wordRange);
       const lineHasAlerts = qfItems.length > 0;
-      const fnItems = functionCompletionItems(word, wordRange);
+
+      let system = "";
+      try {
+        const scoped = await getWorkspaceSymbolIndex().getScopedEligible(document);
+        system = scoped.resolution.system ?? "";
+      } catch {
+        system = "";
+      }
+      const fnItems = functionCompletionItems(word, wordRange, system);
 
       let customItems: vscode.CompletionItem[] = [];
       try {

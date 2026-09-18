@@ -1,10 +1,24 @@
 {
   "scopeName": "source.senior-lsp",
   "patterns": [
-    { "include": "#comments" },
-    { "include": "#strings" },
-    { "include": "#keywords" },
-    { "include": "#types" }
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#numbers"
+    }
   ],
   "repository": {
     "comments": {
@@ -26,16 +40,27 @@
       "begin": "\"",
       "end": "\"",
       "patterns": [
-        { "name": "constant.character.escape.lsp", "match": "\\\\." }
+        {
+          "name": "constant.character.escape.lsp",
+          "match": "\\\\."
+        }
       ]
     },
     "keywords": {
       "name": "keyword.control.lsp",
-      "match": "\\b(Se|Senao|Enquanto|Para|Funcao|Definir|Cancel|Pare|Continue|Mensagem|Retorna)\\b"
+      "match": "\\b(Se|Senao|Enquanto|Para|Funcao|Definir|Cancel|Pare|Continue|Mensagem|Retorna|Inicio|Fim|FimSe|FimEnquanto)\\b"
     },
     "types": {
       "name": "storage.type.lsp",
-      "match": "\\b(Alfa|Numero|Data|Lista|Cursor)\\b"
+      "match": "\\b(Alfa|Numero|Data|Lista|Cursor|Tabela)\\b"
+    },
+    "functions": {
+      "name": "support.function.lsp",
+      "match": "\\b(AbrirCursor|AdicionaDadosGrade|AlfaParaData|AlfaParaDecimal|AlfaParaInt|AlteraControle|AlteraValorFormula|AnoBissexto|ArqExiste|Arredonda|ArredondaABNT|ArredondarValor|ArredondaValorTipoAcerto|AtivaLimpezaParamEnt|AtualizaBarraProgresso|Base64Decode|Base64Encode|CalculaAlfa|Cancel|CancelarRelatorio|CaracterParaAlfa|CarregaImagemControle|CarregaImgControle|CarregaImgVetorialControle|CarregarTextoArq|CodData|CodigoEspNivel|Concatena|ConfiguraPontoGrafico|ConverteCodificacaoString|ConverteDataBanco|ConverteDataSqlSenior2|ConverteDataToDB|ConverteMascara|ConverteParaMaiusculo|ConverteParaMinusculo|ConverteTexto|ConverteUnidadeMedida|CopiarAlfa|CopiarStr|CriarArquivoTemporario|CriaView|Cursores|DataExtenso|DataHoje|DataHora|DataHoraUTC|DataInicialFinal|DateToDB|DecimalParaAlfa|DecodData|DeixaNumeros|DeletarAlfa|DeletarStr|DeleteFieldSQL|DesatLimpezaParamEnt|DesCamLista|Desencriptar|DesfazerTransacao|DesMontaData|DetPrimConector|Dividir|Encriptar|EstaNulo|ExcluirArquivoTemporario|ExecProg|ExecSQL|ExecSQLEx|Executar|Extenso|ExtensoMes|ExtensoMoeda|ExtensoSemana|FecharCursor|FinalizaBarraProgresso|FinalizarTransacao|Formatar|FormatarData|FormatarN|GeraHash|GerarNonce|GerarPwdDigest|GeraSenha|GeraToken|HoraParaMinuto|HttpAlteraCabecalhoRequisicao|HttpDelete|HttpDeleteBody|HttpDesabilitaErroResposta|HttpDownload|HttpGet|HttpLeCodigoResposta|HttpObjeto|HttpPost|HttpPut|HttpSetaTimeout|IniciaBarraProgresso|IniciarTransacao|InsClauSQLCampoDireto|InsClauSQLField|InsClauSQLFrom|InsClauSQLGroupBy|InsClauSQLOrderBy|InsClauSQLWhere|InserirAlfa|InserirStr|InsEspAlinhDireita|InsSQLWhereSimples|IntParaAlfa|IntParaStr|LerPosicaoAlfa|LimpaDadosGrade|LimpaDadosGrafico|LimpaEspacos|LimpaEspacosDireita|LimpaEspacosEsquerda|LimpaGerTabAlf|LimpaGerTabNum|LimparParamsEntrada|LinhasArquivo|ListaItem|ListaQuantidade|ListaRegraCarregarJson|ListaRegraCriarLista|ListaRegraObterValorAlfa|ListaRegraPrimeiro|ListaRegraProximo|ListaSecao|LSP|Mensagem|MontaAbrangencia|MontaData|MontarSQLHisCampo|MontarSQLHisCampoSeq|MontarSQLHistorico|MontarSQLHistoricoSeq|MultiplicaValor|ObtemIdiomaAtivo|ObterVersaoSistema|OcultaBarraProgressoRelatorio|OrdenacaoSelecionada|PegarTipoVar|PegarValorVarAlf|PegarValorVarNum|PosicaoAlfa|PosicaoStr|PreenchePagina|ProcuraEnter|ProximaPagina|Proximo|QuebraTexto|RemoveExpressoesProibidas|RestoDivisao|RetDiaSemana|RetDiaUtilAntPos|RetiraAcentuacao|RetiraCaracteresEspeciais|RetornaAscII|RetornaCampoAlfaTabela|RetornaCampoNumeroTabela|RetornarDiasUteisMes|RetornarDiasUteisPeriodo|RetornarQtdDiasAno|RetornaValorCFG|SaltarPagina|SelecaoTabelas|SelecionaImpressora|SetaNumeroTelaEntrada|SetarValorVarAlf|SetarValorVarNum|sleep|SQL_AbrirCursor|SQL_BOF|SQL_Criar|SQL_DefinirAlfa|SQL_DefinirBlob|SQL_DefinirComando|SQL_DefinirData|SQL_DefinirInteiro|SQL_Destruir|SQL_EOF|SQL_FecharCursor|SQL_Proximo|SQL_RetornarAlfa|SQL_RetornarBlob|SQL_RetornarBoleano|SQL_RetornarData|SQL_RetornarFlutuante|SQL_RetornarInteiro|SQL_RetornarSeNulo|SQL_UsarAbrangencia|SQL_UsarSQLSenior2|StrParaInt|SubstAlfa|SubstAlfaUmaVez|SubstituiFrom|TamanhoAlfa|TamanhoStr|TrocaString|TruncaDadosGrade|Truncar|UltimoDia|UltimoRegistro|ValorElementoJson|Vantagens|VerificaAbaAtiva|VrfAbrA|VrfAbrN)\\b"
+    },
+    "numbers": {
+      "name": "constant.numeric.lsp",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
     }
   }
 }

@@ -2,7 +2,7 @@
   "name": "lsp-workbench",
   "displayName": "LSP Workbench",
   "description": "Linguagem Senior de Programação — formatação, diagnósticos, snippets e suporte IDE (LSP Workbench).",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "publisher": "brunoleocam",
   "icon": "../../assets/icon.png",
   "engines": { "vscode": "^1.85.0" },
@@ -87,13 +87,13 @@
         "lsp.format.embeddedSql.enabled": {
           "type": "boolean",
           "default": false,
-          "description": "Reserva — formatação dedicada de SQL embutido ainda não implementada."
+          "description": "Formatação dedicada de SQL embutido em ExecSql / .SQL / SQL_DefinirComando (PDR-004)."
         },
         "lsp.format.embeddedSql.dialect": {
           "type": "string",
           "default": "sql",
           "enum": ["sql", "oracle", "sqlserver"],
-          "description": "Dialeto pretendido para SQL embutido (reserva; sem efeito até a feature)."
+          "description": "Dialeto pretendido para SQL embutido (heurística de layout)."
         },
         "lsp.refactor.defaultBlockStyle": {
           "type": "string",

@@ -6,9 +6,12 @@ import { registerCodeActions } from "./code-actions";
 import { registerLanguageFeatures } from "./language-features";
 import { registerContextCommands, registerStatusBar } from "./context-commands";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
-import { findMatchingContext, mergeIgnoreIds } from "./scope-config";
 import { SENIOR_LSP_LANGUAGE_ID } from "./language";
 import { APPLY_TEXT_EDITS_CMD, applySerializedTextEdits } from "./apply-edits";
+import { registerSemanticTokens } from "./adapters/vscode/semantic-tokens-provider";
+import { registerOutlineProvider } from "./adapters/vscode/outline-provider";
+import { registerRefactorActions } from "./adapters/vscode/refactors-provider";
+import { formatEmbeddedSqlInSource } from "./application/format-embedded-sql";
 import {
   addSuppression,
   filterSuppressedHits,
@@ -16,6 +19,7 @@ import {
   initSuppressions,
   SUPPRESSIONS_STATE_KEY,
 } from "./suppressions";
+import { findMatchingContext, mergeIgnoreIds } from "./scope-config";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
 
@@ -37,6 +41,9 @@ export function activate(context: vscode.ExtensionContext): void {
   registerLanguageFeatures(context);
   registerContextCommands(context);
   registerStatusBar(context);
+  registerSemanticTokens(context);
+  registerOutlineProvider(context);
+  registerRefactorActions(context);
 
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(SENIOR_LSP_LANGUAGE_ID, {
@@ -45,16 +52,20 @@ export function activate(context: vscode.ExtensionContext): void {
         if (!cfg.get<boolean>("format.enabled", true)) {
           return [];
         }
-        const formatted = formatLsp(document.getText(), {
+        let text = formatLsp(document.getText(), {
           indentSize: cfg.get<number>("format.indentSize", 2),
           useTabs: cfg.get<boolean>("format.useTabs", false),
           braceStyle: cfg.get<"sameLine" | "nextLine">("format.braceStyle", "sameLine"),
+        });
+        text = formatEmbeddedSqlInSource(text, {
+          enabled: cfg.get<boolean>("format.embeddedSql.enabled", false),
+          dialect: cfg.get<"sql" | "oracle" | "sqlserver">("format.embeddedSql.dialect", "sql"),
         });
         const full = new vscode.Range(
           document.positionAt(0),
           document.positionAt(document.getText().length)
         );
-        return [vscode.TextEdit.replace(full, formatted)];
+        return [vscode.TextEdit.replace(full, text)];
       },
     })
   );

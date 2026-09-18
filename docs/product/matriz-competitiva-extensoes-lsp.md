@@ -116,18 +116,16 @@ Não compete “copiar o compiler llutti”. Compete **escolher gaps de UX** (me
 
 ## 6. Prioridade sugerida (pós-matriz)
 
-| Pri | Item | Por quê | Referência UX |
-|-----|------|---------|---------------|
-| **P0** | Completion membros Cursor / Lista (+ campos `AdicionarCampo`) | Gap mais sentido no dia a dia vs llutti | llutti members |
-| **P0** | Semantic tokens básicos (função/var/membro) | Highlight “parece amador” só com TextMate mínima | llutti tokens |
-| **P1** | Expandir snippets (SQL API + Definir* + Se/Enquanto) | Killer/llutti vencem por volume | ambos |
-| **P1** | Enrich TextMate (keywords + builtins SENIOR) | Killer ganha na “cara” do arquivo | Killer grammar |
-| **P1** | Catálogos HCM/ACESSO/ERP (ou subset) | Setting já existe; hoje só UI | llutti internals JSON |
-| **P1** | Format SQL embutido (opt-in) | Setting reserva | llutti embedded-sql |
-| **P2** | DocumentSymbol / Outline | Navegação | llutti |
-| **P2** | Refactors wrap dedicados | llutti tem CodeAction Refactor | llutti refactors |
-| **P3** | Language Server + Worker | Só se perf/isolamento exigir | llutti arquitetura |
-| **—** | Manter Agent + RUL* + FUN009 | Diferencial; não abandonar | Workbench ★ |
+**Atualização 2026-09-18:** Opção 1 (PDR-004) entregue na extensão **0.2.0**. Opção 2 foundation em `packages/lsp-analyzer`. Opção 3: stub.
+
+| Pri | Item | Status |
+|-----|------|--------|
+| P0 | Membros Cursor/Lista | Feito |
+| P0 | Semantic tokens | Feito |
+| P1 | Snippets + TextMate | Feito |
+| P1 | Catálogos system + SQL format | Feito (stubs HCM/ERP) |
+| P2 | Outline + refactors | Feito |
+| — | Compiler / LS | Em andamento (foundation / stub) |
 
 ---
 

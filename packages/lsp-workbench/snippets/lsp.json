@@ -21,5 +21,189 @@
       "Cur_${1:Nome}.FecharCursor();"
     ],
     "description": "Cursor com loop"
+  },
+  "Se": {
+    "prefix": "se",
+    "body": ["Se (${1:vnCond}) {", "  ${0}", "}"],
+    "description": "Bloco Se"
+  },
+  "Se Senao": {
+    "prefix": "sesenao",
+    "body": ["Se (${1:vnCond}) {", "  ${2}", "} Senao {", "  ${0}", "}"],
+    "description": "Se / Senao"
+  },
+  "Enquanto": {
+    "prefix": "enquanto",
+    "body": ["Enquanto (${1:vnCond}) {", "  ${0}", "}"],
+    "description": "Loop Enquanto"
+  },
+  "Para": {
+    "prefix": "para",
+    "body": [
+      "Para (${1:vnI} = 0; ${1:vnI} < ${2:vnN}; ${1:vnI} = ${1:vnI} + 1) {",
+      "  ${0}",
+      "}"
+    ],
+    "description": "Loop Para"
+  },
+  "Definir Alfa": {
+    "prefix": "definir alfa",
+    "body": ["Definir Alfa va${1:Nome};"],
+    "description": "Definir Alfa"
+  },
+  "Definir Numero": {
+    "prefix": "definir numero",
+    "body": ["Definir Numero vn${1:Nome};"],
+    "description": "Definir Numero"
+  },
+  "Definir Data": {
+    "prefix": "definir data",
+    "body": ["Definir Data vd${1:Nome};"],
+    "description": "Definir Data"
+  },
+  "Definir Cursor": {
+    "prefix": "definir cursor",
+    "body": ["Definir Cursor Cur_${1:Nome};"],
+    "description": "Definir Cursor"
+  },
+  "Definir Funcao": {
+    "prefix": "definir funcao",
+    "body": [
+      "Definir Funcao ${1:nome}(Numero ${2:vnA}, Numero End ${3:vnR});",
+      "",
+      "Funcao ${1:nome}(Numero ${2:vnA}, Numero End ${3:vnR}); {",
+      "  ${0}",
+      "}"
+    ],
+    "description": "Decl+Impl função"
+  },
+  "SQL_Criar": {
+    "prefix": "SQL_Criar",
+    "body": [
+      "SQL_Criar(${1:vaCur});",
+      "SQL_UsarAbrangencia(${1:vaCur}, 0);",
+      "SQL_UsarSQLSenior2(${1:vaCur}, 0);",
+      "SQL_DefinirComando(${1:vaCur}, ${2:vaSQL});",
+      "SQL_AbrirCursor(${1:vaCur});",
+      "Enquanto (SQL_EOF(${1:vaCur}) = 0) {",
+      "  ${0}",
+      "  SQL_Proximo(${1:vaCur});",
+      "}",
+      "SQL_FecharCursor(${1:vaCur});",
+      "SQL_Destruir(${1:vaCur});"
+    ],
+    "description": "Cursor SQL completo"
+  },
+  "SQL_DefinirComando": {
+    "prefix": "SQL_DefinirComando",
+    "body": ["SQL_DefinirComando(${1:vaCur}, ${2:vaSQL});"],
+    "description": "SQL_DefinirComando"
+  },
+  "SQL_AbrirCursor": {
+    "prefix": "SQL_AbrirCursor",
+    "body": ["SQL_AbrirCursor(${1:vaCur});"],
+    "description": "SQL_AbrirCursor"
+  },
+  "SQL_RetornarInteiro": {
+    "prefix": "SQL_RetornarInteiro",
+    "body": ["SQL_RetornarInteiro(${1:vaCur}, \"${2:COL}\", ${3:vnOut});"],
+    "description": "SQL_RetornarInteiro"
+  },
+  "SQL_RetornarAlfa": {
+    "prefix": "SQL_RetornarAlfa",
+    "body": ["SQL_RetornarAlfa(${1:vaCur}, \"${2:COL}\", ${3:vaOut});"],
+    "description": "SQL_RetornarAlfa"
+  },
+  "SQL_RetornarData": {
+    "prefix": "SQL_RetornarData",
+    "body": ["SQL_RetornarData(${1:vaCur}, \"${2:COL}\", ${3:vdOut});"],
+    "description": "SQL_RetornarData"
+  },
+  "SQL_Proximo": {
+    "prefix": "SQL_Proximo",
+    "body": ["SQL_Proximo(${1:vaCur});"],
+    "description": "SQL_Proximo"
+  },
+  "SQL_FecharCursor": {
+    "prefix": "SQL_FecharCursor",
+    "body": ["SQL_FecharCursor(${1:vaCur});"],
+    "description": "SQL_FecharCursor"
+  },
+  "SQL_Destruir": {
+    "prefix": "SQL_Destruir",
+    "body": ["SQL_Destruir(${1:vaCur});"],
+    "description": "SQL_Destruir"
+  },
+  "ExecSQL": {
+    "prefix": "ExecSQL",
+    "body": ["ExecSQL(${1:vaSQL});"],
+    "description": "ExecSQL"
+  },
+  "ExecSQLEx": {
+    "prefix": "ExecSQLEx",
+    "body": [
+      "vnRetSql = ExecSQLEx(${1:vaSQL});",
+      "Se (vnRetSql <> 0) {",
+      "  Mensagem(Retorna, \"Erro SQL\");",
+      "  Cancel(1);",
+      "}"
+    ],
+    "description": "ExecSQLEx com checagem"
+  },
+  "Mensagem pergunta": {
+    "prefix": "Mensagem",
+    "body": ["Mensagem(Pergunta, \"${1:Confirma?}\");"],
+    "description": "Mensagem Pergunta"
+  },
+  "Cancel": {
+    "prefix": "Cancel",
+    "body": ["Cancel(1);"],
+    "description": "Interromper regra"
+  },
+  "CRLF": {
+    "prefix": "CRLF",
+    "body": ["CaracterParaAlfa(13, vaEnter);", "CaracterParaAlfa(10, vaLF);"],
+    "description": "CR+LF via CaracterParaAlfa"
+  },
+  "Comentario bloco": {
+    "prefix": "coment",
+    "body": ["@ ${1:comentario} @"],
+    "description": "Comentário @"
+  },
+  "Inicio bloco braces": {
+    "prefix": "bloco",
+    "body": ["{", "  ${0}", "}"],
+    "description": "Bloco { }"
+  },
+  "Definir Tabela": {
+    "prefix": "definir tabela",
+    "body": ["Definir Tabela ${1:tbNome};"],
+    "description": "Definir Tabela"
+  },
+  "Enquanto Lista": {
+    "prefix": "enquanto lista",
+    "body": [
+      "${1:vlX}.Primeiro();",
+      "Enquanto (${1:vlX}.FDA = 0) {",
+      "  ${0}",
+      "  ${1:vlX}.Proximo();",
+      "}"
+    ],
+    "description": "Loop lista"
+  },
+  "TiraEspacos": {
+    "prefix": "TiraEspacos",
+    "body": ["TiraEspacos(${1:vaTxt}, ${2:vaOut});"],
+    "description": "TiraEspacos"
+  },
+  "ConverteParaMaiusculo": {
+    "prefix": "ConverteParaMaiusculo",
+    "body": ["ConverteParaMaiusculo(${1:vaTxt}, ${2:vaOut});"],
+    "description": "ConverteParaMaiusculo"
+  },
+  "GeraLog": {
+    "prefix": "GeraLog",
+    "body": ["GeraLog(${1:vaMsg});"],
+    "description": "GeraLog"
   }
 }

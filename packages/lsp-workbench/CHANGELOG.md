@@ -1,38 +1,35 @@
 # Changelog — LSP Workbench (extensão)
 
-## Unreleased (PDR-004 — Opção 1)
+## 0.2.0 — 2026-09-18
 
-### Planejado
+### Adicionado (PDR-004 — Opção 1)
 
-- P0: completion membros Cursor/Lista + campos; semantic tokens
-- P1: snippets ~30; TextMate enriquecida; catálogos por sistema; format SQL opt-in
-- P2: Outline; refactors wrap / toggle / concat
+- Completion de membros Cursor / Lista + campos `AdicionarCampo` (domínio puro)
+- Semantic tokens (funções, variáveis, membros)
+- Snippets ~30 (Definir, blocos, SQL API, helpers) com `{ }`
+- TextMate enriquecida com builtins do catálogo SENIOR (~208)
+- Catálogos stub HCM / ERP mesclados por `system` do contexto
+- Format SQL embutido opt-in (`lsp.format.embeddedSql.*`)
+- Outline (`DocumentSymbolProvider`)
+- Refactors: wrap Se/Enquanto/Para/bloco, Inicio→braces, `\`→`+`
+- Camadas `domain/` / `application/` / `adapters/vscode/` (ADR-005)
 
-Ver [PDR-004](../../docs/product/pdr/PDR-004-paridade-ux.md).
+### Relacionado
+
+- Package `@lsp-workbench/analyzer` (Opção 2 foundation)
+- Stub `packages/lsp-language-server` (Opção 3)
+
+## Unreleased
+
+-
 
 ## 0.1.3 — 2026-09-18
 
 ### Adicionado (PDR-003)
 
-- Índice de símbolos do workspace (`Definir Funcao` + `Funcao` elegíveis, variáveis, LSPDoc)
-- Escopos `lsp.symbols.scope`: `project` | `file` | `mixed`
-- Contextos nomeados `lsp.contexts` (CRUD via comandos + status bar)
-- Completion / hover / signature help / go-to-definition para funções custom e builtins SENIOR
-- Diagnósticos FUN007 / FUN008 / FUN009 + Quick Fix de import Decl+Impl
-- `lsp.contexts[].diagnostics.ignoreIds` unido ao ignore global
-- Allowlist `files` como **união** com `filePattern` (não substitui o padrão)
-
-### Corrigido
-
-- Refresh de diagnósticos em todos os buffers LSP abertos quando um peer muda
-- Documentação alinhada à versão e ao language id `senior-lsp`
-
-### Documentação de produto
-
-- Roadmap Opção 1→2→3 (ADR-006), Clean Architecture (ADR-005), PDR-004/005, TDD/Eval paridade
+- Índice de símbolos, escopos, contextos, FUN007–009, import QF
+- Allowlist `files` união; ignoreIds por contexto; refresh peers
 
 ## 0.1.0 — baseline
 
-- Language id `senior-lsp`, TextMate, snippets lista/cursor
-- Format Document, diagnósticos estáticos, Quick Fixes iniciais
-- Settings `lsp.format.*` / `lsp.diagnostics.ignoreIds`
+- Language id `senior-lsp`, TextMate, snippets, format, diagnostics iniciais
