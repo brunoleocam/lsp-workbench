@@ -23,6 +23,7 @@ import {
   applySql009LineFix,
   applySql009ScaffoldFix,
   applyPrefixRenameSourceFix,
+  applyPrefixChangeTypeFix,
   applySyn005MoveDefinir,
   applySyn007CloseComment,
   applySyn010DefinirStub,
@@ -48,6 +49,7 @@ import {
   sql008NativeInsert,
   sqlEnquantoLoopInsert,
   suggestedPrefixedName,
+  suggestedTipoFromPrefix,
 } from "./quick-fixes";
 import { arredondarRewriteOptions, truncarRewriteOptions } from "./rewrite-options";
 import { buildDefinirInsertEdit, definirStatement } from "./definir-insert";
@@ -320,18 +322,38 @@ function prefixRenameActions(
   const line = document.lineAt(diagnostic.range.start.line);
   const defM = line.text.match(/^(\s*)Definir\s+(Alfa|Numero|Data|Lista|Cursor)\s+(\w+)\b/i);
   if (!defM) return [];
-  const next = applyPrefixRenameSourceFix(document.getText(), defM[2], defM[3]);
-  if (!next) return [];
-  const newName = suggestedPrefixedName(defM[2], defM[3])!;
+  const tipo = defM[2];
+  const nome = defM[3];
   void code;
-  return [
-    replaceWholeDocument(
+  const actions: vscode.CodeAction[] = [];
+
+  const nextRename = applyPrefixRenameSourceFix(document.getText(), tipo, nome);
+  const newName = suggestedPrefixedName(tipo, nome);
+  if (nextRename && newName) {
+    const a = replaceWholeDocument(
       document,
       diagnostic,
-      `Renomear ${defM[3]} → ${newName} (todo o arquivo)`,
-      next
-    ),
-  ];
+      `Renomear ${nome} → ${newName} (todo o arquivo)`,
+      nextRename
+    );
+    a.isPreferred = true;
+    actions.push(a);
+  }
+
+  const nextTipo = applyPrefixChangeTypeFix(document.getText(), tipo, nome);
+  const newTipo = suggestedTipoFromPrefix(nome);
+  if (nextTipo && newTipo) {
+    const a = replaceWholeDocument(
+      document,
+      diagnostic,
+      `Mudar tipo: Definir ${newTipo} ${nome}`,
+      nextTipo
+    );
+    a.isPreferred = false;
+    actions.push(a);
+  }
+
+  return actions;
 }
 
 function sql005Actions(

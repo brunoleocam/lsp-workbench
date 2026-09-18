@@ -549,6 +549,19 @@ export function suggestedPrefixedName(tipo: string, name: string): string | null
   return null;
 }
 
+/**
+ * Tipo alinhado ao prefixo do nome (SYN006/RUL008 — alternativa ao rename).
+ * Ex.: vnErrado → Numero; vaX → Alfa.
+ */
+export function suggestedTipoFromPrefix(name: string): string | null {
+  if (/^va/i.test(name)) return "Alfa";
+  if (/^vn/i.test(name)) return "Numero";
+  if (/^vd/i.test(name)) return "Data";
+  if (/^vl/i.test(name) || /^a[A-Z]/i.test(name)) return "Lista";
+  if (/^Cur_/i.test(name)) return "Cursor";
+  return null;
+}
+
 /** Substitui identificador com word-boundary em todo o fonte. */
 export function renameIdentifierInSource(source: string, from: string, to: string): string {
   if (from === to) return source;
@@ -609,6 +622,22 @@ export function applyPrefixRenameSourceFix(
   const newName = suggestedPrefixedName(tipo, oldName);
   if (!newName || newName === oldName) return null;
   return renameIdentifierInSource(source, oldName, newName);
+}
+
+/** SYN006/RUL008: muda o tipo do Definir para casar com o prefixo do nome. */
+export function applyPrefixChangeTypeFix(
+  source: string,
+  oldTipo: string,
+  name: string
+): string | null {
+  const newTipo = suggestedTipoFromPrefix(name);
+  if (!newTipo || newTipo.toLowerCase() === oldTipo.toLowerCase()) return null;
+  const re = new RegExp(
+    String.raw`^(\s*)Definir\s+${oldTipo}\s+(${name})\b`,
+    "im"
+  );
+  if (!re.test(source)) return null;
+  return source.replace(re, `$1Definir ${newTipo} $2`);
 }
 
 /** SQL006: move linha SQL_Usar* para imediatamente antes do SQL_DefinirComando. */

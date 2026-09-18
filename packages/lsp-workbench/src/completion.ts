@@ -37,6 +37,7 @@ import {
   applySql009LineFix,
   applySql009ScaffoldFix,
   applyPrefixRenameSourceFix,
+  applyPrefixChangeTypeFix,
   applySyn005MoveDefinir,
   applySyn007CloseComment,
   applySyn007CloseCommentLine,
@@ -58,6 +59,7 @@ import {
   sql008NativeInsert,
   sqlEnquantoLoopInsert,
   suggestedPrefixedName,
+  suggestedTipoFromPrefix,
 } from "./quick-fixes";
 import { filterSuppressedHits, IGNORE_DIAGNOSTIC_CMD, isLineSuppressed } from "./suppressions";
 import {
@@ -767,15 +769,28 @@ function quickFixCompletions(
     if (hit.id === "SYN006" || hit.id === "RUL008") {
       const defM = line.text.match(/^(\s*)Definir\s+(Alfa|Numero|Data|Lista|Cursor)\s+(\w+)\b/i);
       if (defM) {
-        const next = applyPrefixRenameSourceFix(document.getText(), defM[2], defM[3]);
-        const newName = suggestedPrefixedName(defM[2], defM[3]);
-        if (next && newName) {
+        const tipo = defM[2];
+        const nome = defM[3];
+        const nextRename = applyPrefixRenameSourceFix(document.getText(), tipo, nome);
+        const newName = suggestedPrefixedName(tipo, nome);
+        if (nextRename && newName) {
           pushWholeDocFix(
-            `QF: Renomear ${defM[3]} → ${newName}`,
-            `LSP · ${hit.id} — prefixo alinhado ao tipo`,
-            next,
-            `00_QF_${hit.id}`,
+            `QF: Renomear ${nome} → ${newName}`,
+            `LSP · ${hit.id} — alinhar prefixo ao tipo ${tipo}`,
+            nextRename,
+            `00_QF_${hit.id}_rename`,
             `${newName} ${hit.id}`
+          );
+        }
+        const nextTipo = applyPrefixChangeTypeFix(document.getText(), tipo, nome);
+        const newTipo = suggestedTipoFromPrefix(nome);
+        if (nextTipo && newTipo) {
+          pushWholeDocFix(
+            `QF: Definir ${newTipo} ${nome}`,
+            `LSP · ${hit.id} — alinhar tipo ao prefixo de ${nome}`,
+            nextTipo,
+            `00_QF_${hit.id}_tipo`,
+            `${newTipo} ${hit.id}`
           );
         }
       }

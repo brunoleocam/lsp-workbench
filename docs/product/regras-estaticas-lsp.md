@@ -15,7 +15,7 @@ Status extensão: `ok` = implementado | `pendente`
 | SYN003 | Em `e`/`ou`, cada parte entre `()` | `Se`/`Enquanto` com `e`/`ou` mal parentizado | sim (parentizar partes) | ok | condicionais |
 | SYN004 | Blocos `{ }` (não `Inicio`/`Fim;`/`FimSe`/`FimEnquanto`) | palavras-chave legado | sim (par Inicio…Fim; → `{`…`}` de uma vez) | ok | sintaxe, padroes |
 | SYN005 | `Definir` no início (não no meio de `Se`/loop) | `Definir` após stmts em bloco | sim (mover Definir ao topo) | ok | erros-comuns |
-| SYN006 | Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_` vs tipo | `Definir Tipo nome` desalinhado | sim (renomear prefixo) | ok | variaveis |
+| SYN006 | Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_` vs tipo | `Definir Tipo nome` desalinhado | sim (renomear **ou** mudar tipo) | ok | variaveis |
 | SYN007 | Comentário `/*` fechado com `*/` | bloco aberto | sim (acrescentar `*/`) | ok | comentarios |
 | SYN008 | Chaves `{`/`}` balanceadas | contagem fora de string (alerta na linha do `}` extra) | sim (remover `}` extra) | ok | sintaxe |
 | SYN009 | String longa / SQL: preferir `\` ~col 80 | literal > ~100 sem `\` | sim (quebrar com `\`) | ok | padroes, sql |
@@ -32,7 +32,7 @@ Status extensão: `ok` = implementado | `pendente`
 | RUL005 | Não passar `Obj.Campo` direto em args de função | arg `\w+(\.\w+)+` em call | sim | ok | limitacoes, avisos |
 | RUL006 | Sem concat/`+` dentro de argumentos | arg com `+` | sim | ok | limitacoes, lembrete-ouro |
 | RUL007 | `Retorna;`/`Retorne;` → `Cancel(1);` | `\bRetorn[ae]\s*;` (exceto `Mensagem(Retorna`) | sim | ok | avisos, cancel |
-| RUL008 | Prefixo alinhado ao tipo (`Definir Alfa` → `va`) | ver SYN006 (mesmo check) | sim (renomear) | ok | variaveis |
+| RUL008 | Prefixo alinhado ao tipo (`Definir Alfa` → `va`) | ver SYN006 (mesmo check) | sim (renomear **ou** mudar tipo) | ok | variaveis |
 | RUL009 | `ExecSQLEx`: `0`=sucesso (não tratar `1` como ok) | heurística pós-`ExecSQLEx` | sim (+ ignorar sem comentário) | ok | sql |
 | RUL010 | Evitar `Mensagem` com JSON/XML/log enorme | `Mensagem(..., vaJSON|vaXML|vaLog…)` | nao (+ ignorar sem comentário) | ok | limitacoes, mensagens |
 | RUL011 | Operador `%` → `RestoDivisao` | `\w+\s*%\s*` | sim | ok | operadores |

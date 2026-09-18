@@ -59,6 +59,8 @@ import {
   sql008NativeInsert,
   sqlEnquantoLoopInsert,
   suggestedPrefixedName,
+  suggestedTipoFromPrefix,
+  applyPrefixChangeTypeFix,
   renameIdentifierInSource,
   findFun003VdArg,
   findFun004PArg,
@@ -216,6 +218,12 @@ describe("quick-fixes", () => {
     assert.equal(findSql002DestruirAfterLine(src, "vaCur", 1), 3);
     assert.equal(suggestedPrefixedName("alfa", "vnH"), "vaH");
     assert.equal(suggestedPrefixedName("numero", "vaX"), "vnX");
+    assert.equal(suggestedTipoFromPrefix("vnErrado"), "Numero");
+    assert.equal(suggestedTipoFromPrefix("vaX"), "Alfa");
+    assert.equal(
+      applyPrefixChangeTypeFix("Definir Alfa vnErrado;\nvnErrado = 1;\n", "Alfa", "vnErrado"),
+      "Definir Numero vnErrado;\nvnErrado = 1;\n"
+    );
     assert.equal(renameIdentifierInSource("SQL_Criar(vnH);", "vnH", "vaH"), "SQL_Criar(vaH);");
   });
 

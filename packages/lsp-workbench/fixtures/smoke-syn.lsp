@@ -4,7 +4,7 @@ Definir Numero vnA
 Definir Numero vnB;
 @ SYN010: tipo/identificador solto — Senior: falta valor, expressao ou comando — QF → remover ou Definir @
 numero;
-@ SYN006/RUL008: prefixo desalinhado — QF → renomear vnErrado → vaErrado @
+@ SYN006/RUL008: prefixo desalinhado — QF → vnErrado→vaErrado OU Definir Numero vnErrado @
 Definir Alfa vnErrado;
 vnB = 1;
 @ SYN005: Definir depois de stmt — QF → mover Definir ao topo @
