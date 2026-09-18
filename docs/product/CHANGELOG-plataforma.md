@@ -9,7 +9,7 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | Extensão `packages/lsp-workbench` | **0.2.0** — PDR-003 + PDR-004 (UX) + merge ANL* do analyzer |
 | Analyzer `packages/lsp-analyzer` | **0.2.0** — lexer/parser/AST + ANL001/002/010/011 + `format` |
 | Language Server `packages/lsp-language-server` | **0.1.0** — LS+Worker; `lsp.server.enabled` default **false** |
-| Agent `packages/lsp-workbench-agent` | Skills/commands PDR-002; CLI analyzer (PDR-006 P0) |
+| Agent `packages/lsp-workbench-agent` | Skills/commands PDR-002; PDR-006 (Agent ↔ analyzer) **concluído** (P0–P3) |
 | Remoto público | https://github.com/brunoleocam/lsp-workbench |
 
 ### Roadmap (motor de linguagem)
@@ -19,9 +19,9 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | **1 — UX IDE** | [PDR-004](pdr/PDR-004-paridade-ux.md) | **Concluída** (extensão 0.2.0) |
 | **2 — Analyzer** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | **Foundation** analyzer 0.2.0 |
 | **3 — Language Server** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | **Foundation** LS+Worker (opt-in) |
-| **4 — Agent ↔ analyzer** | [PDR-006](pdr/PDR-006-agent-analyzer.md) | P0: CLI + skills |
+| **4 — Agent ↔ analyzer** | [PDR-006](pdr/PDR-006-agent-analyzer.md) | **Concluído** (P0–P3) |
 
-Próximo foco público: fechar PDR-006 (format/eval via analyzer).
+Próximo foco público: Marketplace / catálogos multi-sistema (conforme PDR-001 / backlog UX).
 
 ### Extensão 0.2.0 (resumo)
 
