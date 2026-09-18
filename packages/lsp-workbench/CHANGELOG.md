@@ -16,10 +16,23 @@
 
 ### Relacionado
 
-- Package `@lsp-workbench/analyzer` (Opção 2 foundation)
-- Stub `packages/lsp-language-server` (Opção 3)
+- Package `@lsp-workbench/analyzer` **0.2.0** (Opção 2)
+- Package `lsp-language-server` **0.1.0** (Opção 3 foundation; `lsp.server.enabled` default false)
+- i18n removido (fora de escopo)
 
 ## Unreleased
+
+### Documentação
+
+- Status produto alinhado a 0.2.0 / analyzer 0.2.0 / LS 0.1.0
+- PDR-006 (Agent ↔ analyzer) e PDR-007 (bridge Demóbile)
+- Removida matriz competitiva / referências a extensões de terceiros
+
+### Adicionado (PDR-006 / PDR-007)
+
+- CLI `scripts/analyze-lsp.mjs` para Agent validar ANL*
+- Setting `lsp.demobile.catalogPath` + completion de tabelas a partir do JSON local
+- Fallback in-process se o Language Server falhar ao iniciar
 
 ### Adicionado (PDR-005 — Opção 2)
 

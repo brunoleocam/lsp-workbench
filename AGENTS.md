@@ -6,7 +6,7 @@ Monorepo **LSP Workbench**: extensão IDE + Agent público + plugin Demóbile pr
 - Cursor local: [`.cursor/README.md`](.cursor/README.md)
 - Produto: [`docs/product/`](docs/product/)
 - Arquitetura: [`docs/product/architecture/ARCHITECTURE.md`](docs/product/architecture/ARCHITECTURE.md)
-- Roadmap UX→compiler→LS: [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) · [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) · [ADR-006](docs/product/adr/ADR-006-roadmap-opcoes-1-2-3.md)
+- Roadmap: [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) · [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) · [PDR-006](docs/product/pdr/PDR-006-agent-analyzer.md) · [PDR-007](docs/product/pdr/PDR-007-demobile-catalog-bridge.md) · [ADR-006](docs/product/adr/ADR-006-roadmap-opcoes-1-2-3.md)
 
 ## Skills (`lsp-<ação>`)
 

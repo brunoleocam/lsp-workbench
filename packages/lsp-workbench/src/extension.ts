@@ -75,24 +75,11 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
-  const useLanguageServer = isLanguageServerEnabled();
-  if (useLanguageServer) {
-    void startLanguageServer(context).then(
-      () => {
-        /* LS push diagnostics; in-process collection unused */
-      },
-      (err: unknown) => {
-        void vscode.window.showErrorMessage(
-          `LSP Workbench Language Server failed to start: ${
-            err instanceof Error ? err.message : String(err)
-          }. Falling back tip: set lsp.server.enabled to false and reload.`
-        );
-      }
-    );
-  }
+  /** Mutável: se o LS falhar ao subir, volta para diagnostics in-process. */
+  const lsState = { active: isLanguageServerEnabled() };
 
   const refresh = (doc: vscode.TextDocument) => {
-    if (useLanguageServer) return;
+    if (lsState.active) return;
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
       return;
     }
@@ -139,7 +126,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   /** Revalida todos os buffers LSP abertos (peers cruzados — FUN009 / símbolos). */
   const refreshOpenLspDocuments = (changed?: vscode.Uri) => {
-    if (useLanguageServer) return;
+    if (lsState.active) return;
     const idx = getWorkspaceSymbolIndex();
     if (changed) idx.invalidate(changed);
     else idx.invalidate();
@@ -147,6 +134,23 @@ export function activate(context: vscode.ExtensionContext): void {
       if (d.languageId === SENIOR_LSP_LANGUAGE_ID) refresh(d);
     }
   };
+
+  if (lsState.active) {
+    void startLanguageServer(context).then(
+      () => {
+        /* LS push diagnostics ANL*; suite SYN/RUL continua só in-process (PDR-005). */
+      },
+      (err: unknown) => {
+        lsState.active = false;
+        void vscode.window.showErrorMessage(
+          `LSP Workbench Language Server failed to start: ${
+            err instanceof Error ? err.message : String(err)
+          }. Usando diagnostics in-process.`
+        );
+        refreshOpenLspDocuments();
+      }
+    );
+  }
 
   context.subscriptions.push(
     vscode.commands.registerCommand(

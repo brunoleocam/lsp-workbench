@@ -1,4 +1,4 @@
-# Teste local — LSP Workbench (antes do git/remoto)
+# Teste local — LSP Workbench
 
 Checklist rápido. Não precisa de Marketplace.
 
@@ -17,9 +17,9 @@ Cursor Tab / sugestões em inglês-espanhol ficam desligados para `senior-lsp` v
 - `editor.inlineSuggest.enabled`: false
 - `editor.wordBasedSuggestions`: off
 
-Language id: **`senior-lsp`** (não `lsp`, para evitar colisão).
+Language id: **`senior-lsp`**.
 
-## 1. Extensão (`packages/lsp-workbench`)
+## 1. Extensão (`packages/lsp-workbench`) — **0.2.0**
 
 ```powershell
 cd packages\lsp-workbench
@@ -27,20 +27,31 @@ npm install
 npm test
 ```
 
-Esperado: **113+ testes passando** (inclui cobertura de fixtures via `MANIFEST.json` e catálogo de funções 100% docs/lsp).
+Esperado: testes passando (fixtures via `MANIFEST.json` + catálogo de funções docs/lsp).
 
-Autocomplete de funções: após alterar `docs/lsp/`, rode `npm run extract-functions` em `packages/lsp-workbench` (já roda no `pretest`). Ctrl+Espaço filtra por prefixo (`Mens` → `Mensagem`, `Http` → família HTTP, …).
+Features cobertas: PDR-003 (símbolos/contextos) + PDR-004 (membros, tokens, snippets, TextMate, Outline, refactors, SQL format opt-in) + merge **ANL*** do analyzer.
 
 Para carregar no Cursor/VS Code (UI):
 
 1. Abra a **raiz do monorepo** neste workspace
-2. `npm run compile` em `packages/lsp-workbench` (ou deixe o preLaunchTask rodar)
-3. Painel **Run and Debug** → configuração **Run LSP Workbench Extension** → F5  
-   (abre Extension Development Host com as fixtures)
-4. Confira: colorização, Problems (abrir `fixtures/smoke-*.lsp` — ver `fixtures/README.md` + `MANIFEST.json`), Format Document, Quick Fix em RUL007/RUL014/FUN001/SYN004
+2. Compile analyzer + extensão:
+   ```powershell
+   cd packages\lsp-analyzer; npm install; npm run compile
+   cd ..\lsp-workbench; npm run compile
+   ```
+3. Painel **Run and Debug** → **Run LSP Workbench Extension** → F5
+4. Confira: colorização, Problems (`fixtures/smoke-*.lsp`), Format, Quick Fix, Outline, semantic tokens
 5. Smoke negativo: `fixtures/00-ok-clean.lsp` → Problems vazio
 
-Alternativa: abrir só `packages/lsp-workbench` e F5 com extensionDevelopmentPath implícito.
+### Language Server (opt-in)
+
+```powershell
+cd packages\lsp-language-server
+npm install
+npm test
+```
+
+Settings: `lsp.server.enabled` = `true` → Reload Window. Diagnostics ANL* com source `LSP Analyzer`.
 
 ## 2. Agent público (`packages/lsp-workbench-agent`)
 
@@ -54,13 +65,15 @@ cmd /c mklink /J "$dest" "$src"
 
 Depois: **Developer: Reload Window**.
 
-Smoke no Agent (chat novo):
+Smoke:
 
 - `/gerar-lista-lsp` → campos `CODIGO:Numero, NOME:Alfa`
 - `/validar-lsp` em um `.lsp` com `Retorna;`
 - `@lsp-linguagem` em dúvida de sintaxe
 
-(Alternativa sem junction: o harness em `.cursor/` do monorepo já espelha skills/commands ao abrir esta pasta.)
+Harness em `.cursor/` do monorepo já espelha skills/commands.
+
+Próximo: [PDR-006](pdr/PDR-006-agent-analyzer.md) — validar via analyzer.
 
 ## 3. Plugin Demóbile (privado)
 
@@ -68,38 +81,30 @@ Smoke no Agent (chat novo):
 powershell -ExecutionPolicy Bypass -File .\scripts\install-demobile-plugin.ps1
 ```
 
-Reload Window. No Agent: `@lsp-demobile` e uma pergunta sobre tabela `E120PED` (deve apontar `docs/banco-senior`).
+Reload Window. No Agent: `@lsp-demobile` e pergunta sobre tabela `E120PED` (deve apontar `docs/banco-senior`).
+
+Próximo: [PDR-007](pdr/PDR-007-demobile-catalog-bridge.md).
 
 ## 4. Gitignore (sanity)
 
 ```powershell
-git init   # se ainda não houver
 git status
 ```
 
-**Não** devem aparecer como untracked a versionar: `docs/banco-senior/`, `docs/senior/`, `packages/lsp-workbench-demobile/`, `node_modules/`.
+**Não** versionar: `docs/banco-senior/`, `docs/senior/`, `packages/lsp-workbench-demobile/`, `node_modules/`.
 
 ## 5. Eval manual Agent
 
-Seguir [`docs/product/eval/EVAL-agent.md`](../docs/product/eval/EVAL-agent.md).
-
-## O que ainda NÃO está completo (plano Fase C)
-
-Extensão **0.1.3** tem: grammar, format, diagnostics do catálogo estático (`regras-estaticas-lsp.md`), snippets, Quick Fixes, completion (builtins + funções/variáveis customizadas no escopo), hover, signature help, go-to-def, modos `lsp.symbols.scope` (`project`/`file`/`mixed`), `lsp.contexts`, FUN007–FUN009 + QF importar, comandos de contexto.
-
-Ainda faltam para paridade IDE plena: semantic tokens dedicados, SQL embutido formatado, catálogos HCM/ACESSO/ERP além de SENIOR, VSIX/Marketplace.
+Seguir [`eval/EVAL-agent.md`](eval/EVAL-agent.md).
 
 ### Setup `.txt` de regra (workspace)
 
 ```json
 {
   "files.associations": {
-    "**/HR/HR*.txt": "lsp",
-    "**/TR/TR*.txt": "lsp"
+    "**/HR/HR*.txt": "senior-lsp",
+    "**/TR/TR*.txt": "senior-lsp"
   },
   "lsp.symbols.scope": "project"
 }
 ```
-
-Nota: a language id da extensão é `senior-lsp`; se a association usar `"lsp"`, ajustar para `"senior-lsp"`.
-

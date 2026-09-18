@@ -53,7 +53,11 @@ Sem entrada no dicionário → declarar lacuna; não inventar coluna.
 ### 4. Antes de encerrar
 
 1. Checklist **`lsp-revisar`**, e/ou
-2. **`lsp-validar`**
+2. **`lsp-validar`** + `node scripts/analyze-lsp.mjs <arquivo>` (ANL*)
+3. Confirmar tabelas/campos no dicionário (`lsp-banco`); se existir, pode regenerar índice:
+   `node scripts/build-demobile-catalog.mjs`
+
+Commands Cursor: `/consultar-tabela` · `/fluxo-regra` · `/gerar-com-banco`
 
 Corrigir violações críticas. Logs: skill **`lsp-logs`** se a tarefa incluir logging.
 

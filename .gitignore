@@ -13,6 +13,7 @@ logs/
 docs/banco-senior/
 docs/senior/
 packages/lsp-workbench-demobile/
+**/docs/banco-senior/.generated/
 
 # Local / temp
 BKP/

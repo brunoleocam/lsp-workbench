@@ -10,18 +10,20 @@ Monorepo da plataforma **LSP Workbench** — Linguagem Senior de Programação n
 | Agent Cursor | [`packages/lsp-workbench-agent`](packages/lsp-workbench-agent) | Sim |
 | Plugin Demóbile | `packages/lsp-workbench-demobile` | **Não** (gitignored) |
 
-## Roadmap (1 → 2 → 3)
+## Roadmap
 
-1. **Paridade UX** — [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md)
-2. **Compiler** — [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md)
-3. **Language Server + Worker** — PDR-005
+1. **UX IDE** — [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) (**concluída**, extensão 0.2.0)
+2. **Analyzer** — [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) (foundation 0.2.0)
+3. **Language Server + Worker** — PDR-005 (foundation 0.1.0, opt-in)
+4. **Agent ↔ analyzer** — [PDR-006](docs/product/pdr/PDR-006-agent-analyzer.md)
+5. **Bridge Demóbile → IDE** — [PDR-007](docs/product/pdr/PDR-007-demobile-catalog-bridge.md)
 
 Arquitetura: [`docs/product/architecture/ARCHITECTURE.md`](docs/product/architecture/ARCHITECTURE.md)
 
 Docs de engenharia: [`docs/product/`](docs/product/) (PDR, ADR, TDD, Eval).  
 Extensão (0.2.0): [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md) · [`CHANGELOG.md`](packages/lsp-workbench/CHANGELOG.md).  
-Analyzer (Opção 2): [`packages/lsp-analyzer`](packages/lsp-analyzer).  
-Language Server (Opção 3 foundation, default off): [`packages/lsp-language-server`](packages/lsp-language-server).  
+Analyzer: [`packages/lsp-analyzer`](packages/lsp-analyzer).  
+Language Server: [`packages/lsp-language-server`](packages/lsp-language-server).  
 Linguagem: [`docs/lsp/`](docs/lsp/). Exemplos: [`exemplos/`](exemplos/).
 
 Config compartilhada: [`lsp.config.json`](lsp.config.json).

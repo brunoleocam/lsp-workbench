@@ -72,6 +72,7 @@ import {
   type CustomFunctionSymbol,
 } from "./document-symbols";
 import { mergeEligible } from "./symbol-scope";
+import { demobileTableCompletions } from "./adapters/vscode/demobile-catalog-loader";
 
 function toKind(kind: "keyword" | "function" | "type"): vscode.CompletionItemKind {
   switch (kind) {
@@ -1142,18 +1143,32 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       }
 
       const defItem = definirCompletion(document, position, word, wordRange);
+      const demobileItems =
+        word.length >= 1 && /^[A-Za-z_]/.test(word)
+          ? demobileTableCompletions(word).map((t, i) => {
+              const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
+              item.detail = t.detail;
+              if (t.documentation) {
+                item.documentation = t.documentation;
+              }
+              item.range = wordRange;
+              item.sortText = `2${String(i).padStart(3, "0")}`;
+              return item;
+            })
+          : [];
       const base = [
         ...qfItems,
         ...(defItem ? [defItem] : []),
         ...customItems,
         ...fnItems,
+        ...demobileItems,
       ];
 
       if (lineHasAlerts) {
         return new vscode.CompletionList(base, true);
       }
 
-      if (fnItems.length || defItem || customItems.length) {
+      if (fnItems.length || defItem || customItems.length || demobileItems.length) {
         return new vscode.CompletionList(base, false);
       }
 

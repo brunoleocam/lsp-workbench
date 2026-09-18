@@ -8,7 +8,7 @@
 
 ## Problema
 
-Desenvolvedores de regras na Linguagem Senior de Programação (LSP) precisam de: (1) suporte IDE rico, (2) Agent Cursor alinhado às regras de ouro, (3) dados internos Demóbile (banco + regras) sem vazar em repositório público. Extensões existentes cobrem só parte do fluxo (ex.: colorização) ou não integram Agent + dados privados.
+Desenvolvedores de regras na Linguagem Senior de Programação (LSP) precisam de: (1) suporte IDE rico, (2) Agent Cursor alinhado às regras de ouro, (3) dados internos Demóbile (banco + regras) sem vazar em repositório público. Não havia uma plataforma única que unisse extensão + Agent + plugin privado com a mesma disciplina de regras.
 
 ## Personas
 

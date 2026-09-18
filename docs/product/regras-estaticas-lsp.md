@@ -82,6 +82,17 @@ Status extensão: `ok` = implementado | `pendente`
 | SQL008 | JOIN/subquery → nativo | comando com JOIN/`(SELECT` sem UsarAbrangencia(0)+UsarSQLSenior2(0) | sim (inserir Usar*) | ok | sql nativo |
 | SQL009 | Não misturar API simples × completa | `SQL_*` em `Definir Cursor` ou `.AbrirCursor` em handle de `SQL_Criar` | sim (**esqueleto** do modo certo; ou só converter a linha). SQL002 adiado enquanto a API estiver misturada | ok | cursores |
 
+## ANL — Analyzer (`@lsp-workbench/analyzer`)
+
+Emitidos pela AST (Opção 2). A extensão faz **merge** com SYN/RUL (dedupe vs RUL007 / SYN003 / SYN008). Source típico: `LSP Analyzer` (LS) ou mesclado no Problems in-process.
+
+| ID | Regra | Detecção | QF | Ext | Fonte |
+|----|-------|----------|----|-----|-------|
+| ANL001 | `{` sem `}` correspondente | AST braces | parcial | ok | analyzer |
+| ANL002 | `}` sem `{` correspondente | AST braces | parcial | ok | analyzer |
+| ANL010 | `Retorna;` / `Retorne;` inválidos | AST / token | sim (via RUL007) | ok | analyzer |
+| ANL011 | `e` / `ou` com partes mal parentizadas | AST condição | sim (via SYN003) | ok | analyzer |
+
 ## Mapa de equivalência (IDs antigos do skill)
 
 | Antes (skill antigo) | Agora (canônico) |

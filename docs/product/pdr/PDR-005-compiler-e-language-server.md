@@ -1,65 +1,70 @@
-# PDR-005 — Compiler e Language Server (Opções 2 e 3)
+# PDR-005 — Analyzer e Language Server (Opções 2 e 3)
 
 | Campo | Valor |
 |-------|-------|
-| Status | Aceito — Opção 2 foundation + **Opção 3 foundation** (LS+Worker, default off) |
+| Status | Aceito — Opção 2 **0.2.0** + Opção 3 foundation **0.1.0** (LS+Worker, default off) |
 | Data | 2026-09-18 |
 | Roadmap | [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md) |
 | Pré-requisito | Opção 1 (PDR-004) concluída |
 
 ## Problema
 
-Heurísticas cobrem regras Demóbile, mas não tipagem fina, Tabela/schema, unused real nem isolamento de processo sob carga. llutti resolve isso com compiler + LS + Worker.
+Heurísticas em `diagnostics.ts` cobrem regras Demóbile (SYN/RUL/…), mas tipagem fina, schema/Tabela, unused real e isolamento de processo sob carga pedem um núcleo de análise reutilizável e, depois, um Language Server opcional.
 
-## Opção 2 — Compiler (`packages/lsp-analyzer`)
+## Opção 2 — Analyzer (`packages/lsp-analyzer`)
 
 ### Escopo
 
 - Package **puro** (zero `vscode`): lexer → parser/AST (com recovery) → semantic mínimo.
-- API pública: `analyze(source, opts)`, `format(source, opts)`, símbolos, tokens.
-- A extensão (e depois o LS) só consome a API.
+- API pública: `analyze(source, opts)`, `format(source, opts)`, `tokenize`, `parse`.
+- A extensão (e o LS) consomem a API.
 - Migrar gradualmente regras de `diagnostics.ts` para o analyzer quando a AST permitir.
 
-### Não-objetivos da primeira entrega Opção 2
+### Entregue (0.2.0)
 
-- Paridade 1:1 com códigos `LSP####` do llutti
-- Language Server
-- Copiar parser do llutti
+- Lexer com comentários `@…@` e `/*…*/`
+- Parser/AST com recovery
+- Diagnostics: **ANL001** / **ANL002** (braces), **ANL010** (`Retorna`), **ANL011** (`e`/`ou`)
+- `format` por indentação de chaves
+- Extensão faz merge ANL* em `analyzeLsp` (dedupe vs RUL007 / SYN003 / SYN008)
 
-### Aceite Opção 2
+### Não-objetivos da foundation Opção 2
 
-- Package compilável + testes de lexer/parser em fixtures próprias.
-- Extensão chama analyzer para pelo menos um caminho (ex.: parse errors SYN) sem regressão RUL*.
+- Tipagem completa / unused / schema
+- Language Server (Opção 3)
+- Trocar IDs canônicos SYN/RUL/… por outra família
+
+### Aceite Opção 2 (foundation)
+
+- [x] Package compilável + testes
+- [x] Extensão consome analyzer sem regressão RUL*
+- [ ] Migração ampla das regras SYN/RUL para AST (backlog)
 
 ## Opção 3 — Language Server + Worker
 
 ### Escopo
 
 - `vscode-languageclient` na extensão; server Node importando `lsp-analyzer`.
-- Worker (`worker_threads`) para sessões de compile.
-- Extensão vira thin client; snippets/grammar permanecem contribs.
+- Worker (`worker_threads`) para sessões de `analyze`.
+- Snippets/grammar permanecem contribs da extensão.
 - **Sem i18n** (fora de escopo).
 
-### Pré-requisito
+### Entregue (foundation 0.1.0)
 
-- Opção 2 estável (API analyzer congelada o suficiente).
+- `packages/lsp-language-server`: `server.ts` + `compiler-worker.ts`
+- Extensão: `lsp.server.enabled` (default **false**)
+- Com LS on: push diagnostics (`source: LSP Analyzer`); format/completion rica continuam in-process
+- Fallback sync se o Worker falhar
 
-### Aceite Opção 3
+### Aceite Opção 3 (completo — ainda aberto)
 
-- Mesmos features UX da Opção 1 via LS.
-- Smoke F5 sem regressão; métrica de não-bloqueio da UI em arquivo grande (baseline a documentar).
+- [ ] Paridade UX da Opção 1 via LS (não só diagnostics)
+- [ ] Smoke F5 + métrica de não-bloqueio em arquivo grande
 
-### Status implementação (2026-09-18)
-
-**Foundation Opção 3 landed** em `packages/lsp-language-server`:
-
-- `server.ts` + `compiler-worker.ts` (`worker_threads`)
-- Extensão: `lsp.server.enabled` (default **false**) inicia `LanguageClient` → `out/server.js`
-- Com LS off, Opção 1 in-process permanece o caminho estável
-- Ainda **não** é aceite completo (paridade UX via LS / métrica UI) — só a fundação LS+Worker
-- i18n **removido** / não será implementado
 ## Ordem
 
 ```text
 PDR-004 (UX) → PDR-005 Opção 2 (analyzer) → PDR-005 Opção 3 (LS/Worker)
+         ↓
+    PDR-006 (Agent consome analyzer) · PDR-007 (bridge Demóbile)
 ```

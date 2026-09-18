@@ -12,11 +12,28 @@ Validação alinhada ao catálogo canônico e à extensão **LSP Workbench** (`a
 
 ## Fluxo
 
-1. Ler o código (arquivo, seleção ou pasta/padrão multiarquivo)
-2. Aplicar as tabelas SYN / RUL / FUN / SEM / SQL abaixo (mesmos IDs da extensão)
-3. Registrar: conforme | violação (ID, local, correção)
-4. Entregar relatório no formato final
-5. Se o usuário pedir, **aplicar** as correções
+1. Identificar escopo (arquivo/seleção/pasta)
+2. **Rodar o analyzer** (mesmos ANL* da IDE), na raiz do monorepo:
+   ```powershell
+   cd packages\lsp-analyzer; npm run compile
+   node ..\..\scripts\analyze-lsp.mjs <arquivo-ou-pasta>
+   ```
+   Incluir toda linha `file:line: [ANL…]` no relatório.
+3. Aplicar checklists SYN / RUL / FUN / SEM / SQL abaixo (complementares ao analyzer)
+4. Registrar: conforme | violação (ID, local, correção)
+5. Entregar relatório no formato final
+6. Se o usuário pedir, **aplicar** as correções e reexecutar o analyzer
+
+## Checklist ANL (analyzer — obrigatório via CLI)
+
+| ID | Regra | Correção típica |
+|----|-------|-----------------|
+| ANL001 | `{` sem `}` | Fechar bloco |
+| ANL002 | `}` sem `{` | Remover `}` extra ou abrir bloco |
+| ANL010 | `Retorna;` / `Retorne;` | `Cancel(1);` (equiv. RUL007) |
+| ANL011 | `e`/`ou` mal parentizado | Parentizar partes (equiv. SYN003) |
+
+Fonte: `@lsp-workbench/analyzer` / `docs/product/regras-estaticas-lsp.md`
 
 ## Escopo multiarquivo
 

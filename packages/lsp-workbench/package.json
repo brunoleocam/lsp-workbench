@@ -166,6 +166,11 @@
           "type": "boolean",
           "default": false,
           "description": "Usa o Language Server + Worker (Opção 3) para diagnósticos do analyzer. Desligado por padrão mantém diagnósticos in-process (Opção 1). Recarregue a janela após alterar."
+        },
+        "lsp.demobile.catalogPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path do catálogo Demóbile local (JSON PDR-007). Vazio = docs/banco-senior/.generated/catalog.json na 1ª pasta do workspace. Se o arquivo não existir, completion de tabelas fica no-op."
         }
       }
     },

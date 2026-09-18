@@ -1,3 +1,4 @@
+import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import {
@@ -32,6 +33,12 @@ export async function startLanguageServer(
     "out",
     "server.js"
   );
+
+  if (!fs.existsSync(serverModule)) {
+    throw new Error(
+      `Language Server não encontrado em ${serverModule}. Compile packages/lsp-language-server ou desligue lsp.server.enabled.`
+    );
+  }
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.ipc },

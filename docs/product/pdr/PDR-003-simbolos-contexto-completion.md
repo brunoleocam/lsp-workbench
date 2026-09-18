@@ -2,11 +2,10 @@
 
 | Campo | Valor |
 |-------|-------|
-| Status | Aceito (implementação inicial na extensão 0.1.3) |
+| Status | Aceito — entregue na extensão **0.1.3**; UX complementar em PDR-004 (**0.2.0**) |
 | Data | 2026-09-18 |
 | Artefato | Extensão `packages/lsp-workbench` |
-| Referência UX | [llutti/vscode-language-lsp](https://github.com/llutti/vscode-language-lsp) (modelo mental; **não** copiar código) |
-| Relacionados | PDR-001, ADR-003 (`lsp.*`), `docs/product/regras-estaticas-lsp.md` |
+| Relacionados | PDR-001, PDR-004, ADR-003 (`lsp.*`), `docs/product/regras-estaticas-lsp.md` |
 
 ## Problema
 
@@ -30,7 +29,7 @@ Desenvolvedores precisam de Ctrl+Espaço / hover / signature help para funções
 | D6 | Sistema **SENIOR** sempre carregado; sistema adicional (`HCM` \| `ACESSO` \| `ERP`) por contexto nomeado ou fallback SingleFile |
 | D7 | Um arquivo pertence a **no máximo um** contexto nomeado; símbolos não vazam entre contextos nomeados |
 | D8 | Associação `files.associations` para `.txt` é **configuração de workspace** (documentada), não feature de runtime da extensão |
-| D9 | Referência llutti: UX e conceitos; implementação própria no Workbench |
+| D9 | Language id canônico: **`senior-lsp`** (evita colisão com outras extensões no mesmo workspace) |
 
 ## Modos de escopo
 
@@ -55,7 +54,7 @@ Valores: `project` \| `file` \| `mixed`. Default: `project`.
 
 - Índice = apenas o buffer atual.
 - Sem varredura de pasta.
-- Equivale ao SingleFile do llutti para símbolos.
+- Escopo limitado ao buffer atual (sem varredura de pasta).
 - Sistema adicional selecionável na status bar (`lsp.fallback.defaultSystem`).
 
 ### 3. Misto (arquivo + entradas explícitas)
@@ -86,7 +85,7 @@ Valores: `project` \| `file` \| `mixed`. Default: `project`.
 }
 ```
 
-Campos de contexto (alinhados ao modelo llutti + extensão Workbench):
+Campos de contexto (`lsp.contexts`):
 
 | Campo | Obrigatório | Significado |
 |-------|-------------|-------------|
@@ -227,7 +226,6 @@ No modo **Projeto**, `lsp.contexts` vazio = índice = workspace inteiro. Se `lsp
 
 ## Não-objetivos
 
-- Copiar código do repositório llutti
 - Compilador/runtime Senior
 - Publicação Marketplace nesta leva
 - Execução real da regra / link de módulos Senior além do índice estático
@@ -245,14 +243,6 @@ No modo **Projeto**, `lsp.contexts` vazio = índice = workspace inteiro. Se `lsp
 
 Complementar `docs/product/tdd/TDD-extension.md` e fixtures em `packages/lsp-workbench` com ACC-01…12.
 
-Estado na 0.1.3: ACC-01…08 e ACC-10 cobertos por testes unitários; ACC-09/11/12 e demo manual em `exemplos/contexto-projeto/`. Status do PDR: **Aceito (implementação inicial)** — backlog abaixo permanece fora desta leva.
-
-## Backlog explícito (não nesta leva — por quê)
-
-| Item | Por que ficou de fora | Pré-requisito / próxima leva |
-|------|----------------------|------------------------------|
-| **Semantic tokens dedicados** | O PDR priorizou índice de símbolos, completion, hover, signature, go-to-def e contextos — valor direto no fluxo Ctrl+Espaço. Highlight semântico fino (token types por função customizada / campo de Lista) exige `DocumentSemanticTokensProvider` + legend + invalidação no índice; a TextMate já cobre colorização básica. | Provider semântico ligado ao `WorkspaceSymbolIndex`; testes de snapshot de tokens |
-| **Catálogos HCM / ACESSO / ERP** | O setting `system` / `fallback.defaultSystem` e a status bar já existem, mas o Workbench só tem o catálogo **SENIOR** gerado de `docs/lsp/` (~208 builtins). Não há dicionário versionado de builtins por produto Senior no repo público; inventar nomes quebraria confiança. | Extrair/empacotar assinaturas por sistema (ou espelhar fontes oficiais) + merge no `function-catalog` por `system` ativo |
-| **Formatação SQL embutido** | Já há flag `lsp.format.embeddedSql.*` (default off) alinhada ao ADR, mas o formatter atual só faz layout LSP (indent/braces). SQL embutido seguro precisa detectar literais elegíveis (`ExecSql`, `.SQL`, `SQL_DefinirComando`), dialeto e no-op em concat dinâmica — escopo grande e ortogonal ao PDR-003 de símbolos. | Motor de format SQL (oracle/sqlserver/sql) + fixtures; ligar ao `formatLsp` quando enabled |
+Estado: ACC-01…08 e ACC-10 cobertos por testes unitários na **0.1.3**; ACC-09/11/12 e demo manual em `exemplos/contexto-projeto/`. Itens que eram backlog deste PDR (semantic tokens, SQL embutido, stubs HCM/ERP) foram entregues na **0.2.0** via [PDR-004](PDR-004-paridade-ux.md). Catálogos multi-sistema completos e bridge Demóbile → IDE: [PDR-007](PDR-007-demobile-catalog-bridge.md).
 
 Demo manual: [`exemplos/contexto-projeto/`](../../../exemplos/contexto-projeto/).
