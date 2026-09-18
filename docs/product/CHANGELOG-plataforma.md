@@ -2,7 +2,27 @@
 
 Histórico de implementação do monorepo (não confundir com o [CHANGELOG da extensão](../../packages/lsp-workbench/CHANGELOG.md)).
 
-## 2026-09-18 — foundation 0.2.0 / LS 0.1.0
+## 2026-09-18 — analyzer 0.3.0 / LS 0.2.0 (paridade diagnostics)
+
+| Artefato | Versão / estado |
+|----------|-----------------|
+| Extensão `packages/lsp-workbench` | **0.2.0** — lint via analyzer; debounce; refactors no range |
+| Analyzer `packages/lsp-analyzer` | **0.3.0** — `analyzeLsp` + ANL004/012 + lint em `src/lint/` |
+| Language Server `packages/lsp-language-server` | **0.2.0** — Worker usa `analyzeLsp` (paridade SYN/RUL/…) |
+| Agent | PDR-006 concluído |
+| Catálogo local | PDR-007 concluído |
+
+### Roadmap
+
+| Fase | Estado |
+|------|--------|
+| 1 UX IDE | Concluída |
+| 2 Analyzer | **0.3.0** (lint unificado) |
+| 3 Language Server | **0.2.0** (paridade diagnostics) |
+| 4–5 Agent + catálogo | Concluídos |
+| Próximo | Higiene residual → **teste local F5** → Marketplace / Cursor |
+
+## 2026-09-18 — foundation 0.2.0 / LS 0.1.0 (histórico)
 
 | Artefato | Versão / estado |
 |----------|-----------------|
@@ -11,6 +31,7 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | Language Server `packages/lsp-language-server` | **0.1.0** — LS+Worker; `lsp.server.enabled` default **false** |
 | Agent `packages/lsp-workbench-agent` | Skills/commands PDR-002; PDR-006 (Agent ↔ analyzer) **concluído** (P0–P3) |
 | Remoto público | https://github.com/brunoleocam/lsp-workbench |
+
 
 ### Roadmap (motor de linguagem)
 

@@ -1,5 +1,6 @@
 /**
  * Adapter VS Code — refactors (CodeActionKind.Refactor).
+ * Toggle/concat só no range selecionado (ou documento se seleção vazia e houver match).
  */
 
 import * as vscode from "vscode";
@@ -10,6 +11,13 @@ import {
   wrapSelection,
 } from "../../application/refactors";
 import { APPLY_TEXT_EDITS_CMD, serializeFullDocumentReplace } from "../../apply-edits";
+
+function applyOnRange(src: string, start: number, end: number, transform: (s: string) => string): string | null {
+  const slice = src.slice(start, end);
+  const nextSlice = transform(slice);
+  if (nextSlice === slice) return null;
+  return src.slice(0, start) + nextSlice + src.slice(end);
+}
 
 export function registerRefactorActions(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
@@ -41,33 +49,38 @@ export function registerRefactorActions(context: vscode.ExtensionContext): void 
             }
           }
 
-          const toggle = new vscode.CodeAction(
-            "Converter Inicio/Fim → { }",
-            vscode.CodeActionKind.Refactor
-          );
-          toggle.command = {
-            title: "Toggle braces",
-            command: APPLY_TEXT_EDITS_CMD,
-            arguments: [
-              document.uri.toString(),
-              serializeFullDocumentReplace(document, toggleInicioFimToBraces(src)),
-            ],
-          };
-          actions.push(toggle);
+          const scopeStart = hasSel ? start : 0;
+          const scopeEnd = hasSel ? end : src.length;
+          const toggled = applyOnRange(src, scopeStart, scopeEnd, toggleInicioFimToBraces);
+          if (toggled) {
+            const toggle = new vscode.CodeAction(
+              hasSel ? "Converter Inicio/Fim → { } (seleção)" : "Converter Inicio/Fim → { }",
+              vscode.CodeActionKind.Refactor
+            );
+            toggle.command = {
+              title: "Toggle braces",
+              command: APPLY_TEXT_EDITS_CMD,
+              arguments: [document.uri.toString(), serializeFullDocumentReplace(document, toggled)],
+            };
+            actions.push(toggle);
+          }
 
-          const concat = new vscode.CodeAction(
-            "Converter \\ multilinha → concatenação +",
-            vscode.CodeActionKind.Refactor
-          );
-          concat.command = {
-            title: "Concat",
-            command: APPLY_TEXT_EDITS_CMD,
-            arguments: [
-              document.uri.toString(),
-              serializeFullDocumentReplace(document, backslashLiteralToConcat(src)),
-            ],
-          };
-          actions.push(concat);
+          const concatNext = applyOnRange(src, scopeStart, scopeEnd, backslashLiteralToConcat);
+          if (concatNext) {
+            const concat = new vscode.CodeAction(
+              hasSel ? "Converter \\ → + (seleção)" : "Converter \\ multilinha → concatenação +",
+              vscode.CodeActionKind.Refactor
+            );
+            concat.command = {
+              title: "Concat",
+              command: APPLY_TEXT_EDITS_CMD,
+              arguments: [
+                document.uri.toString(),
+                serializeFullDocumentReplace(document, concatNext),
+              ],
+            };
+            actions.push(concat);
+          }
 
           return actions;
         },

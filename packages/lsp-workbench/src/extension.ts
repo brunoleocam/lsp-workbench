@@ -78,12 +78,15 @@ export function activate(context: vscode.ExtensionContext): void {
 
   /** Mutável: se o LS falhar ao subir, volta para diagnostics in-process. */
   const lsState = { active: isLanguageServerEnabled() };
+  let refreshSeq = 0;
+  let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
   const refresh = (doc: vscode.TextDocument) => {
     if (lsState.active) return;
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
       return;
     }
+    const seq = ++refreshSeq;
     void (async () => {
       const cfg = vscode.workspace.getConfiguration("lsp");
       const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
@@ -101,6 +104,7 @@ export function activate(context: vscode.ExtensionContext): void {
       } catch {
         scopedExternal = undefined;
       }
+      if (seq !== refreshSeq) return;
       const hits = filterSuppressedHits(
         doc.uri.toString(),
         lines,
@@ -110,6 +114,7 @@ export function activate(context: vscode.ExtensionContext): void {
           demobileTableNames: getDemobileCatalog()?.tables.map((t) => t.name),
         })
       );
+      if (seq !== refreshSeq) return;
       const diags = hits.map((h) => {
         const severity =
           h.severity === "error"
@@ -132,18 +137,22 @@ export function activate(context: vscode.ExtensionContext): void {
   /** Revalida todos os buffers LSP abertos (peers cruzados — FUN009 / símbolos). */
   const refreshOpenLspDocuments = (changed?: vscode.Uri) => {
     if (lsState.active) return;
-    const idx = getWorkspaceSymbolIndex();
-    if (changed) idx.invalidate(changed);
-    else idx.invalidate();
-    for (const d of vscode.workspace.textDocuments) {
-      if (d.languageId === SENIOR_LSP_LANGUAGE_ID) refresh(d);
-    }
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      refreshTimer = undefined;
+      const idx = getWorkspaceSymbolIndex();
+      if (changed) idx.invalidate(changed);
+      else idx.invalidate();
+      for (const d of vscode.workspace.textDocuments) {
+        if (d.languageId === SENIOR_LSP_LANGUAGE_ID) refresh(d);
+      }
+    }, 200);
   };
 
   if (lsState.active) {
     void startLanguageServer(context).then(
       () => {
-        /* LS push diagnostics ANL*; suite SYN/RUL continua só in-process (PDR-005). */
+        /* LS push diagnostics via analyzeLsp (paridade PDR-005). */
       },
       (err: unknown) => {
         lsState.active = false;

@@ -2,69 +2,50 @@
 
 | Campo | Valor |
 |-------|-------|
-| Status | Aceito — Opção 2 **0.2.0** + Opção 3 foundation **0.1.0** (LS+Worker, default off) |
+| Status | Aceito — Opção 2 **0.3.0** + Opção 3 **0.2.0** (paridade diagnostics) |
 | Data | 2026-09-18 |
 | Roadmap | [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md) |
 | Pré-requisito | Opção 1 (PDR-004) concluída |
 
 ## Problema
 
-Heurísticas em `diagnostics.ts` cobrem regras de ouro (SYN/RUL/…), mas tipagem fina, schema/Tabela, unused real e isolamento de processo sob carga pedem um núcleo de análise reutilizável e, depois, um Language Server opcional.
+Heurísticas e AST precisam ser um núcleo reutilizável; o Language Server deve emitir a **mesma** suite de diagnostics da extensão.
 
-## Opção 2 — Analyzer (`packages/lsp-analyzer`)
+## Opção 2 — Analyzer (`packages/lsp-analyzer` 0.3.0)
 
-### Escopo
+### Entregue
 
-- Package **puro** (zero `vscode`): lexer → parser/AST (com recovery) → semantic mínimo.
-- API pública: `analyze(source, opts)`, `format(source, opts)`, `tokenize`, `parse`.
-- A extensão (e o LS) consomem a API.
-- Migrar gradualmente regras de `diagnostics.ts` para o analyzer quando a AST permitir.
+- Lexer / parser / AST / `format`
+- Semantic ANL*: **001, 002, 004, 010, 011, 012**
+- **Lint completo** em `src/lint/` (`analyzeLsp`) — SYN/RUL/FUN/SEM/SQL/DEM + merge ANL*
+- Extensão reexporta o lint do analyzer (fonte única)
 
-### Entregue (0.2.0)
-
-- Lexer com comentários `@…@` e `/*…*/`
-- Parser/AST com recovery
-- Diagnostics: **ANL001** / **ANL002** (braces), **ANL010** (`Retorna`), **ANL011** (`e`/`ou`)
-- `format` por indentação de chaves
-- Extensão faz merge ANL* em `analyzeLsp` (dedupe vs RUL007 / SYN003 / SYN008)
-
-### Não-objetivos da foundation Opção 2
-
-- Tipagem completa / unused / schema
-- Language Server (Opção 3)
-- Trocar IDs canônicos SYN/RUL/… por outra família
-
-### Aceite Opção 2 (foundation)
+### Aceite Opção 2
 
 - [x] Package compilável + testes
-- [x] Extensão consome analyzer sem regressão RUL*
-- [ ] Migração ampla das regras SYN/RUL para AST (backlog)
+- [x] Extensão consome analyzer / `analyzeLsp` sem regressão
+- [x] Regras heurísticas no package analyzer (migração da pasta lint)
+- [ ] Tipagem fina / unused (backlog futuro)
 
-## Opção 3 — Language Server + Worker
+## Opção 3 — Language Server (`0.2.0`)
 
-### Escopo
+### Entregue
 
-- `vscode-languageclient` na extensão; server Node importando `lsp-analyzer`.
-- Worker (`worker_threads`) para sessões de `analyze`.
-- Snippets/grammar permanecem contribs da extensão.
-- **Sem i18n** (fora de escopo).
+- Worker + sync fallback chamam **`analyzeLsp`** (não só ANL*)
+- Debounce 200ms + checagem de `version`
+- Sem completion stub (fica na extensão)
+- Ranges com coluna quando o hit traz `startCol`/`endCol`
+- Extensão: fallback se LS falhar ao subir; debounce in-process
 
-### Entregue (foundation 0.1.0)
+### Aceite Opção 3
 
-- `packages/lsp-language-server`: `server.ts` + `compiler-worker.ts`
-- Extensão: `lsp.server.enabled` (default **false**)
-- Com LS on: push diagnostics (`source: LSP Analyzer`); format/completion rica continuam in-process
-- Fallback sync se o Worker falhar
-
-### Aceite Opção 3 (completo — ainda aberto)
-
-- [ ] Paridade UX da Opção 1 via LS (não só diagnostics)
-- [ ] Smoke F5 + métrica de não-bloqueio em arquivo grande
+- [x] Paridade de **diagnostics** com a extensão (mesma pipeline)
+- [ ] Paridade UX completa via LS (format/completion no server) — fora desta leva
+- [ ] Métrica formal de não-bloqueio em arquivo grande
+- [ ] Bundle `server.js` no VSIX (pré-Marketplace)
 
 ## Ordem
 
 ```text
-PDR-004 (UX) → PDR-005 Opção 2 (analyzer) → PDR-005 Opção 3 (LS/Worker)
-         ↓
-    PDR-006 (Agent consome analyzer)
+PDR-004 → PDR-005 Opção 2 → PDR-005 Opção 3 → PDR-006 → PDR-007 → higiene → teste local → Marketplace
 ```

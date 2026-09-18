@@ -1,6 +1,6 @@
 /**
  * API pública do analyzer (Opção 2 — PDR-005).
- * Lexer → parser/AST → semantic mínimo. Zero dependência de vscode.
+ * Lexer → parser/AST → semantic (ANL*) + lint heurístico (analyzeLsp).
  */
 
 export type {
@@ -16,20 +16,8 @@ export { tokenize } from "./lexer";
 export { parse } from "./parser";
 export { format } from "./format";
 export { collectSemantics } from "./semantic";
+export { analyze } from "./pipeline";
 
-import { tokenize } from "./lexer";
-import { parse } from "./parser";
-import { collectSemantics } from "./semantic";
-import type { AnalyzeOptions, AnalyzeResult } from "./types";
+export * from "./lint/index";
 
-export function analyze(source: string, opts?: AnalyzeOptions): AnalyzeResult {
-  const tokens = tokenize(source);
-  const ast = parse(tokens);
-  const ignore = new Set((opts?.ignoreIds ?? []).map((x) => x.toUpperCase()));
-  const diagnostics = collectSemantics(tokens, ast).filter(
-    (d) => !ignore.has(d.id.toUpperCase())
-  );
-  return { diagnostics, tokens, ast };
-}
-
-export const ANALYZER_VERSION = "0.2.0";
+export const ANALYZER_VERSION = "0.3.0";

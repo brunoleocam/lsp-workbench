@@ -6,6 +6,7 @@ export type AnalyzeRequest = {
   id: number;
   type: "analyze";
   source: string;
+  ignoreIds?: string[];
 };
 
 export type WorkerDiagnostic = {
@@ -13,6 +14,8 @@ export type WorkerDiagnostic = {
   message: string;
   line: number;
   severity: "error" | "warning";
+  startCol?: number;
+  endCol?: number;
 };
 
 export type AnalyzeResponse = {

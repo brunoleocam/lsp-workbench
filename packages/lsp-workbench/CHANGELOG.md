@@ -28,6 +28,13 @@
 - PDR-006 (Agent ↔ analyzer)
 - Removida matriz competitiva / referências a extensões de terceiros
 
+### Adicionado (analyzer 0.3 / LS 0.2)
+
+- Lint unificado em `@lsp-workbench/analyzer` (`analyzeLsp`)
+- LS Worker com paridade de diagnostics
+- Debounce in-process; refactors Inicio/`\` só no range com efeito
+- ANL004 (Inicio/Fim), ANL012 (Se sem parens)
+
 ### Adicionado (PDR-006 / catálogo local)
 
 - CLI `scripts/analyze-lsp.mjs` para Agent validar ANL*

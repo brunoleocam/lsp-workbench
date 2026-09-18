@@ -26,6 +26,14 @@ const DOCS_LSP = path.join(REPO_ROOT, "docs", "lsp");
 const OUT_TS = path.join(
   REPO_ROOT,
   "packages",
+  "lsp-analyzer",
+  "src",
+  "lint",
+  "function-catalog.generated.ts"
+);
+const OUT_TS_WORKBENCH_REEXPORT = path.join(
+  REPO_ROOT,
+  "packages",
   "lsp-workbench",
   "src",
   "function-catalog.generated.ts"
@@ -525,6 +533,12 @@ export function writeOutputs() {
   fs.mkdirSync(path.dirname(OUT_JSON), { recursive: true });
   fs.writeFileSync(OUT_TS, emitTs(entries), "utf8");
   fs.writeFileSync(
+    OUT_TS_WORKBENCH_REEXPORT,
+    `/** Reexport — gerado em packages/lsp-analyzer/src/lint (extract-lsp-functions). */\n` +
+      `export { LSP_FUNCTION_CATALOG_GENERATED, EXTRACTED_FUNCTION_LABELS } from "@lsp-workbench/analyzer";\n`,
+    "utf8"
+  );
+  fs.writeFileSync(
     OUT_JSON,
     JSON.stringify(
       {
@@ -554,6 +568,7 @@ if (isMain) {
   const entries = writeOutputs();
   console.log(`Extraídas ${entries.length} funções →`);
   console.log(`  ${path.relative(REPO_ROOT, OUT_TS)}`);
+  console.log(`  ${path.relative(REPO_ROOT, OUT_TS_WORKBENCH_REEXPORT)} (reexport)`);
   console.log(`  ${path.relative(REPO_ROOT, OUT_JSON)}`);
   const samples = ["Mensagem", "HttpGet", "InsClauSQLWhere", "RetDiaSemana", "UltimoDia", "RetiraAcentuacao", "VrfAbrA", "IntParaStr", "Extenso"];
   for (const s of samples) {

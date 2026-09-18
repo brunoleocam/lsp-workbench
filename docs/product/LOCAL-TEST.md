@@ -45,15 +45,29 @@ Para carregar no Cursor/VS Code (UI):
 4. Confira: colorização, Problems (`fixtures/smoke-*.lsp`), Format, Quick Fix, Outline, semantic tokens
 5. Smoke negativo: `fixtures/00-ok-clean.lsp` → Problems vazio
 
-### Language Server (opt-in)
+### Language Server (opt-in) — paridade diagnostics 0.2.0
 
 ```powershell
-cd packages\lsp-language-server
-npm install
-npm test
+cd packages\lsp-analyzer; npm run compile
+cd ..\lsp-language-server; npm install; npm test
+cd ..\lsp-workbench; npm run compile
 ```
 
-Settings: `lsp.server.enabled` = `true` → Reload Window. Diagnostics ANL* com source `LSP Analyzer`.
+Settings: `lsp.server.enabled` = `true` → **Reload Window**.  
+Problems devem trazer a **mesma** suite SYN/RUL/FUN/SEM/SQL/ANL* (source `LSP Workbench`), não só ANL*.
+
+## Checklist pré-Marketplace (manual)
+
+Depois da higiene e antes de publicar na Microsoft Store / Cursor:
+
+1. F5 Extension Development Host
+2. Abrir `fixtures/smoke-*.lsp` e `00-ok-clean.lsp`
+3. Alternar `lsp.server.enabled` false/true e comparar Problems
+4. Completion membros Cursor/Lista, Format Document, um Quick Fix, um refactor com seleção
+5. Agent: `/validar-lsp` + `node scripts/analyze-lsp.mjs` num arquivo com `Retorna;`
+6. Anotar bugs → corrigir → repetir este checklist
+
+Só então: empacotar VSIX / publicar.
 
 ## 2. Agent público (`packages/lsp-workbench-agent`)
 

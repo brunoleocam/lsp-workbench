@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * LSP Workbench Language Server (Opção 3 foundation).
- * Diagnósticos via Worker + @lsp-workbench/analyzer; fallback sync in-process.
+ * LSP Workbench Language Server (Opção 3).
+ * Diagnósticos via Worker + analyzeLsp (mesma pipeline da extensão).
  */
 import { Worker } from "node:worker_threads";
 import { join } from "node:path";
@@ -16,7 +16,7 @@ import {
   TextDocumentChangeEvent,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { analyze } from "@lsp-workbench/analyzer";
+import { analyzeLsp } from "@lsp-workbench/analyzer";
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -26,8 +26,7 @@ import type {
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-/** Diagnostic source for Problems panel. */
-const DIAG_SOURCE = "LSP Analyzer";
+const DIAG_SOURCE = "LSP Workbench";
 
 let nextRequestId = 1;
 let worker: Worker | undefined;
@@ -39,6 +38,17 @@ const pending = new Map<
 
 function workerScriptPath(): string {
   return join(__dirname, "compiler-worker.js");
+}
+
+function hitsToWorker(source: string, ignoreIds?: string[]): WorkerDiagnostic[] {
+  return analyzeLsp(source, { ignoreIds }).map((h) => ({
+    id: h.id,
+    message: h.message,
+    line: h.line,
+    severity: h.severity,
+    startCol: h.startCol,
+    endCol: h.endCol,
+  }));
 }
 
 function ensureWorker(): Worker | undefined {
@@ -88,24 +98,21 @@ function failWorker(err: Error): void {
   }
   pending.clear();
   connection.console.warn(
-    `Worker unavailable (${err.message}); using in-process analyze()`
+    `Worker unavailable (${err.message}); using in-process analyzeLsp()`
   );
-}
-
-function analyzeSync(source: string): WorkerDiagnostic[] {
-  return analyze(source).diagnostics;
 }
 
 function analyzeViaWorker(source: string): Promise<WorkerDiagnostic[]> {
   const w = ensureWorker();
   if (!w) {
-    return Promise.resolve(analyzeSync(source));
+    return Promise.resolve(hitsToWorker(source));
   }
   const id = nextRequestId++;
   return new Promise<WorkerDiagnostic[]>((resolve, reject) => {
     const timer = setTimeout(() => {
       pending.delete(id);
-      reject(new Error("analyze timeout"));
+      // timeout: fallback sync; não marca worker como morto permanentemente
+      resolve(hitsToWorker(source));
     }, 15_000);
     pending.set(id, {
       resolve: (diags) => {
@@ -129,12 +136,7 @@ async function runAnalyze(source: string): Promise<WorkerDiagnostic[]> {
     connection.console.warn(
       `Worker analyze failed (${err instanceof Error ? err.message : String(err)}); sync fallback`
     );
-    workerFailed = true;
-    if (worker) {
-      void worker.terminate();
-      worker = undefined;
-    }
-    return analyzeSync(source);
+    return hitsToWorker(source);
   }
 }
 
@@ -145,14 +147,20 @@ function toLspDiagnostics(diags: WorkerDiagnostic[], doc: TextDocument): Diagnos
       start: { line, character: 0 },
       end: { line, character: Number.MAX_SAFE_INTEGER },
     });
+    const startCh =
+      d.startCol !== undefined ? Math.max(0, Math.min(d.startCol, text.length)) : 0;
+    const endCh =
+      d.endCol !== undefined
+        ? Math.max(startCh, Math.min(d.endCol, text.length))
+        : text.length;
     return {
       severity:
         d.severity === "error"
           ? DiagnosticSeverity.Error
           : DiagnosticSeverity.Warning,
       range: {
-        start: { line, character: 0 },
-        end: { line, character: text.length },
+        start: { line, character: startCh },
+        end: { line, character: endCh },
       },
       message: `[${d.id}] ${d.message}`,
       source: DIAG_SOURCE,
@@ -189,15 +197,14 @@ function scheduleValidate(doc: TextDocument): void {
 }
 
 connection.onInitialize((_params: InitializeParams) => {
-  connection.console.log("LSP Workbench Language Server initializing");
+  connection.console.log("LSP Workbench Language Server initializing (analyzeLsp)");
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
-      // Completion rica permanece na extensão até migração completa (PDR-005).
     },
     serverInfo: {
       name: "LSP Workbench Language Server",
-      version: "0.1.0",
+      version: "0.2.0",
     },
   };
 });

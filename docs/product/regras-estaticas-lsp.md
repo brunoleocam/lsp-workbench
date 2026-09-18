@@ -90,8 +90,10 @@ Emitidos pela AST (Opção 2). A extensão faz **merge** com SYN/RUL (dedupe vs 
 |----|-------|----------|----|-----|-------|
 | ANL001 | `{` sem `}` correspondente | AST braces | parcial | ok | analyzer |
 | ANL002 | `}` sem `{` correspondente | AST braces | parcial | ok | analyzer |
+| ANL004 | `Inicio`/`Fim*` legado | tokens keyword | sim (via SYN004) | ok | analyzer |
 | ANL010 | `Retorna;` / `Retorne;` inválidos | AST / token | sim (via RUL007) | ok | analyzer |
 | ANL011 | `e` / `ou` com partes mal parentizadas | AST condição | sim (via SYN003) | ok | analyzer |
+| ANL012 | `Se`/`Enquanto`/`Para` sem `(` | tokens | sim (via SYN002) | ok | analyzer |
 
 ## DEM — Catálogo local de tabelas
 

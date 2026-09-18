@@ -75,7 +75,51 @@ function astDiagnostics(ast: AstNode): Diagnostic[] {
   return diagnostics;
 }
 
+/** SYN004 — blocos legado Inicio/Fim* (token). */
+function legacyBlockDiagnostics(tokens: Token[]): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+  for (const t of tokens) {
+    if (t.kind !== "keyword") continue;
+    const v = t.value.toLowerCase();
+    if (v === "inicio" || v === "fim" || v === "fimse" || v === "fimenquanto") {
+      diagnostics.push({
+        id: "ANL004",
+        message: "Use blocos { } em vez de Inicio/Fim;/FimSe/FimEnquanto.",
+        line: t.line,
+        severity: "error",
+      });
+    }
+  }
+  return diagnostics;
+}
+
+/** SYN002 — Se/Enquanto/Para sem '(' imediato. */
+function controlParenDiagnostics(tokens: Token[]): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t.kind !== "keyword") continue;
+    const v = t.value.toLowerCase();
+    if (v !== "se" && v !== "enquanto" && v !== "para") continue;
+    const next = tokens[i + 1];
+    if (!next || next.value !== "(") {
+      diagnostics.push({
+        id: "ANL012",
+        message: `${t.value} deve ter a condição entre parênteses: ${t.value} (…)`,
+        line: t.line,
+        severity: "error",
+      });
+    }
+  }
+  return diagnostics;
+}
+
 /** Semantic mínimo + braces a partir de tokens/AST. */
 export function collectSemantics(tokens: Token[], ast: AstNode): Diagnostic[] {
-  return [...braceDiagnostics(tokens), ...astDiagnostics(ast)];
+  return [
+    ...braceDiagnostics(tokens),
+    ...legacyBlockDiagnostics(tokens),
+    ...controlParenDiagnostics(tokens),
+    ...astDiagnostics(ast),
+  ];
 }

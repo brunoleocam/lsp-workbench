@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   ANALYZER_VERSION,
   analyze,
+  analyzeLsp,
   format,
   parse,
   tokenize,
@@ -115,7 +116,19 @@ describe("format + version", () => {
     assert.match(out, /^  x;/m);
   });
 
-  it("ANALYZER_VERSION is 0.2.0", () => {
-    assert.equal(ANALYZER_VERSION, "0.2.0");
+  it("ANALYZER_VERSION is 0.3.0", () => {
+    assert.equal(ANALYZER_VERSION, "0.3.0");
+  });
+});
+
+describe("analyzeLsp parity", () => {
+  it("flags Retorna as RUL007 or ANL010", () => {
+    const hits = analyzeLsp("Retorna;");
+    assert.ok(hits.some((h) => h.id === "RUL007" || h.id === "ANL010"));
+  });
+
+  it("ANL004 for Inicio", () => {
+    const { diagnostics } = analyze("Inicio\nvnX = 1;\nFim;");
+    assert.ok(diagnostics.some((d) => d.id === "ANL004"));
   });
 });

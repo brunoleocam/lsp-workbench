@@ -18,6 +18,10 @@ const KEYWORDS = new Set(
     "cursor",
     "retorna",
     "retorne",
+    "inicio",
+    "fim",
+    "fimse",
+    "fimenquanto",
   ].map((k) => k.toLowerCase())
 );
 
@@ -61,10 +65,10 @@ export function tokenize(source: string): Token[] {
       continue;
     }
 
-    // @…@ line/inline comment
+    // @…@ comment — se não fechar, encerra no fim da linha (evita engolir o arquivo)
     if (ch === "@") {
       advance(); // @
-      while (i < src.length && peek() !== "@") {
+      while (i < src.length && peek() !== "@" && peek() !== "\n") {
         advance();
       }
       if (peek() === "@") {

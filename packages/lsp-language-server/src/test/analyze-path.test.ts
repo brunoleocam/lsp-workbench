@@ -31,7 +31,10 @@ describe("analyze path (analyzer + worker)", () => {
         worker.postMessage(req);
       });
       assert.equal(res.id, 7);
-      assert.ok(res.diagnostics.some((d) => d.id === "ANL002"));
+      assert.ok(
+        res.diagnostics.some((d) => d.id === "ANL002" || d.id === "SYN008"),
+        `expected ANL002 or SYN008, got ${res.diagnostics.map((d) => d.id).join(",")}`
+      );
       assert.equal(res.error, undefined);
     } finally {
       await worker.terminate();
