@@ -21,7 +21,10 @@
 
 ## Unreleased
 
--
+### Adicionado (PDR-005 — Opção 2)
+
+- Integração com `@lsp-workbench/analyzer` 0.2.0: merge de diagnósticos `ANL*` (AST) em `analyzeLsp`, sem duplicar `RUL007`/`SYN008`
+- Analyzer: lexer com comentários `@…@` e blocos, parser/AST, `ANL010`/`ANL011`, `format`, `ignoreIds`
 
 ## 0.1.3 — 2026-09-18
 

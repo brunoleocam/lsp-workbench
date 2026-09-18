@@ -21,7 +21,7 @@ Arquitetura: [`docs/product/architecture/ARCHITECTURE.md`](docs/product/architec
 Docs de engenharia: [`docs/product/`](docs/product/) (PDR, ADR, TDD, Eval).  
 Extensão (0.2.0): [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md) · [`CHANGELOG.md`](packages/lsp-workbench/CHANGELOG.md).  
 Analyzer (Opção 2): [`packages/lsp-analyzer`](packages/lsp-analyzer).  
-LS stub (Opção 3): [`packages/lsp-language-server`](packages/lsp-language-server).  
+Language Server (Opção 3 foundation, default off): [`packages/lsp-language-server`](packages/lsp-language-server).  
 Linguagem: [`docs/lsp/`](docs/lsp/). Exemplos: [`exemplos/`](exemplos/).
 
 Config compartilhada: [`lsp.config.json`](lsp.config.json).

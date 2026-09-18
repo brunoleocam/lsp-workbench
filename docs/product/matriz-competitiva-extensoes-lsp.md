@@ -116,7 +116,7 @@ Não compete “copiar o compiler llutti”. Compete **escolher gaps de UX** (me
 
 ## 6. Prioridade sugerida (pós-matriz)
 
-**Atualização 2026-09-18:** Opção 1 (PDR-004) entregue na extensão **0.2.0**. Opção 2 foundation em `packages/lsp-analyzer`. Opção 3: stub.
+**Atualização 2026-09-18:** Opção 1 (PDR-004) entregue na extensão **0.2.0**. Opção 2 foundation em `packages/lsp-analyzer`. Opção 3 foundation: `packages/lsp-language-server` (LS+Worker; `lsp.server.enabled` default false).
 
 | Pri | Item | Status |
 |-----|------|--------|

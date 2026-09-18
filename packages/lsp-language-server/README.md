@@ -1,13 +1,50 @@
-# Language Server stub (Opção 3)
+# @lsp-workbench/language-server (Opção 3)
 
-Pasta reservada para o Language Server + Worker (PDR-005 / ADR-006).
+Language Server Node + `worker_threads` + i18n. Consome [`@lsp-workbench/analyzer`](../lsp-analyzer).
 
-**Não iniciar implementação completa até a Opção 2 (`packages/lsp-analyzer`) estar estável.**
+## Status
 
-Planejado:
+Fundação **0.1.0** — LS + Worker + push diagnostics (`source: "LSP Analyzer"`).  
+Default na extensão: **desligado** (`lsp.server.enabled: false` → Opção 1 in-process).
 
-- `server.ts` — `vscode-languageserver`
-- `compiler-worker.ts` — `worker_threads` chamando `@lsp-workbench/analyzer`
-- Client em `packages/lsp-workbench` via `vscode-languageclient`
+## Arquitetura
 
-Enquanto isso, a extensão permanece **in-process** (Opção 1).
+```text
+VS Code / Cursor
+  └─ LanguageClient (vscode-languageclient)   [opt-in]
+       └─ server.ts (vscode-languageserver)
+            ├─ TextDocuments sync Full
+            ├─ publishDiagnostics
+            └─ Worker (compiler-worker.ts)
+                 └─ analyze() @lsp-workbench/analyzer
+```
+
+Se o Worker falhar, o server faz **fallback sync** `analyze()` no mesmo processo.
+
+## Dev
+
+```powershell
+cd packages/lsp-analyzer
+npm install
+npm run compile
+
+cd ../lsp-language-server
+npm install
+npm test
+```
+
+Entry: `out/server.js` (bin `lsp-workbench-language-server`).
+
+## Como habilitar (extensão)
+
+1. Compile analyzer + language-server + extensão.
+2. Em Settings: `lsp.server.enabled` = `true`.
+3. Recarregue a janela (Reload Window).
+4. Diagnósticos do analyzer passam a vir do LS (`LSP Analyzer`); providers in-process (format, completion rica, etc.) permanecem na extensão nesta fundação.
+
+## i18n
+
+- `package.nls.json` (en)
+- `package.nls.pt-br.json` (pt-BR)
+
+Carregados por `src/i18n.ts` no boot do server.

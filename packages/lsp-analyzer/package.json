@@ -1,8 +1,7 @@
 {
   "name": "@lsp-workbench/analyzer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Núcleo de análise LSP (Opção 2 — lexer/parser/semantic). Puro, sem vscode.",
-  "type": "module",
   "main": "./out/index.js",
   "types": "./out/index.d.ts",
   "scripts": {

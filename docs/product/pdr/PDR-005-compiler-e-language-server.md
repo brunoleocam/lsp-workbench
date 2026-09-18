@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|-------|
-| Status | Aceito (especificação; implementação **após** PDR-004) |
+| Status | Aceito — Opção 2 foundation + **Opção 3 foundation** (LS+Worker, default off) |
 | Data | 2026-09-18 |
 | Roadmap | [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md) |
 | Pré-requisito | Opção 1 (PDR-004) concluída |
@@ -48,6 +48,15 @@ Heurísticas cobrem regras Demóbile, mas não tipagem fina, Tabela/schema, unus
 
 - Mesmos features UX da Opção 1 via LS.
 - Smoke F5 sem regressão; métrica de não-bloqueio da UI em arquivo grande (baseline a documentar).
+
+### Status implementação (2026-09-18)
+
+**Foundation Opção 3 landed** em `packages/lsp-language-server`:
+
+- `server.ts` + `compiler-worker.ts` (`worker_threads`) + i18n (`package.nls*.json`)
+- Extensão: `lsp.server.enabled` (default **false**) inicia `LanguageClient` → `out/server.js`
+- Com LS off, Opção 1 in-process permanece o caminho estável
+- Ainda **não** é aceite completo (paridade UX via LS / métrica UI) — só a fundação LS+Worker
 
 ## Ordem
 

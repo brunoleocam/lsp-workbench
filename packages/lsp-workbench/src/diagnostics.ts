@@ -1,3 +1,4 @@
+import { analyze as analyzeCore } from "@lsp-workbench/analyzer";
 import { findRul007Ranges, findRul019CancelRange, findTokenRange, isSyn010OrphanStatement } from "./quick-fixes";
 import { LIST_BUILTIN_MEMBERS, OUT_PARAM_FUNCS, RESERVED_WORDS } from "./rule-catalog";
 import {
@@ -1249,6 +1250,26 @@ export function analyzeLsp(
         );
       }
     }
+  }
+
+  // Opção 2 (PDR-005): merge ANL* do analyzer puro (sem duplicar RUL007 / SYN003 / SYN008).
+  const hasRul007 = hits.some((h) => h.id === "RUL007");
+  const hasSyn003 = hits.some((h) => h.id === "SYN003");
+  const hasSyn008 = hits.some((h) => h.id === "SYN008");
+  const anlIgnore = [
+    ...ignore,
+    ...(hasRul007 ? ["ANL010"] : []),
+    ...(hasSyn003 ? ["ANL011"] : []),
+    ...(hasSyn008 ? ["ANL001", "ANL002"] : []),
+  ];
+  try {
+    const { diagnostics: anl } = analyzeCore(source, { ignoreIds: anlIgnore });
+    for (const d of anl) {
+      if (!/^ANL\d+/i.test(d.id)) continue;
+      push(hits, d.id, d.message, d.line, d.severity);
+    }
+  } catch {
+    // analyzer opcional — não quebra heurísticas RUL/SYN/FUN
   }
 
   const suppressedByLine = lineSuppressions(lines);

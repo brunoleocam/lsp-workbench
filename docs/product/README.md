@@ -16,9 +16,9 @@
 
 | Fase | Doc | Estado |
 |------|-----|--------|
-| **1 — Paridade UX** | [PDR-004](pdr/PDR-004-paridade-ux.md) | Em implementação (levas P0–P2) |
-| **2 — Compiler** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | Spec; após fase 1 |
-| **3 — Language Server** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | Spec; após fase 2 |
+| **1 — Paridade UX** | [PDR-004](pdr/PDR-004-paridade-ux.md) | **Concluída** (0.2.0) |
+| **2 — Compiler** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | Foundation `lsp-analyzer` |
+| **3 — Language Server** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | Foundation LS+Worker (default off) |
 
 Arquitetura: [ADR-005](adr/ADR-005-clean-architecture-nucleo-puro.md) · [ARCHITECTURE.md](architecture/ARCHITECTURE.md)
 
@@ -30,7 +30,7 @@ TDD/Eval paridade: [TDD-paridade-ux.md](tdd/TDD-paridade-ux.md) · [EVAL-paridad
 |----------|-----------------|
 | Extensão `packages/lsp-workbench` | **0.2.0** — PDR-004 Opção 1 (paridade UX) |
 | Analyzer `packages/lsp-analyzer` | **0.1.0** — Opção 2 foundation (tokenize/analyze) |
-| Language Server | Stub README — Opção 3 após analyzer estável |
+| Language Server `packages/lsp-language-server` | **0.1.0** — Opção 3 foundation (LS+Worker; `lsp.server.enabled` default false) |
 | Agent `packages/lsp-workbench-agent` | Commands/skills PDR-002 |
 | Demóbile | Plugin local gitignored |
 | Remoto público | https://github.com/brunoleocam/lsp-workbench |
@@ -39,4 +39,4 @@ TDD/Eval paridade: [TDD-paridade-ux.md](tdd/TDD-paridade-ux.md) · [EVAL-paridad
 |------|-----|--------|
 | **1 — Paridade UX** | [PDR-004](pdr/PDR-004-paridade-ux.md) | **Concluída** (0.2.0) |
 | **2 — Compiler** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | Foundation `lsp-analyzer` |
-| **3 — Language Server** | PDR-005 | Stub package |
+| **3 — Language Server** | PDR-005 | Foundation LS+Worker (opt-in) |

@@ -161,6 +161,11 @@
           "type": "boolean",
           "default": false,
           "description": "Highlight dedicado para SQL embutido (reserva; feature futura)."
+        },
+        "lsp.server.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "%lsp.server.enabled.description%"
         }
       }
     },
@@ -202,6 +207,10 @@
     "pretest": "npm run extract-functions",
     "test": "npm run compile && node --test out/test/*.test.js",
     "vscode:prepublish": "npm run extract-functions && npm run compile"
+  },
+  "dependencies": {
+    "@lsp-workbench/analyzer": "file:../lsp-analyzer",
+    "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

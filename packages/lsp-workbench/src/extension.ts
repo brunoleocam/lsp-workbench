@@ -20,6 +20,11 @@ import {
   SUPPRESSIONS_STATE_KEY,
 } from "./suppressions";
 import { findMatchingContext, mergeIgnoreIds } from "./scope-config";
+import {
+  isLanguageServerEnabled,
+  startLanguageServer,
+  stopLanguageServer,
+} from "./language-client";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
 
@@ -70,7 +75,24 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
+  const useLanguageServer = isLanguageServerEnabled();
+  if (useLanguageServer) {
+    void startLanguageServer(context).then(
+      () => {
+        /* LS push diagnostics; in-process collection unused */
+      },
+      (err: unknown) => {
+        void vscode.window.showErrorMessage(
+          `LSP Workbench Language Server failed to start: ${
+            err instanceof Error ? err.message : String(err)
+          }. Falling back tip: set lsp.server.enabled to false and reload.`
+        );
+      }
+    );
+  }
+
   const refresh = (doc: vscode.TextDocument) => {
+    if (useLanguageServer) return;
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
       return;
     }
@@ -117,6 +139,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   /** Revalida todos os buffers LSP abertos (peers cruzados — FUN009 / símbolos). */
   const refreshOpenLspDocuments = (changed?: vscode.Uri) => {
+    if (useLanguageServer) return;
     const idx = getWorkspaceSymbolIndex();
     if (changed) idx.invalidate(changed);
     else idx.invalidate();
@@ -155,6 +178,11 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidCloseTextDocument((doc) => collection.delete(doc.uri)),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (!e.affectsConfiguration("lsp")) return;
+      if (e.affectsConfiguration("lsp.server.enabled")) {
+        void vscode.window.showInformationMessage(
+          "lsp.server.enabled mudou — recarregue a janela para aplicar (Reload Window)."
+        );
+      }
       getWorkspaceSymbolIndex().refreshCandidates();
       refreshOpenLspDocuments();
     }),
@@ -171,6 +199,7 @@ export function activate(context: vscode.ExtensionContext): void {
   refreshOpenLspDocuments();
 }
 
-export function deactivate(): void {
+export async function deactivate(): Promise<void> {
+  await stopLanguageServer();
   collection.dispose();
 }
