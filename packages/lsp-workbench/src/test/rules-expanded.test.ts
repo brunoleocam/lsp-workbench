@@ -8,6 +8,7 @@ import {
   applyFun004Fix,
   applyFun005Fix,
   applyRul001Fix,
+  applyRul001FixAllSignatures,
   applyRul002Fix,
   applyRul003Fix,
   applyRul007Fix,
@@ -411,6 +412,15 @@ describe("analyzeLsp expanded", () => {
     const fixed = applyRul001Fix("Definir Funcao Foo(vaP);");
     assert.match(fixed, /Definir Funcao Foo\(Numero vnP\);/);
     assert.equal(/Definir Alfa vaP/.test(fixed), false);
+  });
+
+  it("RUL001 corrige decl e impl juntos", () => {
+    const src = `Definir Funcao Foo(Alfa vaP);\nFuncao Foo(Alfa vaP); {\n  vaP = "x";\n}\n`;
+    const { next, globals } = applyRul001FixAllSignatures(src);
+    assert.match(next, /Definir Funcao Foo\(\);/);
+    assert.match(next, /Funcao Foo\(\);/);
+    assert.equal(/Alfa vaP/.test(next), false);
+    assert.deepEqual(globals, [{ tipo: "Alfa", name: "vaP" }]);
   });
 
   it("detects SQL001 concat SQL", () => {

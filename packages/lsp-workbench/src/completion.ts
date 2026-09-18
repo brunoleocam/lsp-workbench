@@ -22,6 +22,7 @@ import {
   findFun003VdArg,
   findFun004PArg,
   findRul001Param,
+  applyRul001FixAllSignatures,
   findSem002FileOpen,
   findSem003Cursor,
   findSem004InsertAfterLine,
@@ -90,6 +91,20 @@ function toKind(kind: "keyword" | "function" | "type"): vscode.CompletionItemKin
 
 function isDefined(source: string, name: string): boolean {
   return new RegExp(String.raw`Definir\s+\w+\s+${name}\b`, "i").test(source);
+}
+
+/** RUL001 em todas as assinaturas (decl+impl) + Definir global dos params ilegais. */
+function applyRul001DocumentFix(source: string): string {
+  const { next, globals } = applyRul001FixAllSignatures(source);
+  let sim = next;
+  for (const g of globals) {
+    if (isDefined(sim, g.name)) continue;
+    const { afterLine } = buildDefinirInsertEdit(sim, 0, g.name);
+    const lines = sim.replace(/\r\n/g, "\n").split("\n");
+    lines.splice(afterLine + 1, 0, `Definir ${g.tipo} ${g.name};`);
+    sim = lines.join("\n");
+  }
+  return sim;
 }
 
 function rewriteItems(
@@ -907,20 +922,28 @@ function quickFixCompletions(
     }
 
     // RUL*/SYN004/FUN002 via catálogo LINE_FIXERS
+    if (hit.id === "RUL001") {
+      const next = applyRul001DocumentFix(src);
+      if (next !== src) {
+        pushWholeDocFix(
+          findRul001Param(line.text)
+            ? "QF: Remover param ilegal em decl+impl + Definir global"
+            : "QF: Declarar params como Numero (decl+impl)",
+          "LSP · RUL001 — corrige Definir Funcao e Funcao",
+          next,
+          "00_QF_RUL001",
+          "RUL001 Numero assinatura"
+        );
+      }
+      continue;
+    }
     const fixer = LINE_FIXERS.find((f) => f.id === hit.id);
     if (fixer) {
       const fixed = fixer.apply(line.text);
       if (fixed !== line.text) {
         const extras: vscode.TextEdit[] = [];
         let simSrc = src;
-        const extraNames =
-          hit.id === "RUL001"
-            ? (() => {
-                // Só gera Definir global quando remove param Alfa/Data/Lista (não no caso "add Numero")
-                const p = findRul001Param(line.text);
-                return p ? [p.name] : [];
-              })()
-            : newVarsFromFix(hit.id, fixed);
+        const extraNames = newVarsFromFix(hit.id, fixed);
         for (const name of extraNames) {
           if (isDefined(simSrc, name)) continue;
           const { afterLine, text } = buildDefinirInsertEdit(simSrc, line.lineNumber, name);
@@ -929,14 +952,8 @@ function quickFixCompletions(
           lines.splice(afterLine + 1, 0, text.replace(/\n$/, ""));
           simSrc = lines.join("\n");
         }
-        const title =
-          hit.id === "RUL001" && findRul001Param(line.text)
-            ? `QF: Remover param ilegal + Definir global`
-            : hit.id === "RUL001"
-              ? `QF: Declarar param como Numero na assinatura`
-              : `QF: ${fixer.title}`;
         pushLineFix(
-          title,
+          `QF: ${fixer.title}`,
           `LSP · ${hit.id}`,
           fixed,
           `00_QF_${hit.id}`,

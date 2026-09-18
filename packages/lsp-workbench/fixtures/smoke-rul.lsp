@@ -9,7 +9,7 @@ Definir Alfa vaTexto;
 Definir Alfa vaJSON;
 Definir Alfa vaSaida;
 
-@ RUL001 — QF → Funcao Foo(vaP); + Definir Alfa vaP; @
+@ RUL001 — QF → Funcao Foo(); + Definir Alfa vaP; (nunca Foo(vaP) / Alfa na assinatura) @
 Funcao Foo(Alfa vaP);
 {
   vaTexto = "x";

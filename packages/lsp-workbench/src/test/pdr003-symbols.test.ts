@@ -83,6 +83,14 @@ describe("PDR-003 document symbols", () => {
     assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN008"));
   });
 
+  it("FUN008 não copia param Alfa ilegal para Definir Funcao", () => {
+    const src = `Funcao Foo(Alfa vaP); {\n  vaTexto = "x";\n}\n`;
+    const next = applyFun008InsertDecl(src, "Foo");
+    assert.ok(next);
+    assert.match(next!, /Definir Funcao Foo\(\);/);
+    assert.equal(/Definir Funcao Foo\(Alfa/i.test(next!), false);
+  });
+
   it("FUN007 QF inserts Funcao stub after declarations", () => {
     const src = `Definir Numero vnA;\nDefinir Funcao soDecl(Numero vnX, Numero End vnOut);\n`;
     const next = applyFun007InsertImpl(src, "soDecl");

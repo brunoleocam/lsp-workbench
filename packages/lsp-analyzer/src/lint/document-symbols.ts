@@ -132,6 +132,11 @@ function signatureOf(name: string, params: FuncParam[]): string {
   return `${name}(${inner})`;
 }
 
+/** Só Numero (e End) são legais na assinatura — Alfa/Data/Lista/Cursor ficam de fora. */
+export function legalFuncParams(params: FuncParam[]): FuncParam[] {
+  return params.filter((p) => /^Numero$/i.test(p.tipo));
+}
+
 function extractImplBlock(lines: string[], startLine: number): string | undefined {
   let depth = 0;
   let started = false;
@@ -292,12 +297,9 @@ export function parseFileSymbols(source: string): FileSymbols {
   };
 }
 
-/** Texto canônico `Definir Funcao name(…);` a partir do símbolo. */
+/** Texto canônico `Definir Funcao name(…);` — só params Numero (nunca copia Alfa/Data/Lista). */
 export function declStatementFor(fn: CustomFunctionSymbol): string {
-  if (fn.declText) {
-    return /;\s*$/.test(fn.declText) ? fn.declText : `${fn.declText};`;
-  }
-  return `Definir Funcao ${signatureOf(fn.name, fn.params)};`;
+  return `Definir Funcao ${signatureOf(fn.name, legalFuncParams(fn.params))};`;
 }
 
 /** FUN008 — inserir `Definir Funcao` no bloco de declarações (após variáveis). */
@@ -350,7 +352,7 @@ export function applyFun007InsertImpl(source: string, functionName: string): str
 
   const lines = source.replace(/\r\n/g, "\n").split("\n");
   const insertAt = findDefinirFuncaoInsertIndex(lines);
-  const stub = [`Funcao ${signatureOf(fn.name, fn.params)}; {`, "}"];
+  const stub = [`Funcao ${signatureOf(fn.name, legalFuncParams(fn.params))}; {`, "}"];
   lines.splice(insertAt, 0, ...stub);
   return lines.join("\n");
 }

@@ -167,6 +167,32 @@ export function hasUntypedFuncParam(line: string): boolean {
   return false;
 }
 
+/**
+ * Aplica RUL001 em **todas** as assinaturas Definir Funcao / Funcao do arquivo
+ * (decl + impl ficam alinhadas). Retorna globals a declarar (params Alfa/… removidos).
+ */
+export function applyRul001FixAllSignatures(source: string): {
+  next: string;
+  globals: { tipo: string; name: string }[];
+} {
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const globals: { tipo: string; name: string }[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (!/\b(?:Definir\s+)?Funcao\s+\w+\s*\(/i.test(lines[i])) continue;
+    const inner = lines[i].match(/\(([^)]*)\)/)?.[1] ?? "";
+    for (const part of inner.split(",")) {
+      const pm = part.trim().match(/^(Alfa|Data|Lista|Cursor)\s+(\w+)$/i);
+      if (!pm) continue;
+      const g = { tipo: pm[1], name: pm[2] };
+      if (!globals.some((x) => x.name.toLowerCase() === g.name.toLowerCase())) {
+        globals.push(g);
+      }
+    }
+    lines[i] = applyRul001Fix(lines[i]);
+  }
+  return { next: lines.join("\n"), globals };
+}
+
 /** Ranges dos parâmetros sem tipo (para grifo). */
 export function findUntypedFuncParams(
   line: string

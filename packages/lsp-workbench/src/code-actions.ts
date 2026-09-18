@@ -13,6 +13,7 @@ import {
   findFun003VdArg,
   findFun004PArg,
   findRul001Param,
+  applyRul001FixAllSignatures,
   findSem002FileOpen,
   findSem003Cursor,
   findSem004InsertAfterLine,
@@ -64,6 +65,20 @@ function definedNames(source: string): Set<string> {
     set.add(m[1].toLowerCase());
   }
   return set;
+}
+
+/** RUL001 em decl+impl + Definir dos params ilegais removidos. */
+function applyRul001DocumentFix(source: string): string {
+  const { next, globals } = applyRul001FixAllSignatures(source);
+  let sim = next;
+  for (const g of globals) {
+    if (definedNames(sim).has(g.name.toLowerCase())) continue;
+    const { afterLine } = buildDefinirInsertEdit(sim, 0, g.name);
+    const lines = sim.replace(/\r\n/g, "\n").split("\n");
+    lines.splice(afterLine + 1, 0, `Definir ${g.tipo} ${g.name};`);
+    sim = lines.join("\n");
+  }
+  return sim;
 }
 
 /** Remove sintaxe de snippet VS Code para WorkspaceEdit. */
@@ -666,30 +681,24 @@ function lineFixerActions(
   const actions: vscode.CodeAction[] = [];
 
   if (code === "RUL001") {
-    const line = document.lineAt(diagnostic.range.start.line);
-    const info = findRul001Param(line.text);
-    const entry = LINE_FIXERS.find((f) => f.id === "RUL001");
-    if (!entry) {
-      /* skip */
-    } else if (info) {
-      const fixed = entry.apply(line.text);
-      const a = lineReplaceAction(
-        document,
-        diagnostic,
-        `Remover param ${info.tipo} (usar Definir ${info.tipo} ${info.name} global)`,
-        fixed,
-        [info.name]
+    const next = applyRul001DocumentFix(document.getText());
+    if (next !== document.getText()) {
+      const line = document.lineAt(diagnostic.range.start.line);
+      const info = findRul001Param(line.text);
+      const action = new vscode.CodeAction(
+        info
+          ? `Remover param ${info.tipo} em decl+impl + Definir ${info.tipo} ${info.name}`
+          : "Declarar params como Numero (decl+impl)",
+        vscode.CodeActionKind.QuickFix
       );
-      if (a) actions.push(a);
-    } else {
-      const fixed = entry.apply(line.text);
-      const a = lineReplaceAction(
-        document,
-        diagnostic,
-        "Declarar param como Numero na assinatura",
-        fixed
-      );
-      if (a) actions.push(a);
+      action.diagnostics = [diagnostic];
+      action.isPreferred = true;
+      action.command = {
+        command: APPLY_TEXT_EDITS_CMD,
+        title: action.title,
+        arguments: [document.uri.toString(), [serializeFullDocumentReplace(document, next)]],
+      };
+      actions.push(action);
     }
   } else if (code === "RUL015") {
     const line = document.lineAt(diagnostic.range.start.line);
