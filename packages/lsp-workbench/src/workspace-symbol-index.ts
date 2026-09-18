@@ -82,9 +82,11 @@ export class WorkspaceSymbolIndex {
     const cached = this.cache.get(key);
     if (cached) return cached.symbols;
 
+    // fs.readFile — NÃO openTextDocument (dispara onDidOpen → refresh em cascata).
     try {
-      const doc = await vscode.workspace.openTextDocument(uri);
-      const symbols = parseFileSymbols(doc.getText());
+      const bytes = await vscode.workspace.fs.readFile(uri);
+      const text = Buffer.from(bytes).toString("utf8");
+      const symbols = parseFileSymbols(text);
       this.cache.set(key, { symbols });
       return symbols;
     } catch {

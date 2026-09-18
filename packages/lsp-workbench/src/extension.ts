@@ -82,6 +82,26 @@ export function activate(context: vscode.ExtensionContext): void {
   const refreshSeqByUri = new Map<string, number>();
   let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
+  const hitsToDiagnostics = (doc: vscode.TextDocument, hits: ReturnType<typeof analyzeLsp>) => {
+    const last = Math.max(0, doc.lineCount - 1);
+    return hits.map((h) => {
+      const severity =
+        h.severity === "error"
+          ? vscode.DiagnosticSeverity.Error
+          : vscode.DiagnosticSeverity.Warning;
+      const lineNo = Math.max(0, Math.min(h.line, last));
+      const line = doc.lineAt(lineNo);
+      const range =
+        h.startCol !== undefined && h.endCol !== undefined
+          ? new vscode.Range(lineNo, h.startCol, lineNo, h.endCol)
+          : new vscode.Range(lineNo, 0, lineNo, line.text.length);
+      const d = new vscode.Diagnostic(range, `[${h.id}] ${h.message}`, severity);
+      d.code = h.id;
+      d.source = "LSP Workbench";
+      return d;
+    });
+  };
+
   const refresh = (doc: vscode.TextDocument) => {
     if (lsState.active) return;
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
@@ -90,17 +110,32 @@ export function activate(context: vscode.ExtensionContext): void {
     const key = doc.uri.toString();
     const seq = (refreshSeqByUri.get(key) ?? 0) + 1;
     refreshSeqByUri.set(key, seq);
+
+    const cfg = vscode.workspace.getConfiguration("lsp");
+    const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
+    const idx = getWorkspaceSymbolIndex();
+    const settings = idx.readSettings();
+    const root = idx.workspaceRootFor(doc.uri.fsPath);
+    const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
+    const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
+    const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
+    const demobileTableNames = getDemobileCatalog()?.tables.map((t) => t.name);
+
+    // 1ª passada síncrona — RUL/FUN/SYN aparecem mesmo se o índice demorar.
+    try {
+      const quick = filterSuppressedHits(
+        key,
+        lines,
+        analyzeLsp(doc.getText(), { ignoreIds: ignore, demobileTableNames })
+      );
+      collection.set(doc.uri, hitsToDiagnostics(doc, quick));
+    } catch (err) {
+      console.error("[LSP Workbench] diagnostics sync failed", key, err);
+    }
+
+    // 2ª passada — FUN009 / peers (scopedExternal).
     void (async () => {
       try {
-        const cfg = vscode.workspace.getConfiguration("lsp");
-        const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
-        const idx = getWorkspaceSymbolIndex();
-        const settings = idx.readSettings();
-        const root = idx.workspaceRootFor(doc.uri.fsPath);
-        const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
-        const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
-
-        const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
         idx.invalidate(doc.uri);
         let scopedExternal: Map<string, { fileName: string }> | undefined;
         try {
@@ -110,33 +145,18 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         if (refreshSeqByUri.get(key) !== seq) return;
         const hits = filterSuppressedHits(
-          doc.uri.toString(),
+          key,
           lines,
           analyzeLsp(doc.getText(), {
             ignoreIds: ignore,
             scopedExternal,
-            demobileTableNames: getDemobileCatalog()?.tables.map((t) => t.name),
+            demobileTableNames,
           })
         );
         if (refreshSeqByUri.get(key) !== seq) return;
-        const diags = hits.map((h) => {
-          const severity =
-            h.severity === "error"
-              ? vscode.DiagnosticSeverity.Error
-              : vscode.DiagnosticSeverity.Warning;
-          const line = doc.lineAt(h.line);
-          const range =
-            h.startCol !== undefined && h.endCol !== undefined
-              ? new vscode.Range(h.line, h.startCol, h.line, h.endCol)
-              : new vscode.Range(h.line, 0, h.line, line.text.length);
-          const d = new vscode.Diagnostic(range, `[${h.id}] ${h.message}`, severity);
-          d.code = h.id;
-          d.source = "LSP Workbench";
-          return d;
-        });
-        collection.set(doc.uri, diags);
+        collection.set(doc.uri, hitsToDiagnostics(doc, hits));
       } catch (err) {
-        console.error("[LSP Workbench] diagnostics failed", doc.uri.toString(), err);
+        console.error("[LSP Workbench] diagnostics async failed", key, err);
       }
     })();
   };
