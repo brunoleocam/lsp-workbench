@@ -2,7 +2,7 @@
 
 ## Status
 
-Aceito (fases 1–3 foundation + PDR-006 Agent concluídos)
+Aceito (fases 1–3 foundation + PDR-006 + PDR-007 concluídos)
 
 ## Contexto
 
@@ -20,11 +20,14 @@ Ordem **rígida** para o motor de linguagem:
 
 Não iniciar a fase N+1 do motor antes do aceite da foundation da fase N.
 
-Próxima frente pública (após foundation 2–3 e PDR-006): catálogos multi-sistema / Marketplace (conforme backlog e PDR-001).
+Frentes após o motor:
 
 | Doc | Foco | Estado |
 |-----|------|--------|
 | [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer | **Concluído** |
+| [PDR-007](../pdr/PDR-007-demobile-catalog-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** |
+
+Próximo público: catálogos multi-sistema / Marketplace (PDR-001 / backlog UX).
 
 ### Por que a Opção 3 não descarta 1 e 2
 
@@ -34,8 +37,8 @@ Snippets, grammar, catálogos e use cases puros são reutilizados. Só o “cola
 
 - Documentação e CHANGELOG por leva.
 - Marketplace permanece fora até decisão explícita (PDR-001).
-- IDs canônicos: SYN/RUL/FUN/SEM/SQL + ANL* (analyzer).
+- IDs canônicos: SYN/RUL/FUN/SEM/SQL + ANL* (analyzer) + DEM* (catálogo local).
 
 ## Relacionados
 
-- PDR-004, PDR-005, PDR-006, ADR-005
+- PDR-004, PDR-005, PDR-006, PDR-007, ADR-005
