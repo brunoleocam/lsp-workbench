@@ -9,6 +9,13 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-09-18 — Ordem de `Definir` no topo do arquivo
+
+- **Contexto:** QFs inseriam `Definir Funcao` / variáveis sem respeitar o bloco inicial ordenado.
+- **Texto canônico (Memory / rule):**
+  > Bloco inicial: variáveis depois funções. Ordem dos tipos: Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao. Plugin: `definir-insert` + FUN008.
+- **Status:** implementado em `definir-insert.ts` / FUN007–008; doc em `docs/lsp/variaveis.md`.
+
 ### 2026-05-06 — Documentação LSP: arredondamento e conversão Numero → Alfa
 
 - **Contexto:** No ambiente real, a função **`Arredondar(<numero>, <casasDecimais>, <resultado>)` não existe** (estava descrita em `docs/lsp/operacoes-numericas-avancadas.md`). Exemplos de código que a usavam quebram na compilação ou induzem erro.

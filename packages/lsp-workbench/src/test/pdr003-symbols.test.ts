@@ -62,12 +62,36 @@ describe("PDR-003 document symbols", () => {
     assert.ok(hits.some((h) => h.id === "FUN008"));
   });
 
+  it("FUN008 QF inserts Definir Funcao after variables", () => {
+    const src = `Definir Numero vnA;\nDefinir Alfa vaB;\nFuncao soImpl(Numero vnX, Numero End vnOut); {\n  vnOut = vnX;\n}\n`;
+    const next = applyFun008InsertDecl(src, "soImpl");
+    assert.ok(next);
+    const lines = next!.split("\n");
+    const iNum = lines.findIndex((l) => /Definir Numero vnA/.test(l));
+    const iAlfa = lines.findIndex((l) => /Definir Alfa vaB/.test(l));
+    const iDecl = lines.findIndex((l) => /Definir Funcao soImpl/.test(l));
+    const iImpl = lines.findIndex((l) => /^\s*Funcao soImpl/.test(l));
+    assert.ok(iNum < iAlfa && iAlfa < iDecl && iDecl < iImpl);
+    assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN008"));
+  });
+
   it("FUN008 QF inserts Definir Funcao", () => {
     const src = `Funcao soImpl(Numero vnX, Numero End vnOut); {\n  vnOut = vnX;\n}\n`;
     const next = applyFun008InsertDecl(src, "soImpl");
     assert.ok(next);
     assert.match(next!, /Definir Funcao soImpl\(Numero vnX, Numero End vnOut\);/);
     assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN008"));
+  });
+
+  it("FUN007 QF inserts Funcao stub after declarations", () => {
+    const src = `Definir Numero vnA;\nDefinir Funcao soDecl(Numero vnX, Numero End vnOut);\n`;
+    const next = applyFun007InsertImpl(src, "soDecl");
+    assert.ok(next);
+    const lines = next!.split("\n");
+    const iDecl = lines.findIndex((l) => /Definir Funcao soDecl/.test(l));
+    const iImpl = lines.findIndex((l) => /^\s*Funcao soDecl/.test(l));
+    assert.ok(iDecl >= 0 && iImpl > iDecl);
+    assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN007"));
   });
 
   it("FUN007 QF inserts Funcao stub", () => {

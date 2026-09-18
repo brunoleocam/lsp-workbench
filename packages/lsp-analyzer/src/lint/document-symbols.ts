@@ -300,30 +300,58 @@ export function declStatementFor(fn: CustomFunctionSymbol): string {
   return `Definir Funcao ${signatureOf(fn.name, fn.params)};`;
 }
 
-/** FUN008 — inserir `Definir Funcao` espelhando a assinatura da `Funcao` existente. */
+/** FUN008 — inserir `Definir Funcao` no bloco de declarações (após variáveis). */
 export function applyFun008InsertDecl(source: string, functionName: string): string | undefined {
   const symbols = parseFileSymbols(source);
   const fn = symbols.functions.find((f) => f.name.toLowerCase() === functionName.toLowerCase());
   if (!fn || !fn.hasImpl || fn.hasDecl || fn.implLine < 0) return undefined;
 
   const lines = source.replace(/\r\n/g, "\n").split("\n");
-  let insertAt = fn.implLine;
-  for (let i = 0; i < fn.implLine; i++) {
-    if (/^\s*Definir\b/i.test(lines[i])) insertAt = i + 1;
-  }
+  const insertAt = findDefinirFuncaoInsertIndex(lines);
   lines.splice(insertAt, 0, declStatementFor(fn));
   return lines.join("\n");
 }
 
-/** FUN007 — inserir stub `Funcao name(…); { }` após o `Definir Funcao`. */
+/**
+ * Índice (splice) para `Definir Funcao`: após Numero…Cursor (e demais Definir Funcao),
+ * antes da primeira instrução executável / `Funcao` de implementação.
+ */
+function findDefinirFuncaoInsertIndex(lines: string[]): number {
+  const order = ["Numero", "Alfa", "Data", "Lista", "Tabela", "Grid", "Cursor", "Funcao"];
+  const rank = (line: string): number | null => {
+    const m = line.match(/^\s*Definir\s+(\w+)\b/i);
+    if (!m) return null;
+    const idx = order.findIndex((k) => k.toLowerCase() === m[1].toLowerCase());
+    return idx >= 0 ? idx : 0;
+  };
+  const isNoise = (line: string) =>
+    /^\s*$/.test(line) || /^\s*@/.test(line) || /^\s*\/\*/.test(line) || /^\s*\*/.test(line);
+
+  let start = 0;
+  while (start < lines.length && isNoise(lines[start])) start++;
+
+  let after = start - 1;
+  let i = start;
+  for (; i < lines.length; i++) {
+    if (isNoise(lines[i])) continue;
+    const r = rank(lines[i]);
+    if (r === null) break;
+    if (r <= order.indexOf("Funcao")) after = i;
+    else break;
+  }
+  return Math.max(0, after + 1);
+}
+
+/** FUN007 — inserir stub `Funcao name(…); { }` após o bloco de declarações (não colado no Definir). */
 export function applyFun007InsertImpl(source: string, functionName: string): string | undefined {
   const symbols = parseFileSymbols(source);
   const fn = symbols.functions.find((f) => f.name.toLowerCase() === functionName.toLowerCase());
   if (!fn || !fn.hasDecl || fn.hasImpl || fn.declLine < 0) return undefined;
 
   const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const insertAt = findDefinirFuncaoInsertIndex(lines);
   const stub = [`Funcao ${signatureOf(fn.name, fn.params)}; {`, "}"];
-  lines.splice(fn.declLine + 1, 0, ...stub);
+  lines.splice(insertAt, 0, ...stub);
   return lines.join("\n");
 }
 

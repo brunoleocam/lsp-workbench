@@ -2,7 +2,9 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildDefinirInsertEdit,
+  DEFINIR_TYPE_ORDER,
   definirStatement,
+  findDefinirFuncaoInsertAfterLine,
   findDefinirInsertAfterLine,
   tipoFromPrefix,
 } from "../definir-insert";
@@ -14,12 +16,35 @@ describe("definir-insert", () => {
     assert.equal(tipoFromPrefix("vaNome"), "Alfa");
   });
 
-  it("inserir após último Definir do arquivo", () => {
+  it("ordem canônica Numero→…→Funcao", () => {
+    assert.deepEqual([...DEFINIR_TYPE_ORDER], [
+      "Numero",
+      "Alfa",
+      "Data",
+      "Lista",
+      "Tabela",
+      "Grid",
+      "Cursor",
+      "Funcao",
+    ]);
+  });
+
+  it("inserir Numero junto dos outros Numero (antes de Alfa)", () => {
     const src = "Definir Numero vnX;\nDefinir Alfa vaY;\nvnCasas = 2;\n";
-    assert.equal(findDefinirInsertAfterLine(src, 2), 1);
     const edit = buildDefinirInsertEdit(src, 2, "vnCasas");
-    assert.equal(edit.afterLine, 1);
+    assert.equal(edit.afterLine, 0);
     assert.match(edit.text, /Definir Numero vnCasas;/);
+  });
+
+  it("inserir Alfa após Numero e antes de Cursor", () => {
+    const src = "Definir Numero vnX;\nDefinir Cursor Cur_X;\nvnX = 1;\n";
+    assert.equal(findDefinirInsertAfterLine(src, 2, "Alfa"), 0);
+  });
+
+  it("Definir Funcao após variáveis", () => {
+    const src =
+      "Definir Numero vnX;\nDefinir Alfa vaY;\nFuncao soImpl(Numero vnA); {\n}\n";
+    assert.equal(findDefinirFuncaoInsertAfterLine(src), 1);
   });
 
   it("definirStatement", () => {
@@ -29,7 +54,7 @@ describe("definir-insert", () => {
 
 describe("SEM001 range", () => {
   it("sublinha só o identificador", () => {
-    const src = 'Definir Alfa vaX;\nvaX = vaNome;\n';
+    const src = "Definir Alfa vaX;\nvaX = vaNome;\n";
     const hits = analyzeLsp(src);
     const sem = hits.find((h) => h.id === "SEM001");
     assert.ok(sem);

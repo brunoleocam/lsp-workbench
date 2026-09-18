@@ -28,15 +28,50 @@ Alfa, Data, Lista e Cursor **precisam** de `Definir`. Boa prática: declarar tam
 
 **Instrução inválida (SYN010):** um identificador ou nome de tipo sozinho na linha (`Numero;`, `xyz;`, `Numero`) **não compila**. O Senior reporta: *Erro na variável, "falta valor, expressão ou comando"*. Em outras linguagens isso costuma ser *unexpected identifier* / *statement expected*. O plugin alerta SYN010 (não basta acrescentar `;`).
 
-Exemplo de declaração de variáveis:
+```lsp
+Definir Alfa vaNome;
+Definir Numero vnIdade;
+Definir Data vdNascimento;
+```
+
+### Ordem das declarações (boas práticas)
+
+No **início do arquivo**, agrupar primeiro as variáveis e depois as funções. Dentro do bloco `Definir`, preferir esta ordem de tipos:
+
+1. Numero  
+2. Alfa  
+3. Data  
+4. Lista  
+5. Tabela  
+6. Grid  
+7. Cursor  
+8. Funcao  
+
+```lsp
+Definir Numero vnCodigo;
+Definir Alfa vaNome;
+Definir Data vdEmissao;
+Definir Lista aItens;
+Definir Cursor Cur_Ped;
+Definir Funcao calcularTotal(Numero vnA, Numero End vnR);
+
+@ implementações e restante do código abaixo @
+Funcao calcularTotal(Numero vnA, Numero End vnR); {
+  vnR = vnA;
+}
+```
+
+O plugin (SEM001 / QF FUN007–008 / import) insere novos `Definir` respeitando essa ordem.
+
+Exemplo de declaração de variáveis (sintaxe):
 
 Sintaxe
 
 Definir <Tipo> <Nome_da_Variável>;
 
 ```lsp
-Definir Alfa vaNome;
 Definir Numero vnIdade;
+Definir Alfa vaNome;
 Definir Data vdNascimento;
 ```
 

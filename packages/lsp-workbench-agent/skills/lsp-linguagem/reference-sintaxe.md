@@ -44,8 +44,10 @@ Se ((vnA > 0) e (vnB < 10)) {
 
 ## Funções – padrão Senior
 
+Declarações (`Definir Funcao`) ficam no **topo do arquivo**, **depois** das variáveis. Ordem dos tipos: Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao.
+
 ```lsp
-@ Declaração @
+@ Declaração (bloco inicial, após variáveis) @
 Definir Funcao Somar(Numero pnA, Numero pnB, Numero End pnResultado);
 
 @ Chamada @
