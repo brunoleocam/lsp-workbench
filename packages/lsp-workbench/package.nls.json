@@ -1,3 +1,0 @@
-{
-  "lsp.server.enabled.description": "Use the Language Server + Worker (Option 3) for analyzer diagnostics. Default off keeps in-process diagnostics (Option 1). Reload the window after changing."
-}

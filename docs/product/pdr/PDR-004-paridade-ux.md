@@ -40,7 +40,7 @@ Implementar **paridade de UX in-process** (Opção 1), com núcleo puro (ADR-005
 ## Não-objetivos (Opção 1)
 
 - Lexer/parser/AST completo (PDR-005 / Opção 2)
-- Language Server / Worker / i18n (Opção 3)
+- Language Server / Worker (Opção 3); **sem i18n**
 - Marketplace
 - Copiar código ou JSON de llutti/Killer
 - Substituir IDs SYN/RUL/FUN/SEM/SQL pelos `LSP####` do llutti

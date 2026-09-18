@@ -20,7 +20,6 @@ import {
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { analyze } from "@lsp-workbench/analyzer";
-import { t } from "./i18n";
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -30,7 +29,7 @@ import type {
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-/** Diagnostic source fixed for clients (matches package.nls diag.source). */
+/** Diagnostic source for Problems panel. */
 const DIAG_SOURCE = "LSP Analyzer";
 
 let nextRequestId = 1;
@@ -174,7 +173,7 @@ async function validate(doc: TextDocument): Promise<void> {
 }
 
 connection.onInitialize((_params: InitializeParams) => {
-  connection.console.log(t("server.initializing"));
+  connection.console.log("LSP Workbench Language Server initializing");
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
@@ -184,7 +183,7 @@ connection.onInitialize((_params: InitializeParams) => {
       },
     },
     serverInfo: {
-      name: t("server.displayName"),
+      name: "LSP Workbench Language Server",
       version: "0.1.0",
     },
   };

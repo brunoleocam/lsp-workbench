@@ -1,3 +1,0 @@
-{
-  "lsp.server.enabled.description": "Usa o Language Server + Worker (Opção 3) para diagnósticos do analyzer. Desligado por padrão mantém diagnósticos in-process (Opção 1). Recarregue a janela após alterar."
-}

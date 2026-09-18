@@ -31,14 +31,14 @@ Heurísticas cobrem regras Demóbile, mas não tipagem fina, Tabela/schema, unus
 - Package compilável + testes de lexer/parser em fixtures próprias.
 - Extensão chama analyzer para pelo menos um caminho (ex.: parse errors SYN) sem regressão RUL*.
 
-## Opção 3 — Language Server + Worker + i18n
+## Opção 3 — Language Server + Worker
 
 ### Escopo
 
 - `vscode-languageclient` na extensão; server Node importando `lsp-analyzer`.
 - Worker (`worker_threads`) para sessões de compile.
-- i18n (`package.nls*.json`) pt-BR (+ es se necessário).
 - Extensão vira thin client; snippets/grammar permanecem contribs.
+- **Sem i18n** (fora de escopo).
 
 ### Pré-requisito
 
@@ -53,11 +53,11 @@ Heurísticas cobrem regras Demóbile, mas não tipagem fina, Tabela/schema, unus
 
 **Foundation Opção 3 landed** em `packages/lsp-language-server`:
 
-- `server.ts` + `compiler-worker.ts` (`worker_threads`) + i18n (`package.nls*.json`)
+- `server.ts` + `compiler-worker.ts` (`worker_threads`)
 - Extensão: `lsp.server.enabled` (default **false**) inicia `LanguageClient` → `out/server.js`
 - Com LS off, Opção 1 in-process permanece o caminho estável
 - Ainda **não** é aceite completo (paridade UX via LS / métrica UI) — só a fundação LS+Worker
-
+- i18n **removido** / não será implementado
 ## Ordem
 
 ```text

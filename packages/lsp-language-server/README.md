@@ -1,11 +1,12 @@
 # @lsp-workbench/language-server (Opção 3)
 
-Language Server Node + `worker_threads` + i18n. Consome [`@lsp-workbench/analyzer`](../lsp-analyzer).
+Language Server Node + `worker_threads`. Consome [`@lsp-workbench/analyzer`](../lsp-analyzer).
 
 ## Status
 
 Fundação **0.1.0** — LS + Worker + push diagnostics (`source: "LSP Analyzer"`).  
-Default na extensão: **desligado** (`lsp.server.enabled: false` → Opção 1 in-process).
+Default na extensão: **desligado** (`lsp.server.enabled: false` → Opção 1 in-process).  
+Sem i18n (strings fixas em pt/en técnico no código).
 
 ## Arquitetura
 
@@ -41,10 +42,3 @@ Entry: `out/server.js` (bin `lsp-workbench-language-server`).
 2. Em Settings: `lsp.server.enabled` = `true`.
 3. Recarregue a janela (Reload Window).
 4. Diagnósticos do analyzer passam a vir do LS (`LSP Analyzer`); providers in-process (format, completion rica, etc.) permanecem na extensão nesta fundação.
-
-## i18n
-
-- `package.nls.json` (en)
-- `package.nls.pt-br.json` (pt-BR)
-
-Carregados por `src/i18n.ts` no boot do server.

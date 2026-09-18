@@ -16,7 +16,7 @@ Ordem **rígida**:
 |------|------|---------|
 | 1 | Paridade UX | PDR-004 — in-process, núcleo puro |
 | 2 | Compiler | PDR-005 — `packages/lsp-analyzer` |
-| 3 | Language Server | PDR-005 — client + server + Worker + i18n |
+| 3 | Language Server | PDR-005 — client + server + Worker (sem i18n) |
 
 Não iniciar a fase N+1 antes do aceite da fase N.
 

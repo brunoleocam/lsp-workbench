@@ -52,7 +52,7 @@ Legenda: ✅ tem · ⚠️ parcial / reserva · ❌ não tem · ★ diferencial 
 | Refactors wrap/toggle bloco | ✅ | ❌ | ⚠️ via QF SYN004 | P2 refactors dedicados |
 | SQL embutido format/highlight | ✅ opt-in | ❌ | ⚠️ settings reserva | P1 |
 | Language Server / Worker | ✅ | ❌ | ❌ | P3 (só se escala exigir) |
-| i18n (pt/es) | ✅ | ❌ | ❌ | P3 |
+| i18n (pt/es) | ✅ | ❌ | ❌ (fora de escopo) | — |
 | Marketplace | ✅ | ✅ | ❌ (não-objetivo) | — |
 
 ---
