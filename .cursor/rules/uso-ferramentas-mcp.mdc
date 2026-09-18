@@ -1,0 +1,39 @@
+---
+description: Tabela canônica de MCPs/decisão rápida para este workspace LSP; detalhes em mcp-triagem-obrigatoria.mdc. Validação LSP e TODO em tarefas grandes.
+alwaysApply: false
+---
+# Uso de ferramentas e MCPs
+
+**Fonte completa:** `mcp-triagem-obrigatoria.mdc`.  
+**Skill ponte:** `lsp-mcps` — não duplicar tabelas na skill.
+
+## Preferência deste workspace
+
+| Situação | Ação |
+|----------|------|
+| Sintaxe / geração LSP | `docs/lsp/` + `lsp-gerar` / `lsp-linguagem` |
+| Regra Demóbile / pode-não-pode | `docs/senior/` + `lsp-demobile` / `lsp-regras-senior.mdc` |
+| Tabelas, chaves, enums, SQL Senior | `docs/banco-senior/` + `lsp-banco` |
+| Validar `.lsp` | `lsp-revisar` / `lsp-validar` |
+
+## MCPs opcionais (se configurados)
+
+| Situação | Ação |
+|----------|------|
+| Critérios de aceite, escopo, edge cases | **spec-driven** |
+| Quebrar em tarefas / checklist | **task-master-ai** |
+| Debug passo a passo | **sequential-thinking** |
+| Trade-offs / comparar opções | **structured-thinking** |
+| Invariantes / contratos | **tractatus_thinking** |
+| Docs de biblioteca externos | **Context7** |
+| Explorar codebase grande | Subagent **explore** ou busca no repositório |
+
+## Código LSP (`.lsp`)
+
+Após criar ou alterar `.lsp`: `lsp-revisar` e/ou `lsp-validar`; ver `lsp-validacao-obrigatoria.mdc`.
+
+## Solicitações grandes
+
+1. Quebrar em tarefas pequenas (TODO).
+2. Implementar a primeira fatia → revisar.
+3. Só então a próxima.

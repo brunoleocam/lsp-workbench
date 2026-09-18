@@ -1,0 +1,14 @@
+{
+  "cursor.cpp.disabledLanguages": [
+    "senior-lsp"
+  ],
+  "files.associations": {
+    "*.lsp": "senior-lsp",
+    "*.lspt": "senior-lsp"
+  },
+  "[senior-lsp]": {
+    "editor.wordBasedSuggestions": "off",
+    "editor.inlineSuggest.enabled": false,
+    "editor.suggest.showWords": false
+  }
+}

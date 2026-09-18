@@ -1,0 +1,136 @@
+{
+  "description": "Smoke fixtures — expectativas de analyzeLsp (IDs canônicos em docs/product/regras-estaticas-lsp.md)",
+  "coverageNote": "A união de expectIds deve cobrir todos os IDs em IMPLEMENTED_RULE_IDS (exceto pendingIds).",
+  "pendingIds": [],
+  "files": [
+    {
+      "path": "00-ok-clean.lsp",
+      "expectIds": [],
+      "note": "Baseline sem diagnósticos (smoke negativo)"
+    },
+    {
+      "path": "smoke-syn.lsp",
+      "expectIds": [
+        "SYN001",
+        "SYN002",
+        "SYN003",
+        "SYN004",
+        "SYN005",
+        "SYN006",
+        "SYN007",
+        "SYN008",
+        "SYN009",
+        "SYN010",
+        "RUL008"
+      ],
+      "quickFixIds": [
+        "SYN001",
+        "SYN002",
+        "SYN003",
+        "SYN004",
+        "SYN005",
+        "SYN006",
+        "SYN007",
+        "SYN008",
+        "SYN009",
+        "SYN010",
+        "RUL008"
+      ]
+    },
+    {
+      "path": "smoke-rul.lsp",
+      "expectIds": [
+        "RUL001",
+        "RUL002",
+        "RUL003",
+        "RUL004",
+        "RUL005",
+        "RUL006",
+        "RUL007",
+        "RUL009",
+        "RUL010",
+        "RUL011",
+        "RUL012",
+        "RUL013",
+        "RUL014",
+        "RUL015",
+        "RUL016",
+        "RUL017",
+        "RUL018",
+        "RUL019"
+      ],
+      "quickFixIds": [
+        "RUL001",
+        "RUL002",
+        "RUL003",
+        "RUL004",
+        "RUL005",
+        "RUL006",
+        "RUL007",
+        "RUL009",
+        "RUL011",
+        "RUL012",
+        "RUL013",
+        "RUL014",
+        "RUL015",
+        "RUL016",
+        "RUL019"
+      ]
+    },
+    {
+      "path": "smoke-fun.lsp",
+      "expectIds": ["FUN001", "FUN002", "FUN003", "FUN004", "FUN005", "FUN006"],
+      "quickFixIds": ["FUN001", "FUN002", "FUN003", "FUN004", "FUN005", "FUN006"]
+    },
+    {
+      "path": "smoke-fun-pdr003.lsp",
+      "expectIds": ["FUN007", "FUN008", "FUN009"],
+      "quickFixIds": ["FUN009"],
+      "scopedExternal": {
+        "somar": { "fileName": "operacoes.lsp" }
+      },
+      "note": "PDR-003 — Decl/Impl incompletos + chamada cross-file (FUN009 via scopedExternal)"
+    },
+    {
+      "path": "smoke-sem.lsp",
+      "expectIds": ["SEM001", "SEM002", "SEM003"],
+      "quickFixIds": ["SEM001", "SEM002", "SEM003"]
+    },
+    {
+      "path": "smoke-sem004.lsp",
+      "expectIds": ["SEM004"],
+      "quickFixIds": ["SEM004"]
+    },
+    {
+      "path": "smoke-sql.lsp",
+      "expectIds": [
+        "SQL001",
+        "SQL002",
+        "SQL003",
+        "SQL004",
+        "SQL005",
+        "SQL006",
+        "SQL007",
+        "SQL008",
+        "SQL009"
+      ],
+      "quickFixIds": ["SQL001", "SQL002", "SQL003", "SQL004", "SQL005", "SQL006", "SQL007", "SQL008", "SQL009"]
+    },
+    {
+      "path": "syntax-missing-semi.lsp",
+      "expectIds": ["SYN001"],
+      "legacy": true
+    },
+    {
+      "path": "rule-retorna.lsp",
+      "expectIds": ["RUL007"],
+      "legacy": true,
+      "quickFixIds": ["RUL007"]
+    },
+    {
+      "path": "format-if.lsp",
+      "expectIds": [],
+      "note": "Fixture de format (não de diagnóstico)"
+    }
+  ]
+}

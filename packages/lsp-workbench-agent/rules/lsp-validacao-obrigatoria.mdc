@@ -1,0 +1,31 @@
+﻿---
+description: Validação obrigatória após gerar ou alterar código LSP.
+globs: "**/*.{lsp,lspt}"
+alwaysApply: false
+---
+# LSP – Validação obrigatória
+
+**OBRIGATÓRIO:** Sempre que gerar ou alterar código LSP (`.lsp` / `.lspt`), validar antes de encerrar.
+
+## Fluxo
+
+1. **Antes** (tarefas não triviais): skill **`lsp-gerar`** ou **`lsp-linguagem`**.
+2. **Após** escrever/editar → validar.
+3. Usar **`lsp-revisar`** (checklist) e/ou **`lsp-validar`** (relatório com IDs).
+4. Corrigir violações críticas antes de concluir.
+5. Opcional: **`lsp-formatar`** se o layout estiver irregular.
+
+## Itens críticos
+
+- Parâmetros de função: só `Numero`.
+- Campos com ponto: variável intermediária antes de funções.
+- Condições compostas: `((a > 0) e (b < 10))`.
+- Concatenação: só Alfa + Alfa; nunca em argumentos de função.
+- Retorno por parâmetro; `Cancel(1);` (não `Retorna`).
+- Blocos com `{ }` (não `Inicio`/`Fim;`).
+- **ExecSQLEx:** `0 = sucesso`, `1 = erro`.
+
+## Referências
+
+- Skills: `lsp-linguagem`, `lsp-gerar`, `lsp-revisar`, `lsp-validar`, `lsp-formatar`, `lsp-refatorar`
+- Rules: `lsp-nucleo.mdc`, `lsp-limites.mdc`, `lsp-sintaxe.mdc`

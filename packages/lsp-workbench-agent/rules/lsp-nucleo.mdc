@@ -1,0 +1,29 @@
+﻿---
+description: Núcleo LSP obrigatório; alwaysApply true (texto enxuto). Anti-padrões frequentes de LLM + regras de ouro.
+alwaysApply: true
+---
+# LSP – Núcleo (sempre aplicar)
+
+## Anti-padrões frequentes (não gerar código assim)
+
+1. **`Retorna`** — não existe; após erro usar `Cancel(1);`.
+2. **Parâmetros de função** — apenas tipo `Numero`; Alfa/Data/Lista via globais ou conversão.
+3. **Retorno de função** — por parâmetro (`TamanhoAlfa(va, vn);`), não `vn = Func();` quando a função usa parâmetro de saída.
+4. **Concatenação** — só `Alfa + Alfa`; nunca concatenar dentro de **argumento** de função; nunca `Alfa + Numero` sem `IntParaAlfa` antes.
+5. **Condições com `e` / `ou`** — cada parte entre parênteses: `Se ((a > 0) e (b < 10))`.
+6. **`Objeto.Campo` / `Grid.Campo` em parâmetros** — usar variável intermediária antes de passar a funções ou conversões.
+7. **`FormatarData`** — só aceita `Numero`; obter instante com `DataHora(vn)` antes.
+8. **`EstaNulo`** — `EstaNulo(vaDado, vnEhNulo);` depois `Se (vnEhNulo = 0)`; não usar `Se (EstaNulo(...) = 0)` na condição.
+9. **`ExecSQLEx`** — `0` = sucesso, `1` = erro (não inverter).
+10. **`SQL_RetornarInteiro` / `SQL_RetornarAlfa`** — não usar variáveis de parâmetro de função como destino; usar variável local e depois atribuir.
+11. **Blocos** — usar **`{ }`**; não usar `Inicio` / `Fim;` (nem `FimSe` / `FimEnquanto`) neste padrão.
+
+## Regras de ouro (detalhe)
+
+- **Parâmetros de função:** apenas tipo `Numero`. Outros tipos usar variáveis globais ou conversão.
+- **Condições compostas:** em `Se`/`Enquanto` com `e` ou `ou`, cada condição entre parênteses: `Se ((a > 0) e (b < 10))`.
+- **Retorno:** funções retornam por parâmetro (ex.: `TamanhoAlfa(vaTexto, vnTamanho);`), não por atribuição direta.
+- **Interrupção:** usar `Cancel(1);` após mensagem de erro; não existe `Retorna`.
+- **Conversões:** sempre variável intermediária (ex.: `AlfaParaDecimal(vaTexto, vnValor);` depois `Grid.Campo = vnValor`).
+- **Concatenação:** apenas Alfa + Alfa; converter número com `IntParaAlfa` antes de concatenar.
+- **Nunca** concatene dentro de parâmetros de funções. Manipule primeiro (operações, conversões, concatenações em variáveis), depois chame a função. Blocos sempre com `{ }`. Detalhe: skill **`lsp-linguagem`**.

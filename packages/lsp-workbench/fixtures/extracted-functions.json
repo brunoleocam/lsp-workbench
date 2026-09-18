@@ -1,0 +1,1464 @@
+{
+  "generatedAt": "2026-09-18T14:32:44.659Z",
+  "count": 208,
+  "labels": [
+    "AbrirCursor",
+    "AdicionaDadosGrade",
+    "AlfaParaData",
+    "AlfaParaDecimal",
+    "AlfaParaInt",
+    "AlteraControle",
+    "AlteraValorFormula",
+    "AnoBissexto",
+    "ArqExiste",
+    "Arredonda",
+    "ArredondaABNT",
+    "ArredondarValor",
+    "ArredondaValorTipoAcerto",
+    "AtivaLimpezaParamEnt",
+    "AtualizaBarraProgresso",
+    "Base64Decode",
+    "Base64Encode",
+    "CalculaAlfa",
+    "Cancel",
+    "CancelarRelatorio",
+    "CaracterParaAlfa",
+    "CarregaImagemControle",
+    "CarregaImgControle",
+    "CarregaImgVetorialControle",
+    "CarregarTextoArq",
+    "CodData",
+    "CodigoEspNivel",
+    "Concatena",
+    "ConfiguraPontoGrafico",
+    "ConverteCodificacaoString",
+    "ConverteDataBanco",
+    "ConverteDataSqlSenior2",
+    "ConverteDataToDB",
+    "ConverteMascara",
+    "ConverteParaMaiusculo",
+    "ConverteParaMinusculo",
+    "ConverteTexto",
+    "ConverteUnidadeMedida",
+    "CopiarAlfa",
+    "CopiarStr",
+    "CriarArquivoTemporario",
+    "CriaView",
+    "Cursores",
+    "DataExtenso",
+    "DataHoje",
+    "DataHora",
+    "DataHoraUTC",
+    "DataInicialFinal",
+    "DateToDB",
+    "DecimalParaAlfa",
+    "DecodData",
+    "DeixaNumeros",
+    "DeletarAlfa",
+    "DeletarStr",
+    "DeleteFieldSQL",
+    "DesatLimpezaParamEnt",
+    "DesCamLista",
+    "Desencriptar",
+    "DesfazerTransacao",
+    "DesMontaData",
+    "DetPrimConector",
+    "Dividir",
+    "Encriptar",
+    "EstaNulo",
+    "ExcluirArquivoTemporario",
+    "ExecProg",
+    "ExecSQL",
+    "ExecSQLEx",
+    "Executar",
+    "Extenso",
+    "ExtensoMes",
+    "ExtensoMoeda",
+    "ExtensoSemana",
+    "FecharCursor",
+    "FinalizaBarraProgresso",
+    "FinalizarTransacao",
+    "Formatar",
+    "FormatarData",
+    "FormatarN",
+    "GeraHash",
+    "GerarNonce",
+    "GerarPwdDigest",
+    "GeraSenha",
+    "GeraToken",
+    "HoraParaMinuto",
+    "HttpAlteraCabecalhoRequisicao",
+    "HttpDelete",
+    "HttpDeleteBody",
+    "HttpDesabilitaErroResposta",
+    "HttpDownload",
+    "HttpGet",
+    "HttpLeCodigoResposta",
+    "HttpObjeto",
+    "HttpPost",
+    "HttpPut",
+    "HttpSetaTimeout",
+    "IniciaBarraProgresso",
+    "IniciarTransacao",
+    "InsClauSQLCampoDireto",
+    "InsClauSQLField",
+    "InsClauSQLFrom",
+    "InsClauSQLGroupBy",
+    "InsClauSQLOrderBy",
+    "InsClauSQLWhere",
+    "InserirAlfa",
+    "InserirStr",
+    "InsEspAlinhDireita",
+    "InsSQLWhereSimples",
+    "IntParaAlfa",
+    "IntParaStr",
+    "LerPosicaoAlfa",
+    "LimpaDadosGrade",
+    "LimpaDadosGrafico",
+    "LimpaEspacos",
+    "LimpaEspacosDireita",
+    "LimpaEspacosEsquerda",
+    "LimpaGerTabAlf",
+    "LimpaGerTabNum",
+    "LimparParamsEntrada",
+    "LinhasArquivo",
+    "ListaItem",
+    "ListaQuantidade",
+    "ListaRegraCarregarJson",
+    "ListaRegraCriarLista",
+    "ListaRegraObterValorAlfa",
+    "ListaRegraPrimeiro",
+    "ListaRegraProximo",
+    "ListaSecao",
+    "LSP",
+    "Mensagem",
+    "MontaAbrangencia",
+    "MontaData",
+    "MontarSQLHisCampo",
+    "MontarSQLHisCampoSeq",
+    "MontarSQLHistorico",
+    "MontarSQLHistoricoSeq",
+    "MultiplicaValor",
+    "ObtemIdiomaAtivo",
+    "ObterVersaoSistema",
+    "OcultaBarraProgressoRelatorio",
+    "OrdenacaoSelecionada",
+    "PegarTipoVar",
+    "PegarValorVarAlf",
+    "PegarValorVarNum",
+    "PosicaoAlfa",
+    "PosicaoStr",
+    "PreenchePagina",
+    "ProcuraEnter",
+    "ProximaPagina",
+    "Proximo",
+    "QuebraTexto",
+    "RemoveExpressoesProibidas",
+    "RestoDivisao",
+    "RetDiaSemana",
+    "RetDiaUtilAntPos",
+    "RetiraAcentuacao",
+    "RetiraCaracteresEspeciais",
+    "RetornaAscII",
+    "RetornaCampoAlfaTabela",
+    "RetornaCampoNumeroTabela",
+    "RetornarDiasUteisMes",
+    "RetornarDiasUteisPeriodo",
+    "RetornarQtdDiasAno",
+    "RetornaValorCFG",
+    "SaltarPagina",
+    "SelecaoTabelas",
+    "SelecionaImpressora",
+    "SetaNumeroTelaEntrada",
+    "SetarValorVarAlf",
+    "SetarValorVarNum",
+    "sleep",
+    "SQL_AbrirCursor",
+    "SQL_BOF",
+    "SQL_Criar",
+    "SQL_DefinirAlfa",
+    "SQL_DefinirBlob",
+    "SQL_DefinirComando",
+    "SQL_DefinirData",
+    "SQL_DefinirInteiro",
+    "SQL_Destruir",
+    "SQL_EOF",
+    "SQL_FecharCursor",
+    "SQL_Proximo",
+    "SQL_RetornarAlfa",
+    "SQL_RetornarBlob",
+    "SQL_RetornarBoleano",
+    "SQL_RetornarData",
+    "SQL_RetornarFlutuante",
+    "SQL_RetornarInteiro",
+    "SQL_RetornarSeNulo",
+    "SQL_UsarAbrangencia",
+    "SQL_UsarSQLSenior2",
+    "StrParaInt",
+    "SubstAlfa",
+    "SubstAlfaUmaVez",
+    "SubstituiFrom",
+    "TamanhoAlfa",
+    "TamanhoStr",
+    "TrocaString",
+    "TruncaDadosGrade",
+    "Truncar",
+    "UltimoDia",
+    "UltimoRegistro",
+    "ValorElementoJson",
+    "Vantagens",
+    "VerificaAbaAtiva",
+    "VrfAbrA",
+    "VrfAbrN"
+  ],
+  "entries": [
+    {
+      "label": "AbrirCursor",
+      "detail": "AbrirCursor",
+      "source": "referencia-rapida.md",
+      "insertText": "AbrirCursor($0);"
+    },
+    {
+      "label": "AdicionaDadosGrade",
+      "detail": "AdicionaDadosGrade(Alfa ControlName, Numero Linha, Numero Coluna, Alfa Texto);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "AdicionaDadosGrade(${1:ControlName}, ${2:Linha}, ${3:Coluna}, ${4:Texto});"
+    },
+    {
+      "label": "AlfaParaData",
+      "detail": "AlfaParaData(<texto>, <data>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "AlfaParaData(${1:texto}, ${2:p2});"
+    },
+    {
+      "label": "AlfaParaDecimal",
+      "detail": "AlfaParaDecimal(<texto>, <decimal>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "AlfaParaDecimal(${1:texto}, ${2:decimal});"
+    },
+    {
+      "label": "AlfaParaInt",
+      "detail": "AlfaParaInt(<texto>, <inteiro>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "AlfaParaInt(${1:texto}, ${2:inteiro});"
+    },
+    {
+      "label": "AlteraControle",
+      "detail": "AlteraControle(\"Nome do Controle\", \"Propriedade\", \"Parametro\");",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "AlteraControle(${1:NomedoControle}, ${2:Propriedade}, ${3:Parametro});"
+    },
+    {
+      "label": "AlteraValorFormula",
+      "detail": "AlteraValorFormula(Alfa NomeFormula, Numero Valor);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "AlteraValorFormula(${1:NomeFormula}, ${2:Valor});"
+    },
+    {
+      "label": "AnoBissexto",
+      "detail": "AnoBissexto(<data>, <bissexto>);",
+      "source": "datas.md",
+      "insertText": "AnoBissexto(${1:p1}, ${2:bissexto});"
+    },
+    {
+      "label": "ArqExiste",
+      "detail": "vnRet = ArqExiste(<caminhoArquivo>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "ArqExiste(${1:caminhoArquivo});"
+    },
+    {
+      "label": "Arredonda",
+      "detail": "Arredonda(<valor>, <decimais>);",
+      "source": "datas.md",
+      "insertText": "Arredonda(${1:valor}, ${2:decimais});"
+    },
+    {
+      "label": "ArredondaABNT",
+      "detail": "ArredondaABNT(<valor>, <decimais>);",
+      "source": "datas.md",
+      "insertText": "ArredondaABNT(${1:valor}, ${2:decimais});"
+    },
+    {
+      "label": "ArredondarValor",
+      "detail": "ArredondarValor(<valorVariavel>, <precisao>);",
+      "source": "datas.md",
+      "insertText": "ArredondarValor(${1:valorVariavel}, ${2:precisao});"
+    },
+    {
+      "label": "ArredondaValorTipoAcerto",
+      "detail": "Arredonda um valor tipo acerto, conforme a precisão informada.",
+      "source": "funcoes-gerais.md",
+      "insertText": "ArredondaValorTipoAcerto($0);"
+    },
+    {
+      "label": "AtivaLimpezaParamEnt",
+      "detail": "nomePorta.AtivaLimpezaParamEnt();",
+      "source": "web-service.md",
+      "insertText": "AtivaLimpezaParamEnt();"
+    },
+    {
+      "label": "AtualizaBarraProgresso",
+      "detail": "AtualizaBarraProgresso(<percentual>, <mensagem>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "AtualizaBarraProgresso(${1:percentual}, ${2:mensagem});"
+    },
+    {
+      "label": "Base64Decode",
+      "detail": "Base64Decode(<textoBase64>, <textoOriginal>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "Base64Decode(${1:textoBase64}, ${2:textoOriginal});"
+    },
+    {
+      "label": "Base64Encode",
+      "detail": "Base64Encode(<textoOriginal>, <textoBase64>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "Base64Encode(${1:textoOriginal}, ${2:textoBase64});"
+    },
+    {
+      "label": "CalculaAlfa",
+      "detail": "CalculaAlfa(<operacao>, <argumento1>, <argumento2>, <resultado>);",
+      "source": "strings.md",
+      "insertText": "CalculaAlfa(${1:operacao}, ${2:argumento1}, ${3:argumento2}, ${4:resultado});"
+    },
+    {
+      "label": "Cancel",
+      "detail": "Cancel(1|2|3)",
+      "source": "cancel.md",
+      "insertText": "Cancel(${1|1,2,3|});"
+    },
+    {
+      "label": "CancelarRelatorio",
+      "detail": "CancelarRelatorio();",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CancelarRelatorio();"
+    },
+    {
+      "label": "CaracterParaAlfa",
+      "detail": "CaracterParaAlfa(<caractere>, <destino>);",
+      "source": "strings.md",
+      "insertText": "CaracterParaAlfa(${1:caractere}, ${2:destino});"
+    },
+    {
+      "label": "CarregaImagemControle",
+      "detail": "CarregaImagemControle(Alfa NomeDoControle, Numero ArquivoOuBanco, Alfa CaminhoOuCampo, Alfa SQL);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CarregaImagemControle(${1:NomeDoControle}, ${2:ArquivoOuBanco}, ${3:CaminhoOuCampo}, ${4:SQL});"
+    },
+    {
+      "label": "CarregaImgControle",
+      "detail": "Carrega uma imagem do banco, arquivo ou variável para um controle imagem do modelo.",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CarregaImgControle(${1:NomeDoControleImagem}, ${2:Arquivo0Banco1Variavel2}, ${3:CaminhoCampoNome}, ${4:SQL}, ${5:SqlSenior2});"
+    },
+    {
+      "label": "CarregaImgVetorialControle",
+      "detail": "CarregaImgVetorialControle(Alfa NomeDoControleImagem, Alfa Caminho, Numero Xms, Numero Xmx);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CarregaImgVetorialControle(${1:NomeDoControleImagem}, ${2:Caminho}, ${3:Xms}, ${4:Xmx});"
+    },
+    {
+      "label": "CarregarTextoArq",
+      "detail": "CarregarTextoArq(<arquivo>, <texto>);",
+      "source": "strings.md",
+      "insertText": "CarregarTextoArq(${1:arquivo}, ${2:texto});"
+    },
+    {
+      "label": "CodData",
+      "detail": "vdData = CodData(<dia>, <mes>, <ano>);",
+      "source": "datas.md",
+      "insertText": "CodData(${1:dia}, ${2:mes}, ${3:ano});"
+    },
+    {
+      "label": "CodigoEspNivel",
+      "detail": "CodigoEspNivel(Numero Nivel, Alfa End CodigoNivel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CodigoEspNivel(${1:Nivel}, ${2:CodigoNivel});"
+    },
+    {
+      "label": "Concatena",
+      "detail": "Concatena(<str1>, <str2>, <str3>, <destino>);",
+      "source": "strings.md",
+      "insertText": "Concatena(${1:str1}, ${2:str2}, ${3:str3}, ${4:destino});"
+    },
+    {
+      "label": "ConfiguraPontoGrafico",
+      "detail": "Configura pontos em gráficos de figuras variáveis (linhas) antes de adicionar valores.",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "ConfiguraPontoGrafico(${1:ControlName}, ${2:Caractere}, ${3:TipoPonto}, ${4:IndiceFigura}, ${5:Interrompido});"
+    },
+    {
+      "label": "ConverteCodificacaoString",
+      "detail": "vnRetorno = ConverteCodificacaoString(<textoOrigem>, <codificacao>, <textoDestino>);",
+      "source": "strings.md",
+      "insertText": "ConverteCodificacaoString(${1:textoOrigem}, ${2:codificacao}, ${3:textoDestino});"
+    },
+    {
+      "label": "ConverteDataBanco",
+      "detail": "ConverteDataBanco(<datNum>, <datAlf>);",
+      "source": "datas.md",
+      "insertText": "ConverteDataBanco(${1:datNum}, ${2:datAlf});"
+    },
+    {
+      "label": "ConverteDataSqlSenior2",
+      "detail": "ConverteDataSqlSenior2(<datNum>, <datSql>);",
+      "source": "datas.md",
+      "insertText": "ConverteDataSqlSenior2(${1:datNum}, ${2:datSql});"
+    },
+    {
+      "label": "ConverteDataToDB",
+      "detail": "ConverteDataToDB(<datNum>, <datAlf>);",
+      "source": "datas.md",
+      "insertText": "ConverteDataToDB(${1:datNum}, ${2:datAlf});"
+    },
+    {
+      "label": "ConverteMascara",
+      "detail": "ConverteMascara(<tipoDado>, <valorOrigem>, <alfaDestino>, <mascara>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "ConverteMascara(${1:tipoDado}, ${2:valorOrigem}, ${3:alfaDestino}, ${4:mascara});"
+    },
+    {
+      "label": "ConverteParaMaiusculo",
+      "detail": "ConverteParaMaiusculo(<texto>);",
+      "source": "strings.md",
+      "insertText": "ConverteParaMaiusculo(${1:texto});"
+    },
+    {
+      "label": "ConverteParaMinusculo",
+      "detail": "ConverteParaMinusculo(<texto>)",
+      "source": "strings.md",
+      "insertText": "ConverteParaMinusculo(${1:texto});"
+    },
+    {
+      "label": "ConverteTexto",
+      "detail": "ConverteTexto(<codificacao>, <textoOrigem>, <textoDestino>);",
+      "source": "strings.md",
+      "insertText": "ConverteTexto(${1:codificacao}, ${2:textoOrigem}, ${3:textoDestino});"
+    },
+    {
+      "label": "ConverteUnidadeMedida",
+      "detail": "Calcula a quantidade convertida de uma unidade de medida (de) para outra unidade de medida (para).",
+      "source": "datas.md",
+      "insertText": "ConverteUnidadeMedida(${1:codPro}, ${2:codDer}, ${3:uniMedDe}, ${4:uniMedPara}, ${5:qtde}, ${6:codFor}, ${7:qtdDec}, ${8:codEmp}, ${9:qtdCnv});"
+    },
+    {
+      "label": "CopiarAlfa",
+      "detail": "CopiarAlfa(<variavel>, <posicao>, <tamanho>);",
+      "source": "strings.md",
+      "insertText": "CopiarAlfa(${1:variavel}, ${2:posicao}, ${3:tamanho});"
+    },
+    {
+      "label": "CopiarStr",
+      "detail": "CopiarStr(<variavel>, <posicao>, <tamanho>)",
+      "source": "strings.md",
+      "insertText": "CopiarStr(${1:variavel}, ${2:posicao}, ${3:tamanho});"
+    },
+    {
+      "label": "CriarArquivoTemporario",
+      "detail": "CriarArquivoTemporario(<prefixo>, <caminhoArquivo>);",
+      "source": "gerenciamento-avancado-de-arquivos.md",
+      "insertText": "CriarArquivoTemporario(${1:prefixo}, ${2:caminhoArquivo});"
+    },
+    {
+      "label": "CriaView",
+      "detail": "CriaView(Alfa SQL, Alfa End NomeView);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "CriaView(${1:SQL}, ${2:NomeView});"
+    },
+    {
+      "label": "Cursores",
+      "detail": "Cursores();",
+      "source": "listas.md",
+      "insertText": "Cursores();"
+    },
+    {
+      "label": "DataExtenso",
+      "detail": "DataExtenso(<data>, <extenso>);",
+      "source": "datas.md",
+      "insertText": "DataExtenso(${1:p1}, ${2:extenso});"
+    },
+    {
+      "label": "DataHoje",
+      "detail": "DataHoje(<data>);",
+      "source": "datas.md",
+      "insertText": "DataHoje(${1:p1});"
+    },
+    {
+      "label": "DataHora",
+      "detail": "DataHora(<numeroDataHora>);",
+      "source": "datas.md",
+      "insertText": "DataHora(${1:numeroDataHora});"
+    },
+    {
+      "label": "DataHoraUTC",
+      "detail": "DataHoraUTC(<numeroDataHoraUTC>);",
+      "source": "datas.md",
+      "insertText": "DataHoraUTC(${1:numeroDataHoraUTC});"
+    },
+    {
+      "label": "DataInicialFinal",
+      "detail": "DataInicialFinal(Data pDatAtu, Numero pTipDat, Data pDatRef, Data End pDatIni, Data End pDatFim);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "DataInicialFinal(${1:pDatAtu}, ${2:pTipDat}, ${3:pDatRef}, ${4:pDatIni}, ${5:pDatFim});"
+    },
+    {
+      "label": "DateToDB",
+      "detail": "DateToDB(Numero Date, Numero Native, Alfa End DateAlfa);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "DateToDB(${1:Date}, ${2:Native}, ${3:DateAlfa});"
+    },
+    {
+      "label": "DecimalParaAlfa",
+      "detail": "DecimalParaAlfa(<numero>, <texto>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "DecimalParaAlfa(${1:p1}, ${2:texto});"
+    },
+    {
+      "label": "DecodData",
+      "detail": "DecodData(<data>, <dia>, <mes>, <ano>);",
+      "source": "datas.md",
+      "insertText": "DecodData(${1:p1}, ${2:dia}, ${3:mes}, ${4:ano});"
+    },
+    {
+      "label": "DeixaNumeros",
+      "detail": "DeixaNumeros(<texto>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "DeixaNumeros(${1:texto});"
+    },
+    {
+      "label": "DeletarAlfa",
+      "detail": "DeletarAlfa(<texto>, <posicao>, <quantidade>);",
+      "source": "strings.md",
+      "insertText": "DeletarAlfa(${1:texto}, ${2:posicao}, ${3:quantidade});"
+    },
+    {
+      "label": "DeletarStr",
+      "detail": "DeletarStr(<origem>, <posicao>, <quantidade>);",
+      "source": "strings.md",
+      "insertText": "DeletarStr(${1:origem}, ${2:posicao}, ${3:quantidade});"
+    },
+    {
+      "label": "DeleteFieldSQL",
+      "detail": "DeleteFieldSQL(Alfa SectionName, Alfa TableFieldName);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "DeleteFieldSQL(${1:SectionName}, ${2:TableFieldName});"
+    },
+    {
+      "label": "DesatLimpezaParamEnt",
+      "detail": "nomePorta.DesatLimpezaParamEnt();",
+      "source": "web-service.md",
+      "insertText": "DesatLimpezaParamEnt();"
+    },
+    {
+      "label": "DesCamLista",
+      "detail": "DesCamLista(Alfa TabelaCampo, Alfa Item, Alfa End Descricao);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "DesCamLista(${1:TabelaCampo}, ${2:Item}, ${3:Descricao});"
+    },
+    {
+      "label": "Desencriptar",
+      "detail": "Desencriptar(<textoCriptografado>, <textoOriginal>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "Desencriptar(${1:textoCriptografado}, ${2:textoOriginal});"
+    },
+    {
+      "label": "DesfazerTransacao",
+      "detail": "DesfazerTransacao();",
+      "source": "sql.md",
+      "insertText": "DesfazerTransacao();"
+    },
+    {
+      "label": "DesMontaData",
+      "detail": "DesMontaData(<data>, <dia>, <mes>, <ano>);",
+      "source": "datas.md",
+      "insertText": "DesMontaData(${1:p1}, ${2:dia}, ${3:mes}, ${4:ano});"
+    },
+    {
+      "label": "DetPrimConector",
+      "detail": "DetPrimConector(Alfa Seção, Alfa Operador);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "DetPrimConector(${1:Seção}, ${2:Operador});"
+    },
+    {
+      "label": "Dividir",
+      "detail": "Dividir(<dividendo>, <divisor>, <resultado>);",
+      "source": "operacoes-numericas-avancadas.md",
+      "insertText": "Dividir(${1:dividendo}, ${2:divisor}, ${3:resultado});"
+    },
+    {
+      "label": "Encriptar",
+      "detail": "Encriptar(<textoOriginal>, <textoCriptografado>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "Encriptar(${1:textoOriginal}, ${2:textoCriptografado});"
+    },
+    {
+      "label": "EstaNulo",
+      "detail": "EstaNulo(<variavel>, <resultado>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "EstaNulo(${1:variavel}, ${2:resultado});"
+    },
+    {
+      "label": "ExcluirArquivoTemporario",
+      "detail": "ExcluirArquivoTemporario(<caminhoArquivo>);",
+      "source": "gerenciamento-avancado-de-arquivos.md",
+      "insertText": "ExcluirArquivoTemporario(${1:caminhoArquivo});"
+    },
+    {
+      "label": "ExecProg",
+      "detail": "ExecProg(<comando>, <parametros>, <aguardarTermino>);",
+      "source": "gerenciamento-avancado-de-arquivos.md",
+      "insertText": "ExecProg(${1:comando}, ${2:parametros}, ${3:aguardarTermino});"
+    },
+    {
+      "label": "ExecSQL",
+      "detail": "ExecSQL(<ComandoSQL>);",
+      "source": "sql.md",
+      "insertText": "ExecSQL(${1:ComandoSQL});"
+    },
+    {
+      "label": "ExecSQLEx",
+      "detail": "ExecSQLEx",
+      "source": "sql.md",
+      "insertText": "ExecSQLEx($0);"
+    },
+    {
+      "label": "Executar",
+      "detail": "nomePorta.Executar();",
+      "source": "web-service.md",
+      "insertText": "Executar();"
+    },
+    {
+      "label": "Extenso",
+      "detail": "Extenso(<valor>, <tamanhoLinha1>, <tamanhoLinha2>, <tamanhoLinha3>, <linha1>, <linha2>, <linha3>);",
+      "source": "datas.md",
+      "insertText": "Extenso(${1:valor}, ${2:tamanhoLinha1}, ${3:tamanhoLinha2}, ${4:tamanhoLinha3}, ${5:linha1}, ${6:linha2}, ${7:linha3});"
+    },
+    {
+      "label": "ExtensoMes",
+      "detail": "ExtensoMes(<datMon>, <extMes>);",
+      "source": "datas.md",
+      "insertText": "ExtensoMes(${1:datMon}, ${2:extMes});"
+    },
+    {
+      "label": "ExtensoMoeda",
+      "detail": "Esta função gera o extenso de um valor com a moeda informada.",
+      "source": "datas.md",
+      "insertText": "ExtensoMoeda(${1:vlrExt}, ${2:tamLn1}, ${3:tamLn2}, ${4:tamLn3}, ${5:moeIS}, ${6:moeIP}, ${7:moeDS}, ${8:moeDP}, ${9:extLn1}, ${10:extLn2}, ${11:extLn3});"
+    },
+    {
+      "label": "ExtensoSemana",
+      "detail": "ExtensoSemana(<datMon>, <extSem>);",
+      "source": "datas.md",
+      "insertText": "ExtensoSemana(${1:datMon}, ${2:extSem});"
+    },
+    {
+      "label": "FecharCursor",
+      "detail": "FecharCursor",
+      "source": "referencia-rapida.md",
+      "insertText": "FecharCursor($0);"
+    },
+    {
+      "label": "FinalizaBarraProgresso",
+      "detail": "FinalizaBarraProgresso();",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "FinalizaBarraProgresso();"
+    },
+    {
+      "label": "FinalizarTransacao",
+      "detail": "FinalizarTransacao();",
+      "source": "sql.md",
+      "insertText": "FinalizarTransacao();"
+    },
+    {
+      "label": "Formatar",
+      "detail": "<variável> = Formatar(<dado>, \"<formato>\");",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "Formatar(${1:dado}, ${2:formato});"
+    },
+    {
+      "label": "FormatarData",
+      "detail": "FormatarData(<data>, <formato>, <dataFormatada>);",
+      "source": "datas.md",
+      "insertText": "FormatarData(${1:p1}, ${2:formato}, ${3:dataFormatada});"
+    },
+    {
+      "label": "FormatarN",
+      "detail": "FormatarN(<dado>, \"<formato>\", \"<separador decimal>\", <variável>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "FormatarN(${1:dado}, ${2:formato}, ${3:separadordecimal}, ${4:variável});"
+    },
+    {
+      "label": "GeraHash",
+      "detail": "GeraHash(<texto>, <algoritmo>, <hash>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "GeraHash(${1:texto}, ${2:algoritmo}, ${3:hash});"
+    },
+    {
+      "label": "GerarNonce",
+      "detail": "GerarNonce(<nonce>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "GerarNonce(${1:nonce});"
+    },
+    {
+      "label": "GerarPwdDigest",
+      "detail": "GerarPwdDigest(<nonce>, <created>, <senha>, <digest>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "GerarPwdDigest(${1:nonce}, ${2:created}, ${3:senha}, ${4:digest});"
+    },
+    {
+      "label": "GeraSenha",
+      "detail": "GeraSenha(<tamanho>, <senha>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "GeraSenha(${1:tamanho}, ${2:senha});"
+    },
+    {
+      "label": "GeraToken",
+      "detail": "GeraToken(<tamanho>, <token>);",
+      "source": "criptografia-e-seguranca.md",
+      "insertText": "GeraToken(${1:tamanho}, ${2:token});"
+    },
+    {
+      "label": "HoraParaMinuto",
+      "detail": "HoraParaMinuto(<hora>, <minuto>, <minutos>);",
+      "source": "operacoes-numericas-avancadas.md",
+      "insertText": "HoraParaMinuto(${1:hora}, ${2:minuto}, ${3:minutos});"
+    },
+    {
+      "label": "HttpAlteraCabecalhoRequisicao",
+      "detail": "HttpAlteraCabecalhoRequisicao",
+      "source": "referencia-rapida.md",
+      "insertText": "HttpAlteraCabecalhoRequisicao($0);"
+    },
+    {
+      "label": "HttpDelete",
+      "detail": "HttpDelete(Alfa Objeto, Alfa URL, Alfa end HTML);",
+      "source": "http.md",
+      "insertText": "HttpDelete(${1:Objeto}, ${2:URL}, ${3:HTML});"
+    },
+    {
+      "label": "HttpDeleteBody",
+      "detail": "HttpDeleteBody(Alfa Objeto, Alfa URL, Alfa Dados, Alfa end HTML);",
+      "source": "http.md",
+      "insertText": "HttpDeleteBody(${1:Objeto}, ${2:URL}, ${3:Dados}, ${4:HTML});"
+    },
+    {
+      "label": "HttpDesabilitaErroResposta",
+      "detail": "HttpDesabilitaErroResposta",
+      "source": "referencia-rapida.md",
+      "insertText": "HttpDesabilitaErroResposta($0);"
+    },
+    {
+      "label": "HttpDownload",
+      "detail": "HttpDownload(Alfa Objeto, Alfa URL, Alfa Arquivo);",
+      "source": "http.md",
+      "insertText": "HttpDownload(${1:Objeto}, ${2:URL}, ${3:Arquivo});"
+    },
+    {
+      "label": "HttpGet",
+      "detail": "HttpGet(Alfa Objeto, Alfa URL, Alfa end HTML);",
+      "source": "http.md",
+      "insertText": "HttpGet(${1:Objeto}, ${2:URL}, ${3:HTML});"
+    },
+    {
+      "label": "HttpLeCodigoResposta",
+      "detail": "HttpLeCodigoResposta",
+      "source": "referencia-rapida.md",
+      "insertText": "HttpLeCodigoResposta($0);"
+    },
+    {
+      "label": "HttpObjeto",
+      "detail": "HttpObjeto",
+      "source": "referencia-rapida.md",
+      "insertText": "HttpObjeto($0);"
+    },
+    {
+      "label": "HttpPost",
+      "detail": "HttpPost(Alfa Objeto, Alfa URL, Alfa Dados, Alfa end HTML);",
+      "source": "http.md",
+      "insertText": "HttpPost(${1:Objeto}, ${2:URL}, ${3:Dados}, ${4:HTML});"
+    },
+    {
+      "label": "HttpPut",
+      "detail": "HttpPut(Alfa Objeto, Alfa URL, Alfa Dados, Alfa end HTML);",
+      "source": "http.md",
+      "insertText": "HttpPut(${1:Objeto}, ${2:URL}, ${3:Dados}, ${4:HTML});"
+    },
+    {
+      "label": "HttpSetaTimeout",
+      "detail": "HttpSetaTimeout(Alfa Objeto, Numero Timeout);",
+      "source": "http.md",
+      "insertText": "HttpSetaTimeout(${1:Objeto}, ${2:Timeout});"
+    },
+    {
+      "label": "IniciaBarraProgresso",
+      "detail": "IniciaBarraProgresso(<titulo>, <mensagemInicial>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "IniciaBarraProgresso(${1:titulo}, ${2:mensagemInicial});"
+    },
+    {
+      "label": "IniciarTransacao",
+      "detail": "IniciarTransacao();",
+      "source": "sql.md",
+      "insertText": "IniciarTransacao();"
+    },
+    {
+      "label": "InsClauSQLCampoDireto",
+      "detail": "InsClauSQLCampoDireto(Alfa SectionName, Alfa CampoDireto);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLCampoDireto(${1:SectionName}, ${2:CampoDireto});"
+    },
+    {
+      "label": "InsClauSQLField",
+      "detail": "InsClauSQLField(\"Seção Detalhe\", Variavel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLField(${1:SeçãoDetalhe}, ${2:Variavel});"
+    },
+    {
+      "label": "InsClauSQLFrom",
+      "detail": "InsClauSQLFrom(\"Seção Detalhe\", Variavel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLFrom(${1:SeçãoDetalhe}, ${2:Variavel});"
+    },
+    {
+      "label": "InsClauSQLGroupBy",
+      "detail": "InsClauSQLGroupBy(Alfa SectionName, Alfa GroupByClau);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLGroupBy(${1:SectionName}, ${2:GroupByClau});"
+    },
+    {
+      "label": "InsClauSQLOrderBy",
+      "detail": "InsClauSQLOrderBy(\"Seção Detalhe\", Variavel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLOrderBy(${1:SeçãoDetalhe}, ${2:Variavel});"
+    },
+    {
+      "label": "InsClauSQLWhere",
+      "detail": "InsClauSQLWhere(\"Seção Detalhe\", Variavel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsClauSQLWhere(${1:SeçãoDetalhe}, ${2:Variavel});"
+    },
+    {
+      "label": "InserirAlfa",
+      "detail": "InserirAlfa(<valor>, <origem>, <posicao>);",
+      "source": "strings.md",
+      "insertText": "InserirAlfa(${1:valor}, ${2:origem}, ${3:posicao});"
+    },
+    {
+      "label": "InserirStr",
+      "detail": "InserirStr(<valor>, <origem>, <posicao>);",
+      "source": "strings.md",
+      "insertText": "InserirStr(${1:valor}, ${2:origem}, ${3:posicao});"
+    },
+    {
+      "label": "InsEspAlinhDireita",
+      "detail": "InsEspAlinhDireita(Numero Valor);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsEspAlinhDireita(${1:Valor});"
+    },
+    {
+      "label": "InsSQLWhereSimples",
+      "detail": "InsSQLWhereSimples(\"Seção Detalhe\", Variavel);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "InsSQLWhereSimples(${1:SeçãoDetalhe}, ${2:Variavel});"
+    },
+    {
+      "label": "IntParaAlfa",
+      "detail": "IntParaAlfa(<inteiro>, <texto>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "IntParaAlfa(${1:inteiro}, ${2:texto});"
+    },
+    {
+      "label": "IntParaStr",
+      "detail": "IntParaStr(<inteiro>, <texto>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "IntParaStr(${1:inteiro}, ${2:texto});"
+    },
+    {
+      "label": "LerPosicaoAlfa",
+      "detail": "LerPosicaoAlfa(<origem>, <destino>, <posicao>);",
+      "source": "strings.md",
+      "insertText": "LerPosicaoAlfa(${1:origem}, ${2:destino}, ${3:posicao});"
+    },
+    {
+      "label": "LimpaDadosGrade",
+      "detail": "LimpaDadosGrade(Alfa ControlName);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "LimpaDadosGrade(${1:ControlName});"
+    },
+    {
+      "label": "LimpaDadosGrafico",
+      "detail": "LimpaDadosGrafico(Alfa ControlName);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "LimpaDadosGrafico(${1:ControlName});"
+    },
+    {
+      "label": "LimpaEspacos",
+      "detail": "LimpaEspacos(<texto>);",
+      "source": "strings.md",
+      "insertText": "LimpaEspacos(${1:texto});"
+    },
+    {
+      "label": "LimpaEspacosDireita",
+      "detail": "LimpaEspacosDireita(<texto>);",
+      "source": "strings.md",
+      "insertText": "LimpaEspacosDireita(${1:texto});"
+    },
+    {
+      "label": "LimpaEspacosEsquerda",
+      "detail": "LimpaEspacosEsquerda(<texto>);",
+      "source": "strings.md",
+      "insertText": "LimpaEspacosEsquerda(${1:texto});"
+    },
+    {
+      "label": "LimpaGerTabAlf",
+      "detail": "LimpaGerTabAlf();",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "LimpaGerTabAlf();"
+    },
+    {
+      "label": "LimpaGerTabNum",
+      "detail": "LimpaGerTabNum();",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "LimpaGerTabNum();"
+    },
+    {
+      "label": "LimparParamsEntrada",
+      "detail": "nomePorta.LimparParamsEntrada();",
+      "source": "web-service.md",
+      "insertText": "LimparParamsEntrada();"
+    },
+    {
+      "label": "LinhasArquivo",
+      "detail": "LinhasArquivo(<caminhoArquivo>, <linhas>);",
+      "source": "gerenciamento-avancado-de-arquivos.md",
+      "insertText": "LinhasArquivo(${1:caminhoArquivo}, ${2:linhas});"
+    },
+    {
+      "label": "ListaItem",
+      "detail": "ListaItem(<texto>, <separador>, <indice>, <item>);",
+      "source": "strings.md",
+      "insertText": "ListaItem(${1:texto}, ${2:separador}, ${3:indice}, ${4:item});"
+    },
+    {
+      "label": "ListaQuantidade",
+      "detail": "ListaQuantidade(<texto>, <separador>, <quantidade>);",
+      "source": "strings.md",
+      "insertText": "ListaQuantidade(${1:texto}, ${2:separador}, ${3:quantidade});"
+    },
+    {
+      "label": "ListaRegraCarregarJson",
+      "detail": "ListaRegraCarregarJson(Numero aLista, Alfa aJson, Alfa aGrupo, Alfa aCampos);",
+      "source": "funcoes-de-lista-de-regras.md",
+      "insertText": "ListaRegraCarregarJson(${1:aLista}, ${2:aJson}, ${3:aGrupo}, ${4:aCampos});"
+    },
+    {
+      "label": "ListaRegraCriarLista",
+      "detail": "ListaRegraCriarLista(<numeroLista>);",
+      "source": "funcoes-de-lista-de-regras.md",
+      "insertText": "ListaRegraCriarLista(${1:numeroLista});"
+    },
+    {
+      "label": "ListaRegraObterValorAlfa",
+      "detail": "ListaRegraObterValorAlfa(<numeroLista>, <nomeCampo>, <valor>, <obteve>);",
+      "source": "funcoes-de-lista-de-regras.md",
+      "insertText": "ListaRegraObterValorAlfa(${1:numeroLista}, ${2:nomeCampo}, ${3:valor}, ${4:obteve});"
+    },
+    {
+      "label": "ListaRegraPrimeiro",
+      "detail": "ListaRegraPrimeiro(<numeroLista>, <achou>);",
+      "source": "funcoes-de-lista-de-regras.md",
+      "insertText": "ListaRegraPrimeiro(${1:numeroLista}, ${2:achou});"
+    },
+    {
+      "label": "ListaRegraProximo",
+      "detail": "ListaRegraProximo(<numeroLista>, <achou>);",
+      "source": "funcoes-de-lista-de-regras.md",
+      "insertText": "ListaRegraProximo(${1:numeroLista}, ${2:achou});"
+    },
+    {
+      "label": "ListaSecao",
+      "detail": "ListaSecao(Alfa Seção);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "ListaSecao(${1:Seção});"
+    },
+    {
+      "label": "LSP",
+      "detail": "LSP",
+      "source": "referencia-rapida.md",
+      "insertText": "LSP($0);"
+    },
+    {
+      "label": "Mensagem",
+      "detail": "Apresenta a mensagem em tela de acordo com a parametrização do tipo de retorno e da mensagem que ser",
+      "source": "funcoes-gerais.md",
+      "insertText": "Mensagem($0);"
+    },
+    {
+      "label": "MontaAbrangencia",
+      "detail": "MontaAbrangencia(<tabela>, <valores>, <sqlAbr>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "MontaAbrangencia(${1:tabela}, ${2:valores}, ${3:sqlAbr});"
+    },
+    {
+      "label": "MontaData",
+      "detail": "MontaData(<dia>, <mes>, <ano>, <data>);",
+      "source": "datas.md",
+      "insertText": "MontaData(${1:dia}, ${2:mes}, ${3:ano}, ${4:p4});"
+    },
+    {
+      "label": "MontarSQLHisCampo",
+      "detail": "MontarSQLHisCampo(Alfa NomeTabela, Alfa CampoTabela, Alfa End SQLMontado);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "MontarSQLHisCampo(${1:NomeTabela}, ${2:CampoTabela}, ${3:SQLMontado});"
+    },
+    {
+      "label": "MontarSQLHisCampoSeq",
+      "detail": "MontarSQLHisCampoSeq(Alfa Tabela, Alfa Campo, Alfa End SQLMontado);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "MontarSQLHisCampoSeq(${1:Tabela}, ${2:Campo}, ${3:SQLMontado});"
+    },
+    {
+      "label": "MontarSQLHistorico",
+      "detail": "MontarSQLHistorico(Alfa Tabela, Data Data, Alfa End Xretorno);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "MontarSQLHistorico(${1:Tabela}, ${2:p2}, ${3:Xretorno});"
+    },
+    {
+      "label": "MontarSQLHistoricoSeq",
+      "detail": "MontarSQLHistoricoSeq(Alfa Tabela, Data Data, Alfa End Xretorno);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "MontarSQLHistoricoSeq(${1:Tabela}, ${2:p2}, ${3:Xretorno});"
+    },
+    {
+      "label": "MultiplicaValor",
+      "detail": "MultiplicaValor(<multiplicando>, <fator>, <retorno>);",
+      "source": "datas.md",
+      "insertText": "MultiplicaValor(${1:multiplicando}, ${2:fator}, ${3:retorno});"
+    },
+    {
+      "label": "ObtemIdiomaAtivo",
+      "detail": "ObtemIdiomaAtivo(<valorIdioma>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "ObtemIdiomaAtivo(${1:valorIdioma});"
+    },
+    {
+      "label": "ObterVersaoSistema",
+      "detail": "ObterVersaoSistema(<majorVersion>, <minorVersion>, <release>, <build>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "ObterVersaoSistema(${1:majorVersion}, ${2:minorVersion}, ${3:release}, ${4:build});"
+    },
+    {
+      "label": "OcultaBarraProgressoRelatorio",
+      "detail": "OcultaBarraProgressoRelatorio(<ocultar>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "OcultaBarraProgressoRelatorio(${1:ocultar});"
+    },
+    {
+      "label": "OrdenacaoSelecionada",
+      "detail": "OrdenacaoSelecionada(Alfa SelectionName, Alfa End Ordenacao);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "OrdenacaoSelecionada(${1:SelectionName}, ${2:Ordenacao});"
+    },
+    {
+      "label": "PegarTipoVar",
+      "detail": "PegarTipoVar(<nomeVariavel>, <tipo>);",
+      "source": "manipulacao-dinamica-de-variaveis.md",
+      "insertText": "PegarTipoVar(${1:nomeVariavel}, ${2:tipo});"
+    },
+    {
+      "label": "PegarValorVarAlf",
+      "detail": "PegarValorVarAlf(<nomeVariavel>, <valorRetorno>);",
+      "source": "manipulacao-dinamica-de-variaveis.md",
+      "insertText": "PegarValorVarAlf(${1:nomeVariavel}, ${2:valorRetorno});"
+    },
+    {
+      "label": "PegarValorVarNum",
+      "detail": "PegarValorVarNum(<nomeVariavel>, <valorRetorno>);",
+      "source": "manipulacao-dinamica-de-variaveis.md",
+      "insertText": "PegarValorVarNum(${1:nomeVariavel}, ${2:valorRetorno});"
+    },
+    {
+      "label": "PosicaoAlfa",
+      "detail": "PosicaoAlfa(<subtexto>, <texto>, <posicao>);",
+      "source": "strings.md",
+      "insertText": "PosicaoAlfa(${1:subtexto}, ${2:texto}, ${3:posicao});"
+    },
+    {
+      "label": "PosicaoStr",
+      "detail": "PosicaoStr(<subtexto>, <texto>, <posicao>)",
+      "source": "strings.md",
+      "insertText": "PosicaoStr(${1:subtexto}, ${2:texto}, ${3:posicao});"
+    },
+    {
+      "label": "PreenchePagina",
+      "detail": "Determina que uma página seja preenchida com rasuras.",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "PreenchePagina(${1:Formato}, ${2:FormatoLinha}, ${3:GrossuraLinha}, ${4:CorLinha}, ${5:CorTextura});"
+    },
+    {
+      "label": "ProcuraEnter",
+      "detail": "ProcuraEnter(<strProcura>, <strImp>, <strResto>);",
+      "source": "strings.md",
+      "insertText": "ProcuraEnter(${1:strProcura}, ${2:strImp}, ${3:strResto});"
+    },
+    {
+      "label": "ProximaPagina",
+      "detail": "ProximaPagina(Alfa Secao, Numero End Retorno);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "ProximaPagina(${1:Secao}, ${2:Retorno});"
+    },
+    {
+      "label": "Proximo",
+      "detail": "Proximo",
+      "source": "referencia-rapida.md",
+      "insertText": "Proximo($0);"
+    },
+    {
+      "label": "QuebraTexto",
+      "detail": "QuebraTexto(<texto>, <tamanhoLinha>, <quantidadeLinhas>);",
+      "source": "strings.md",
+      "insertText": "QuebraTexto(${1:texto}, ${2:tamanhoLinha}, ${3:quantidadeLinhas});"
+    },
+    {
+      "label": "RemoveExpressoesProibidas",
+      "detail": "RemoveExpressoesProibidas(<textoOriginal>, <textoLimpo>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "RemoveExpressoesProibidas(${1:textoOriginal}, ${2:textoLimpo});"
+    },
+    {
+      "label": "RestoDivisao",
+      "detail": "RestoDivisao(<dividendo>, <divisor>, <resto>);",
+      "source": "operacoes-numericas-avancadas.md",
+      "insertText": "RestoDivisao(${1:dividendo}, ${2:divisor}, ${3:resto});"
+    },
+    {
+      "label": "RetDiaSemana",
+      "detail": "RetDiaSemana(<pData>, <pDia>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "RetDiaSemana(${1:pData}, ${2:pDia});"
+    },
+    {
+      "label": "RetDiaUtilAntPos",
+      "detail": "RetDiaUtilAntPos(<pData>, <pCEP>, <pDataAnt>, <pDataPos>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "RetDiaUtilAntPos(${1:pData}, ${2:pCEP}, ${3:pDataAnt}, ${4:pDataPos});"
+    },
+    {
+      "label": "RetiraAcentuacao",
+      "detail": "RetiraAcentuacao(<pString>);",
+      "source": "funcoes-adicionais-de-manipulacao-de-strings.md",
+      "insertText": "RetiraAcentuacao(${1:pString});"
+    },
+    {
+      "label": "RetiraCaracteresEspeciais",
+      "detail": "RetiraCaracteresEspeciais(<Retorno>);",
+      "source": "funcoes-adicionais-de-manipulacao-de-strings.md",
+      "insertText": "RetiraCaracteresEspeciais(${1:Retorno});"
+    },
+    {
+      "label": "RetornaAscII",
+      "detail": "RetornaAscII(<xNumero>, <xCarAscII>);",
+      "source": "funcoes-adicionais-de-manipulacao-de-strings.md",
+      "insertText": "RetornaAscII(${1:xNumero}, ${2:xCarAscII});"
+    },
+    {
+      "label": "RetornaCampoAlfaTabela",
+      "detail": "Busca o conteúdo atual de um campo alfanumérico de uma VIEW temporária.",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "RetornaCampoAlfaTabela(${1:NomeCampo}, ${2:NomeTabelaView}, ${3:OpcionalWhere}, ${4:pRetorno}, ${5:pAchou});"
+    },
+    {
+      "label": "RetornaCampoNumeroTabela",
+      "detail": "Busca o conteúdo atual de um campo numérico de uma VIEW temporária.",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "RetornaCampoNumeroTabela(${1:NomeCampo}, ${2:NomeTabelaView}, ${3:OpcionalWhere}, ${4:pRetorno}, ${5:pAchou});"
+    },
+    {
+      "label": "RetornarDiasUteisMes",
+      "detail": "RetornarDiasUteisMes(<aDatabase>, <aTipoRetorno>, <aQtdDiasUteis>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "RetornarDiasUteisMes(${1:aDatabase}, ${2:aTipoRetorno}, ${3:aQtdDiasUteis});"
+    },
+    {
+      "label": "RetornarDiasUteisPeriodo",
+      "detail": "RetornarDiasUteisPeriodo(<aDataIni>, <aDataFim>, <aQtdDiasUteis>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "RetornarDiasUteisPeriodo(${1:aDataIni}, ${2:aDataFim}, ${3:aQtdDiasUteis});"
+    },
+    {
+      "label": "RetornarQtdDiasAno",
+      "detail": "RetornarQtdDiasAno(<aData>, <aTipoAno>, <aQtdDiasAno>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "RetornarQtdDiasAno(${1:aData}, ${2:aTipoAno}, ${3:aQtdDiasAno});"
+    },
+    {
+      "label": "RetornaValorCFG",
+      "detail": "RetornaValorCFG(<chave>, <retorno>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "RetornaValorCFG(${1:chave}, ${2:retorno});"
+    },
+    {
+      "label": "SaltarPagina",
+      "detail": "SaltarPagina();",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "SaltarPagina();"
+    },
+    {
+      "label": "SelecaoTabelas",
+      "detail": "SelecaoTabelas(<pSqlSel>, <pCpoRet>, <pTemMas>);",
+      "source": "sql.md",
+      "insertText": "SelecaoTabelas(${1:pSqlSel}, ${2:pCpoRet}, ${3:pTemMas});"
+    },
+    {
+      "label": "SelecionaImpressora",
+      "detail": "SelecionaImpressora(Alfa pNomeImp);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "SelecionaImpressora(${1:pNomeImp});"
+    },
+    {
+      "label": "SetaNumeroTelaEntrada",
+      "detail": "SetaNumeroTelaEntrada(<NomeCampo>, <Valor>);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "SetaNumeroTelaEntrada(${1:NomeCampo}, ${2:Valor});"
+    },
+    {
+      "label": "SetarValorVarAlf",
+      "detail": "SetarValorVarAlf(<nomeVariavel>, <valor>);",
+      "source": "manipulacao-dinamica-de-variaveis.md",
+      "insertText": "SetarValorVarAlf(${1:nomeVariavel}, ${2:valor});"
+    },
+    {
+      "label": "SetarValorVarNum",
+      "detail": "SetarValorVarNum(<nomeVariavel>, <valor>);",
+      "source": "manipulacao-dinamica-de-variaveis.md",
+      "insertText": "SetarValorVarNum(${1:nomeVariavel}, ${2:valor});"
+    },
+    {
+      "label": "sleep",
+      "detail": "sleep(<milissegundos>);",
+      "source": "interface-e-feedback-do-usuario.md",
+      "insertText": "sleep(${1:milissegundos});"
+    },
+    {
+      "label": "SQL_AbrirCursor",
+      "detail": "SQL_AbrirCursor",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_AbrirCursor($0);"
+    },
+    {
+      "label": "SQL_BOF",
+      "detail": "SQL_BOF",
+      "source": "cursores.md",
+      "insertText": "SQL_BOF($0);"
+    },
+    {
+      "label": "SQL_Criar",
+      "detail": "SQL_Criar",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_Criar($0);"
+    },
+    {
+      "label": "SQL_DefinirAlfa",
+      "detail": "SQL_DefinirAlfa",
+      "source": "sql.md",
+      "insertText": "SQL_DefinirAlfa($0);"
+    },
+    {
+      "label": "SQL_DefinirBlob",
+      "detail": "SQL_DefinirBlob",
+      "source": "sql.md",
+      "insertText": "SQL_DefinirBlob($0);"
+    },
+    {
+      "label": "SQL_DefinirComando",
+      "detail": "SQL_DefinirComando",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_DefinirComando($0);"
+    },
+    {
+      "label": "SQL_DefinirData",
+      "detail": "SQL_DefinirData",
+      "source": "sql.md",
+      "insertText": "SQL_DefinirData($0);"
+    },
+    {
+      "label": "SQL_DefinirInteiro",
+      "detail": "SQL_DefinirInteiro",
+      "source": "sql.md",
+      "insertText": "SQL_DefinirInteiro($0);"
+    },
+    {
+      "label": "SQL_Destruir",
+      "detail": "SQL_Destruir",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_Destruir($0);"
+    },
+    {
+      "label": "SQL_EOF",
+      "detail": "SQL_EOF",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_EOF($0);"
+    },
+    {
+      "label": "SQL_FecharCursor",
+      "detail": "SQL_FecharCursor",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_FecharCursor($0);"
+    },
+    {
+      "label": "SQL_Proximo",
+      "detail": "SQL_Proximo",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_Proximo($0);"
+    },
+    {
+      "label": "SQL_RetornarAlfa",
+      "detail": "SQL_RetornarAlfa",
+      "source": "referencia-rapida.md",
+      "insertText": "SQL_RetornarAlfa($0);"
+    },
+    {
+      "label": "SQL_RetornarBlob",
+      "detail": "SQL_RetornarBlob",
+      "source": "cursores.md",
+      "insertText": "SQL_RetornarBlob($0);"
+    },
+    {
+      "label": "SQL_RetornarBoleano",
+      "detail": "SQL_RetornarBoleano",
+      "source": "cursores.md",
+      "insertText": "SQL_RetornarBoleano($0);"
+    },
+    {
+      "label": "SQL_RetornarData",
+      "detail": "SQL_RetornarData",
+      "source": "cursores.md",
+      "insertText": "SQL_RetornarData($0);"
+    },
+    {
+      "label": "SQL_RetornarFlutuante",
+      "detail": "SQL_RetornarFlutuante",
+      "source": "cursores.md",
+      "insertText": "SQL_RetornarFlutuante($0);"
+    },
+    {
+      "label": "SQL_RetornarInteiro",
+      "detail": "SQL_RetornarInteiro",
+      "source": "sql.md",
+      "insertText": "SQL_RetornarInteiro($0);"
+    },
+    {
+      "label": "SQL_RetornarSeNulo",
+      "detail": "SQL_RetornarSeNulo",
+      "source": "cursores.md",
+      "insertText": "SQL_RetornarSeNulo($0);"
+    },
+    {
+      "label": "SQL_UsarAbrangencia",
+      "detail": "SQL_UsarAbrangencia",
+      "source": "sql.md",
+      "insertText": "SQL_UsarAbrangencia($0);"
+    },
+    {
+      "label": "SQL_UsarSQLSenior2",
+      "detail": "SQL_UsarSQLSenior2",
+      "source": "sql.md",
+      "insertText": "SQL_UsarSQLSenior2($0);"
+    },
+    {
+      "label": "StrParaInt",
+      "detail": "StrParaInt(<texto>, <inteiro>);",
+      "source": "cast-de-variavel.md",
+      "insertText": "StrParaInt(${1:texto}, ${2:inteiro});"
+    },
+    {
+      "label": "SubstAlfa",
+      "detail": "SubstAlfa(<subtexto>, <novoTexto>, <texto>);      @ Substitui todas as ocorrências @",
+      "source": "strings.md",
+      "insertText": "SubstAlfa(${1:subtexto}, ${2:novoTexto}, ${3:texto});"
+    },
+    {
+      "label": "SubstAlfaUmaVez",
+      "detail": "SubstAlfaUmaVez(<subtexto>, <novoTexto>, <texto>)",
+      "source": "strings.md",
+      "insertText": "SubstAlfaUmaVez(${1:subtexto}, ${2:novoTexto}, ${3:texto});"
+    },
+    {
+      "label": "SubstituiFrom",
+      "detail": "SubstituiFrom(Alfa SectionName, Alfa NovaClausula, Alfa TabelaSubstituida);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "SubstituiFrom(${1:SectionName}, ${2:NovaClausula}, ${3:TabelaSubstituida});"
+    },
+    {
+      "label": "TamanhoAlfa",
+      "detail": "TamanhoAlfa(<origem>, <tamanho>);",
+      "source": "strings.md",
+      "insertText": "TamanhoAlfa(${1:origem}, ${2:tamanho});"
+    },
+    {
+      "label": "TamanhoStr",
+      "detail": "TamanhoStr(<origem>, <tamanho>)",
+      "source": "strings.md",
+      "insertText": "TamanhoStr(${1:origem}, ${2:tamanho});"
+    },
+    {
+      "label": "TrocaString",
+      "detail": "TrocaString(<texto>, <textoAntigo>, <textoNovo>);",
+      "source": "strings.md",
+      "insertText": "TrocaString(${1:texto}, ${2:textoAntigo}, ${3:textoNovo});"
+    },
+    {
+      "label": "TruncaDadosGrade",
+      "detail": "TruncaDadosGrade(Alfa ControlName, Numero Linha, Numero Coluna);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "TruncaDadosGrade(${1:ControlName}, ${2:Linha}, ${3:Coluna});"
+    },
+    {
+      "label": "Truncar",
+      "detail": "vnParteInteira = Truncar(<valor>);",
+      "source": "operacoes-numericas-avancadas.md",
+      "insertText": "Truncar(${1:valor});"
+    },
+    {
+      "label": "UltimoDia",
+      "detail": "UltimoDia(<DatAtu>);",
+      "source": "funcoes-avancadas-de-data-e-dias-uteis.md",
+      "insertText": "UltimoDia(${1:DatAtu});"
+    },
+    {
+      "label": "UltimoRegistro",
+      "detail": "UltimoRegistro(\"Seção Detalhe\", Numero Retorno);",
+      "source": "funcoes-especificas-do-gerador-de-relatorios.md",
+      "insertText": "UltimoRegistro(${1:SeçãoDetalhe}, ${2:Retorno});"
+    },
+    {
+      "label": "ValorElementoJson",
+      "detail": "ValorElementoJson",
+      "source": "referencia-rapida.md",
+      "insertText": "ValorElementoJson($0);"
+    },
+    {
+      "label": "Vantagens",
+      "detail": "Vantagens();",
+      "source": "cursores.md",
+      "insertText": "Vantagens();"
+    },
+    {
+      "label": "VerificaAbaAtiva",
+      "detail": "VerificaAbaAtiva(<descricaoAba>, <ativa>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "VerificaAbaAtiva(${1:descricaoAba}, ${2:ativa});"
+    },
+    {
+      "label": "VrfAbrA",
+      "detail": "VrfAbrA(<valor>, <abrangencia>, <resultado>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "VrfAbrA(${1:valor}, ${2:abrangencia}, ${3:resultado});"
+    },
+    {
+      "label": "VrfAbrN",
+      "detail": "VrfAbrN(<valor>, <abrangencia>, <resultado>);",
+      "source": "validacao-e-verificacao.md",
+      "insertText": "VrfAbrN(${1:valor}, ${2:abrangencia}, ${3:resultado});"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "lsp.format.enabled": true,
+  "lsp.format.indentSize": 2,
+  "lsp.format.useTabs": false,
+  "lsp.format.maxParamsPerLine": 4,
+  "lsp.format.braceStyle": "sameLine",
+  "lsp.format.embeddedSql.enabled": false,
+  "lsp.format.embeddedSql.dialect": "sql",
+  "lsp.refactor.defaultBlockStyle": "braces",
+  "lsp.diagnostics.ignoreIds": []
+}

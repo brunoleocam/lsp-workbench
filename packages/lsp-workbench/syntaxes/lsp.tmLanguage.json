@@ -1,0 +1,41 @@
+{
+  "scopeName": "source.senior-lsp",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#types" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.lsp",
+          "begin": "@",
+          "end": "@"
+        },
+        {
+          "name": "comment.block.lsp",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.lsp",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.lsp", "match": "\\\\." }
+      ]
+    },
+    "keywords": {
+      "name": "keyword.control.lsp",
+      "match": "\\b(Se|Senao|Enquanto|Para|Funcao|Definir|Cancel|Pare|Continue|Mensagem|Retorna)\\b"
+    },
+    "types": {
+      "name": "storage.type.lsp",
+      "match": "\\b(Alfa|Numero|Data|Lista|Cursor)\\b"
+    }
+  }
+}

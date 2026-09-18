@@ -1,0 +1,6 @@
+# Ignore
+.DS_Store
+Thumbs.db
+*.log
+.cursor/
+node_modules/

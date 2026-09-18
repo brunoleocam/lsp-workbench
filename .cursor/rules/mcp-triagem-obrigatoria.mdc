@@ -1,0 +1,32 @@
+---
+alwaysApply: true
+---
+# MCP – Triagem antes de responder (workspace LSP)
+
+## Objetivo
+
+Antes de responder, avaliar se é necessário consultar ferramenta/MCP. Se for, consultar primeiro. Neste workspace, **preferir evidência em `docs/lsp`, `docs/senior` e `docs/banco-senior`** antes de MCP externo.
+
+## Checklist (mental)
+
+- **Linguagem LSP / sintaxe / padrões?** → `docs/lsp/` + skills `lsp-gerar` / `lsp-linguagem` (não inventar).
+- **Regra Demóbile / o que pode no Sapiens?** → `docs/senior/` (fluxo + insights + `regras/`).
+- **Tabela, coluna, chave, enum, SQL Senior?** → `docs/banco-senior/` + skill `lsp-banco`.
+- **Planejamento / critérios / edge cases?** → `spec-driven` (se disponível).
+- **Quebrar em tarefas?** → `task-master-ai` (se disponível).
+- **Debug lógico passo a passo?** → `sequential-thinking` (se disponível).
+- **Trade-offs / arquitetura?** → `structured-thinking` (se disponível).
+- **Invariantes / contratos?** → `tractatus_thinking` (se disponível).
+- **Docs de lib externa (versão atual)?** → Context7 (se disponível).
+- **Exploração ampla do codebase?** → busca local ou subagent explore.
+
+## Quando NÃO chamar MCP
+
+- Resposta só com docs locais deste pacote.
+- Pergunta conceitual sem dependência de versão externa.
+- Opinião/abordagem pedida pelo usuário.
+
+## Anti-padrões
+
+- Inventar tabela, coluna, enum ou comportamento de regra sem ler o doc local.
+- Dizer “está certo” sem validar quando a validação é barata (docs ou skill de validação LSP).

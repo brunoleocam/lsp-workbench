@@ -1,0 +1,212 @@
+{
+  "name": "lsp-workbench",
+  "displayName": "LSP Workbench",
+  "description": "Linguagem Senior de Programação — formatação, diagnósticos, snippets e suporte IDE (LSP Workbench).",
+  "version": "0.1.3",
+  "publisher": "brunoleocam",
+  "icon": "../../assets/icon.png",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Formatters", "Linters", "Snippets"],
+  "activationEvents": [
+    "onLanguage:senior-lsp",
+    "onCommand:lspWorkbench.createContext",
+    "onCommand:lspWorkbench.editContext",
+    "onCommand:lspWorkbench.removeContext",
+    "onCommand:lspWorkbench.addToContext",
+    "onCommand:lspWorkbench.removeFromContext",
+    "onCommand:lspWorkbench.toggleSymbolScope",
+    "onCommand:lspWorkbench.selectFallbackSystem"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configurationDefaults": {
+      "[senior-lsp]": {
+        "editor.wordBasedSuggestions": "off",
+        "editor.inlineSuggest.enabled": false,
+        "editor.suggest.showWords": false,
+        "editor.snippetSuggestions": "inline",
+        "editor.quickSuggestions": {
+          "other": true,
+          "comments": false,
+          "strings": false
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "senior-lsp",
+        "aliases": [
+          "Linguagem Senior",
+          "LSP Workbench",
+          "Senior LSP"
+        ],
+        "extensions": [".lsp", ".lspt"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "senior-lsp",
+        "scopeName": "source.senior-lsp",
+        "path": "./syntaxes/lsp.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "senior-lsp",
+        "path": "./snippets/lsp.json"
+      }
+    ],
+    "configuration": {
+      "title": "LSP Workbench",
+      "properties": {
+        "lsp.format.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilita formatação de documentos LSP."
+        },
+        "lsp.format.indentSize": {
+          "type": "number",
+          "default": 2,
+          "enum": [2, 4],
+          "description": "Tamanho da indentação."
+        },
+        "lsp.format.useTabs": {
+          "type": "boolean",
+          "default": false
+        },
+        "lsp.format.maxParamsPerLine": {
+          "type": "number",
+          "default": 4
+        },
+        "lsp.format.braceStyle": {
+          "type": "string",
+          "default": "sameLine",
+          "enum": ["sameLine", "nextLine"]
+        },
+        "lsp.format.embeddedSql.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Reserva — formatação dedicada de SQL embutido ainda não implementada."
+        },
+        "lsp.format.embeddedSql.dialect": {
+          "type": "string",
+          "default": "sql",
+          "enum": ["sql", "oracle", "sqlserver"],
+          "description": "Dialeto pretendido para SQL embutido (reserva; sem efeito até a feature)."
+        },
+        "lsp.refactor.defaultBlockStyle": {
+          "type": "string",
+          "default": "braces",
+          "enum": ["braces", "inicioFim"]
+        },
+        "lsp.diagnostics.ignoreIds": {
+          "type": "array",
+          "default": [],
+          "items": { "type": "string" }
+        },
+        "lsp.symbols.scope": {
+          "type": "string",
+          "default": "project",
+          "enum": ["project", "file", "mixed"],
+          "enumDescriptions": [
+            "Índice = workspace (ou contextos nomeados, se configurados)",
+            "Apenas o arquivo atual (SingleFile)",
+            "Arquivo atual + contextos em lsp.contexts (isolamento por contexto)"
+          ],
+          "description": "Escopo de símbolos / completion cross-file (PDR-003)."
+        },
+        "lsp.contexts": {
+          "type": "array",
+          "default": [],
+          "description": "Contextos nomeados de validação/símbolos (pastas, padrões, sistema adicional).",
+          "items": {
+            "type": "object",
+            "required": ["name", "rootDir", "filePattern"],
+            "properties": {
+              "name": { "type": "string" },
+              "rootDir": { "type": "string" },
+              "filePattern": { "type": "string" },
+              "includeSubdirectories": { "type": "boolean", "default": true },
+              "system": {
+                "type": "string",
+                "enum": ["HCM", "ACESSO", "ERP"],
+                "description": "Sistema adicional (status/UI). Catálogo de builtins por sistema ainda não disponível — só SENIOR."
+              },
+              "files": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Allowlist adicional (união com filePattern), caminhos relativos ao workspace."
+              },
+              "diagnostics": {
+                "type": "object",
+                "properties": {
+                  "ignoreIds": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "IDs ignorados neste contexto (unidos a lsp.diagnostics.ignoreIds)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "lsp.fallback.defaultSystem": {
+          "type": "string",
+          "default": "",
+          "enum": ["", "HCM", "ACESSO", "ERP"],
+          "description": "Sistema adicional no SingleFile / modo arquivo (status bar). Catálogo por sistema ainda não implementado — builtins = SENIOR."
+        },
+        "lsp.semantic.embeddedSqlHighlight.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Highlight dedicado para SQL embutido (reserva; feature futura)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "lspWorkbench.createContext",
+        "title": "LSP Workbench: Criar Contexto"
+      },
+      {
+        "command": "lspWorkbench.editContext",
+        "title": "LSP Workbench: Editar Contexto"
+      },
+      {
+        "command": "lspWorkbench.removeContext",
+        "title": "LSP Workbench: Remover Contexto"
+      },
+      {
+        "command": "lspWorkbench.addToContext",
+        "title": "LSP Workbench: Adicionar ao Contexto"
+      },
+      {
+        "command": "lspWorkbench.removeFromContext",
+        "title": "LSP Workbench: Remover do Contexto"
+      },
+      {
+        "command": "lspWorkbench.toggleSymbolScope",
+        "title": "LSP Workbench: Alternar Escopo de Símbolos"
+      },
+      {
+        "command": "lspWorkbench.selectFallbackSystem",
+        "title": "LSP Workbench: Selecionar Sistema (Fallback)"
+      }
+    ]
+  },
+  "scripts": {
+    "extract-functions": "node ../../scripts/extract-lsp-functions.mjs",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run extract-functions",
+    "test": "npm run compile && node --test out/test/*.test.js",
+    "vscode:prepublish": "npm run extract-functions && npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  },
+  "license": "MIT"
+}

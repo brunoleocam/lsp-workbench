@@ -1,0 +1,66 @@
+---
+description: Padrão de logs em LSP (vaMosLog, pasta logs/, formato com data/hora). Aplicar ao adicionar ou solicitar logs.
+---
+# Padrão de logs LSP
+
+Quando o código precisar de logs para depuração (ou o usuário solicitar), use sempre este padrão. Os arquivos de log devem ser gravados na **pasta `logs/` na raiz do projeto** (ex.: `C:\Dev\LSP - Senior\logs\`).
+
+## Variáveis obrigatórias
+
+Declarar no início da regra (junto às demais variáveis):
+
+```lsp
+Definir Alfa vaCaminhoLog;   @ Caminho do arquivo de log @
+Definir Numero vnHandleLog; vnHandleLog = 0;  @ Handle do arquivo (inicializar 0) @
+Definir Numero vnLogAberto; vnLogAberto = 0; @ 1=aberto (após Abrir), 0=fechado; usar em condições pois vnHandleLog pode vir sempre 0 @
+Definir Alfa vaMensagemLog;  @ Mensagem a ser escrita (para escreverArquivoLog) @
+Definir Alfa vaMosLog;       @ Mostrar Log: S=Sim, N=Não (controle dos logs) @
+```
+
+Para montar linhas com data/hora, use variáveis auxiliares (ex.: `vaLinhaFlags`, `vaDataHoraInitStr`) e lembre-se: **concatenação apenas Alfa + Alfa** — use `IntParaAlfa` para números na mensagem.
+
+## Pasta e nome do arquivo
+
+- **Pasta padrão:** raiz do projeto + `logs\` (ex.: `C:\Dev\LSP - Senior\logs\`).
+- **Nome do arquivo:** `LOG_<NomeDaRegra>.txt` (ex.: `LOG_COT_API_Solistica.txt`).
+- Caminho completo: `vaCaminhoLog = "C:\\Dev\\LSP - Senior\\logs\\LOG_NomeRegra.txt";`  
+  (Ajuste o prefixo se o projeto estiver em outro disco/pasta; pode usar uma variável única, ex.: `vaPastaLogs = "C:\\Dev\\LSP - Senior\\logs"` e depois `vaCaminhoLog = vaPastaLogs + "\\LOG_NomeRegra.txt";`.)
+
+## Formato da linha
+
+- **Padrão:** `[dd/MM/yyyy HH:mm:ss] <mensagem>`
+- Obter data/hora: `DataHora(vnDataHora);` e `FormatarData(vnDataHora, "dd/MM/yyyy HH:mm:ss", vaDataHoraStr);`
+- Montar linha: `vaLinhaCompleta = "[" + vaDataHoraStr + "] " + vaMensagemLog;` (ou concatenar mensagem já montada em Alfa).
+
+## Abertura, escrita e fechamento
+
+- **Abrir:** `vnHandleLog = Abrir(vaCaminhoLog, Gravarnl);` Em alguns contextos o retorno de `Abrir` pode vir sempre 0; nesse caso **não use** `vnHandleLog > 0` como condição para gravar.
+- **Condição para gravar/fechar:** usar uma flag numérica `vnLogAberto`: inicializar em 0, atribuir `vnLogAberto = 1` logo após chamar `Abrir`, e `vnLogAberto = 0` após `Fechar`. As condições ficam `Se (vnLogAberto = 1)` em vez de `Se (vnHandleLog > 0)`.
+- **Escrever:** `Gravarnl(vnHandleLog, vaLinhaCompleta);` (ou variável Alfa com a linha).
+- **Fechar:** ao final do fluxo (e em caminhos de erro antes de `Cancel(1)`): `Fechar(vnHandleLog);` e em seguida `vnLogAberto = 0;`.
+
+### Handle de arquivo e escopo em LSP
+
+Em regras LSP usadas como **WebService** (ou em certos contextos de execução), o handle obtido com `Abrir()` no **fluxo principal** pode ser considerado **inválido** dentro de **funções** chamadas em seguida. Ao chamar `Gravarnl(vnHandleLog, ...)` dentro dessas funções, o sistema pode retornar **"Manipulador de Arquivo inválido"**.
+
+**Solução:** abrir e fechar o arquivo de log **dentro da mesma função** que (e das funções que ela chama que) utilizam `Gravarnl`. Ou seja: no início da função que concentra as escritas no log, chamar `abrirArquivoLog()` (ou `Abrir(...)`); no fim da mesma função, chamar `fecharArquivoLog()` (ou `Fechar(vnHandleLog)`). Assim o handle é válido em toda a cadeia de chamadas a partir dessa função.
+
+## Condição para gravar
+
+- Só abrir/escrever quando **`vaMosLog = "S"`**.
+- Opcional: restringir a um usuário de desenvolvimento, ex.: `(vaMosLog = "S") e (CodUsu = 454)`. Deixar comentado ou em bloco opcional na regra/skill; ativar por regra se desejado.
+
+## Funções auxiliares (opcional)
+
+Para regras maiores, pode-se usar três funções reutilizáveis (como em COT_API_Solistica.lsp):
+
+- **abrirArquivoLog();** — abre o arquivo somente se `vaMosLog = "S"` (e opcionalmente CodUsu) e `vnHandleLog <= 0`; escreve linha separadora e "INÍCIO DA EXECUÇÃO".
+- **escreverArquivoLog();** — antes de chamar, atribuir `vaMensagemLog = "mensagem";`; só escreve se `vaMosLog = "S"` e `vnHandleLog > 0`; monta linha com timestamp e chama `Gravarnl`.
+- **fecharArquivoLog();** — escreve linha separadora final e chama `Fechar(vnHandleLog)`; zera `vnHandleLog`.
+
+Em todas as funções, usar o mesmo formato de timestamp e o mesmo `vaCaminhoLog` apontando para a pasta **logs/** do projeto.
+
+## Lembretes LSP
+
+- Concatenação só Alfa + Alfa; converter número com `IntParaAlfa` antes de concatenar na mensagem.
+- Após mensagem de erro usar `Cancel(1);` (não `Retorna`); fechar o handle antes de `Cancel` quando o log já tiver sido aberto.

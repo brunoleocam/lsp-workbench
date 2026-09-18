@@ -1,0 +1,23 @@
+# Dependencies & build
+node_modules/
+**/out/
+**/dist/
+*.vsix
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+*.log
+logs/
+
+# Demóbile privado — não versionar em remoto público
+docs/banco-senior/
+docs/senior/
+packages/lsp-workbench-demobile/
+
+# Local / temp
+BKP/
+output/
+temp/
+*.bak
+.env
+.env.*

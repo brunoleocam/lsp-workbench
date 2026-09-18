@@ -1,0 +1,14 @@
+# Backups
+BKP/
+
+# Build/saída (ajuste se existir no seu ambiente)
+output/
+temp/
+*.bak
+
+# Arquivos muito grandes ou binários (exemplos)
+# *.log
+# *.mp4
+
+# Logs
+logs/

@@ -1,0 +1,25 @@
+{
+  "Definir Lista": {
+    "prefix": "lista",
+    "body": [
+      "Definir Lista vl${1:Nome};",
+      "vl${1:Nome}.AdicionarCampo(\"${2:CAMPO}\", ${3:0});",
+      "vl${1:Nome}.Adicionar();"
+    ],
+    "description": "Lista dinâmica LSP Workbench"
+  },
+  "Cursor completo": {
+    "prefix": "cursor",
+    "body": [
+      "Definir Cursor Cur_${1:Nome};",
+      "Cur_${1:Nome}.SQL = \"${2:SELECT 1 FROM DUAL}\";",
+      "Cur_${1:Nome}.AbrirCursor();",
+      "Enquanto (Cur_${1:Nome}.Achou) {",
+      "  ${0}",
+      "  Cur_${1:Nome}.Proximo();",
+      "}",
+      "Cur_${1:Nome}.FecharCursor();"
+    ],
+    "description": "Cursor com loop"
+  }
+}

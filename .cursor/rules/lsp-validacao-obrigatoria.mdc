@@ -1,0 +1,34 @@
+﻿---
+description: Validação obrigatória após gerar ou alterar código LSP.
+globs: "**/*.lsp"
+alwaysApply: false
+---
+# LSP – Validação obrigatória
+
+**OBRIGATÓRIO:** Sempre que gerar ou alterar código LSP (arquivos `.lsp`), executar validação antes de dar por encerrado.
+
+## Fluxo obrigatório
+
+1. **Antes** de gerar ou alterar `.lsp` em tarefas não triviais: seguir a skill **`lsp-gerar`** (mapear tópicos em `docs/lsp/`; se houver SQL/tabelas/campos do Senior, usar **`lsp-banco`**).
+2. **Após** escrever ou editar qualquer trecho em `.lsp` → executar validação.
+3. **Usar** a skill `lsp-revisar` (ler o SKILL.md e aplicar o checklist).
+4. **Ou** usar a skill `lsp-validar` para validação sistemática com relatório.
+5. **Corrigir** todas as violações encontradas antes de considerar concluído.
+
+## Itens críticos a validar
+
+- Parâmetros de função: apenas `Numero`; variáveis globais para outros tipos.
+- **Campos com ponto:** não passar `Objeto.Campo` ou `Grid.Campo` em parâmetros; usar variável intermediária (ex.: `vnVal = Grid.Campo;` depois `IntParaAlfa(vnVal, vaStr);`).
+- Condições compostas: cada condição entre parênteses `((a > 0) e (b < 10))`.
+- Conversões em grids: sempre variável intermediária.
+- Concatenação: apenas Alfa + Alfa; nunca em parâmetros de funções.
+- Retorno: funções retornam por parâmetro, não por atribuição.
+- Interrupção: `Cancel(1);` após erro, nunca `Retorna`.
+- **ExecSQLEx:** `0 = sucesso`, `1 = erro`; usar `Se (vnRetorno = 0)` para sucesso (não inverter).
+
+## Referências
+
+- Insights de desenvolvimento (WebService, arquivos, grid): `docs/lsp/insights-webservice-desenvolvimento.md`
+- Checklist completo: skill `lsp-revisar`
+- Validação sistemática: skill `lsp-validar`
+- Limitações: `lsp-limites.mdc`, `lsp-nucleo.mdc`

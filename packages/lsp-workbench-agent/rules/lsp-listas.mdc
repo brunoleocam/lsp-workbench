@@ -1,0 +1,14 @@
+---
+description: Listas dinâmicas em LSP (DefinirCampos, AdicionarCampo, Chave, Primeiro/Proximo, VaiParaChave).
+globs: "**/*.{lsp,lspt}"
+alwaysApply: false
+---
+# LSP – Listas dinâmicas
+
+## Definição e configuração
+- `Definir Lista vlX;`; `vlX.DefinirCampos();`; `vlX.AdicionarCampo("Nome", alfa, 100);` (ou numero); `vlX.EfetivarCampos();`; `vlX.Chave("Codigo");`.
+
+## Manipulação
+- Adicionar: `vlX.Adicionar();`; atribuir campos; `vlX.Gravar();`.
+- Navegar: `vnTem = vlX.Primeiro();` `Enquanto (vnTem = 1) { ... vnTem = vlX.Proximo(); }`.
+- Buscar: `vlX.SetarChave();` `vlX.Codigo = valor;` `Se (vlX.VaiParaChave() = 1) { ... }`.

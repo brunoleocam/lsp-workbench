@@ -1,0 +1,24 @@
+---
+description: Funções essenciais LSP (mensagens, conversões, strings, datas, validação, listas, arrays).
+globs: "**/*.lsp"
+alwaysApply: false
+---
+# LSP – Funções essenciais
+
+## Mensagens
+- `Mensagem(Retorna, vaMensagem);` / `Mensagem(Erro, vaErro);`. Com botões: `vnRetorno = Mensagem(Retorna, "Texto [&Sim,&Não]");` (0=Sim, 1=Não).
+
+## Conversões
+- `IntParaAlfa`, `AlfaParaInt`, `AlfaParaDecimal`, `AlfaParaData` — sempre com variável de retorno.
+
+## Strings
+- `TamanhoAlfa(vaTexto, vnTamanho);`; `PosicaoAlfa`; `SubstAlfa`; `CopiarAlfa` (modifica original); `LimpaEspacos`; `DeletarAlfa`; `InserirAlfa`; `ConverteParaMaiusculo`/`Minusculo`.
+
+## Datas
+- `DataHoje(vdData);`; `DataHora(vnDataHora);`; `MontaData`; `DecodData`; `AdicionarDias`; `FormatarData(vnDataHora, "dd/MM/yyyy", vaData)` (só Numero).
+
+## Validação
+- `EstaNulo(vaDado, vnEhNulo);`; `DeixaNumeros`; `VrfAbrA`/`VrfAbrN`; `ArqExiste`.
+
+## Listas (simples) e Arrays
+- `ListaItem`; `ListaQuantidade`. Arrays: `Definir Alfa vaNomes[10];`; `vaNomes[0] = "João";`.
