@@ -14,7 +14,7 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 - **Contexto:** QFs inseriam `Definir Funcao` / variáveis sem respeitar o bloco inicial ordenado.
 - **Texto canônico (Memory / rule):**
   > Bloco inicial: variáveis depois funções. Ordem dos tipos: Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao. Plugin: `definir-insert` + FUN008.
-- **Status:** implementado em `definir-insert.ts` / FUN007–008; doc em `docs/lsp/variaveis.md`.
+- **Status:** promovido para `.cursor/rules/boas-praticas-lsp.mdc`; implementado em `definir-insert.ts` / FUN007–008; doc em `docs/lsp/variaveis.md`.
 
 ### 2026-05-06 — Documentação LSP: arredondamento e conversão Numero → Alfa
 

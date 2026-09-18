@@ -5,6 +5,15 @@ alwaysApply: false
 ---
 # Boas práticas LSP (código limpo, arquitetura, SOLID)
 
+## Declarações no topo do arquivo
+
+Ordem do bloco inicial `Definir`:
+
+1. Variáveis primeiro, depois funções (`Definir Funcao`).
+2. Tipos nesta ordem: **Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao**.
+
+Inserções automáticas (SEM001, FUN007–008, import) devem respeitar essa ordem (`definir-insert`). Detalhe: `docs/lsp/variaveis.md`.
+
 ## Código limpo
 - Funções curtas e com um propósito; nomes claros (va/vn/vd/vl); evitar duplicação extraindo funções reutilizáveis; comentários só onde agregam.
 
