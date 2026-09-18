@@ -4,8 +4,8 @@
 |-------|-------|
 | Status | **Concluído** (P0–P2) |
 | Data | 2026-09-18 |
-| Artefato | Extensão (consumidor) + script gerador + plugin local gitignored |
-| Relacionados | ADR-001, PDR-003, `lsp.demobile.catalogPath` |
+| Artefato | Extensão (consumidor) + script gerador |
+| Relacionados | ADR-001, PDR-003 |
 
 ## Problema
 
@@ -14,8 +14,8 @@ O repo público não versiona dicionário Oracle / regras de cliente. Sem um ín
 ## Decisão
 
 1. Script gera JSON **local** (gitignored) a partir de `docs/banco-senior` quando existir.
-2. Extensão lê `lsp.demobile.catalogPath` (default: `docs/banco-senior/.generated/catalog.json`).
-3. Plugin local (gitignored) pode expor commands Cursor; não entra no remoto público.
+2. Extensão lê o caminho do catálogo via Settings (default: `docs/banco-senior/.generated/catalog.json`).
+3. Se o arquivo estiver ausente, completion/diagnóstico de catálogo ficam no-op (sem erro).
 
 ## Entregue
 
@@ -24,8 +24,7 @@ O repo público não versiona dicionário Oracle / regras de cliente. Sem um ín
 | Gerador | `scripts/build-local-catalog.mjs` |
 | Completion | tabelas do JSON (no-op se ausente) |
 | DEM001 | tabela citada ausente do catálogo |
-| Commands | no package local `lsp-workbench-demobile` (gitignore) |
 
 ## Contrato JSON
 
-Ver comentários em `packages/lsp-workbench/src/domain/demobile-catalog.ts` (version, tables[], columns[]).
+Contrato: `version`, `tables[]`, `columns[]` — implementação no domínio da extensão (`packages/lsp-workbench/src/domain/`).

@@ -25,7 +25,7 @@ Frentes após o motor:
 | Doc | Foco | Estado |
 |-----|------|--------|
 | [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer | **Concluído** |
-| [PDR-007](../pdr/PDR-007-demobile-catalog-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** |
+| [PDR-007](../pdr/PDR-007-catalogo-local-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** |
 
 Próximo público: catálogos multi-sistema / Marketplace (PDR-001 / backlog UX).
 

@@ -35,10 +35,12 @@ Para carregar no Cursor/VS Code (UI):
 
 1. Abra a **raiz do monorepo** neste workspace
 2. Compile analyzer + extensão:
+
    ```powershell
    cd packages\lsp-analyzer; npm install; npm run compile
    cd ..\lsp-workbench; npm run compile
    ```
+
 3. Painel **Run and Debug** → **Run LSP Workbench Extension** → F5
 4. Confira: colorização, Problems (`fixtures/smoke-*.lsp`), Format, Quick Fix, Outline, semantic tokens
 5. Smoke negativo: `fixtures/00-ok-clean.lsp` → Problems vazio
