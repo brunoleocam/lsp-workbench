@@ -78,7 +78,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
   /** Mutável: se o LS falhar ao subir, volta para diagnostics in-process. */
   const lsState = { active: isLanguageServerEnabled() };
-  let refreshSeq = 0;
+  /** Seq por URI — evita cancelar diagnostics de outros arquivos abertos. */
+  const refreshSeqByUri = new Map<string, number>();
   let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
   const refresh = (doc: vscode.TextDocument) => {
@@ -86,51 +87,57 @@ export function activate(context: vscode.ExtensionContext): void {
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
       return;
     }
-    const seq = ++refreshSeq;
+    const key = doc.uri.toString();
+    const seq = (refreshSeqByUri.get(key) ?? 0) + 1;
+    refreshSeqByUri.set(key, seq);
     void (async () => {
-      const cfg = vscode.workspace.getConfiguration("lsp");
-      const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
-      const idx = getWorkspaceSymbolIndex();
-      const settings = idx.readSettings();
-      const root = idx.workspaceRootFor(doc.uri.fsPath);
-      const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
-      const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
-
-      const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
-      idx.invalidate(doc.uri);
-      let scopedExternal: Map<string, { fileName: string }> | undefined;
       try {
-        scopedExternal = await idx.externalMapFor(doc);
-      } catch {
-        scopedExternal = undefined;
+        const cfg = vscode.workspace.getConfiguration("lsp");
+        const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
+        const idx = getWorkspaceSymbolIndex();
+        const settings = idx.readSettings();
+        const root = idx.workspaceRootFor(doc.uri.fsPath);
+        const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
+        const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
+
+        const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
+        idx.invalidate(doc.uri);
+        let scopedExternal: Map<string, { fileName: string }> | undefined;
+        try {
+          scopedExternal = await idx.externalMapFor(doc);
+        } catch {
+          scopedExternal = undefined;
+        }
+        if (refreshSeqByUri.get(key) !== seq) return;
+        const hits = filterSuppressedHits(
+          doc.uri.toString(),
+          lines,
+          analyzeLsp(doc.getText(), {
+            ignoreIds: ignore,
+            scopedExternal,
+            demobileTableNames: getDemobileCatalog()?.tables.map((t) => t.name),
+          })
+        );
+        if (refreshSeqByUri.get(key) !== seq) return;
+        const diags = hits.map((h) => {
+          const severity =
+            h.severity === "error"
+              ? vscode.DiagnosticSeverity.Error
+              : vscode.DiagnosticSeverity.Warning;
+          const line = doc.lineAt(h.line);
+          const range =
+            h.startCol !== undefined && h.endCol !== undefined
+              ? new vscode.Range(h.line, h.startCol, h.line, h.endCol)
+              : new vscode.Range(h.line, 0, h.line, line.text.length);
+          const d = new vscode.Diagnostic(range, `[${h.id}] ${h.message}`, severity);
+          d.code = h.id;
+          d.source = "LSP Workbench";
+          return d;
+        });
+        collection.set(doc.uri, diags);
+      } catch (err) {
+        console.error("[LSP Workbench] diagnostics failed", doc.uri.toString(), err);
       }
-      if (seq !== refreshSeq) return;
-      const hits = filterSuppressedHits(
-        doc.uri.toString(),
-        lines,
-        analyzeLsp(doc.getText(), {
-          ignoreIds: ignore,
-          scopedExternal,
-          demobileTableNames: getDemobileCatalog()?.tables.map((t) => t.name),
-        })
-      );
-      if (seq !== refreshSeq) return;
-      const diags = hits.map((h) => {
-        const severity =
-          h.severity === "error"
-            ? vscode.DiagnosticSeverity.Error
-            : vscode.DiagnosticSeverity.Warning;
-        const line = doc.lineAt(h.line);
-        const range =
-          h.startCol !== undefined && h.endCol !== undefined
-            ? new vscode.Range(h.line, h.startCol, h.line, h.endCol)
-            : new vscode.Range(h.line, 0, h.line, line.text.length);
-        const d = new vscode.Diagnostic(range, `[${h.id}] ${h.message}`, severity);
-        d.code = h.id;
-        d.source = "LSP Workbench";
-        return d;
-      });
-      collection.set(doc.uri, diags);
     })();
   };
 
