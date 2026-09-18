@@ -150,10 +150,10 @@
     ],
     "description": "ExecSQLEx com checagem"
   },
-  "Mensagem pergunta": {
+  "Mensagem": {
     "prefix": "Mensagem",
-    "body": ["Mensagem(Pergunta, \"${1:Confirma?}\");"],
-    "description": "Mensagem Pergunta"
+    "body": ["Mensagem(${1|Retorna,Erro,Advertencia|}, \"${2:texto}\");"],
+    "description": "Mensagem(Tipo, texto) — tipos documentados: Retorna, Erro, Advertencia"
   },
   "Cancel": {
     "prefix": "Cancel",
