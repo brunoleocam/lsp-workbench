@@ -292,6 +292,41 @@ export function parseFileSymbols(source: string): FileSymbols {
   };
 }
 
+/** Texto canônico `Definir Funcao name(…);` a partir do símbolo. */
+export function declStatementFor(fn: CustomFunctionSymbol): string {
+  if (fn.declText) {
+    return /;\s*$/.test(fn.declText) ? fn.declText : `${fn.declText};`;
+  }
+  return `Definir Funcao ${signatureOf(fn.name, fn.params)};`;
+}
+
+/** FUN008 — inserir `Definir Funcao` espelhando a assinatura da `Funcao` existente. */
+export function applyFun008InsertDecl(source: string, functionName: string): string | undefined {
+  const symbols = parseFileSymbols(source);
+  const fn = symbols.functions.find((f) => f.name.toLowerCase() === functionName.toLowerCase());
+  if (!fn || !fn.hasImpl || fn.hasDecl || fn.implLine < 0) return undefined;
+
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  let insertAt = fn.implLine;
+  for (let i = 0; i < fn.implLine; i++) {
+    if (/^\s*Definir\b/i.test(lines[i])) insertAt = i + 1;
+  }
+  lines.splice(insertAt, 0, declStatementFor(fn));
+  return lines.join("\n");
+}
+
+/** FUN007 — inserir stub `Funcao name(…); { }` após o `Definir Funcao`. */
+export function applyFun007InsertImpl(source: string, functionName: string): string | undefined {
+  const symbols = parseFileSymbols(source);
+  const fn = symbols.functions.find((f) => f.name.toLowerCase() === functionName.toLowerCase());
+  if (!fn || !fn.hasDecl || fn.hasImpl || fn.declLine < 0) return undefined;
+
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const stub = [`Funcao ${signatureOf(fn.name, fn.params)}; {`, "}"];
+  lines.splice(fn.declLine + 1, 0, ...stub);
+  return lines.join("\n");
+}
+
 /** Snippet de chamada com placeholders de parametro. */
 export function callSnippetFor(fn: CustomFunctionSymbol): string {
   if (!fn.params.length) return `${fn.name}();`;

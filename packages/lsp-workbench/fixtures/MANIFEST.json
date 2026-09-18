@@ -85,11 +85,11 @@
     {
       "path": "smoke-fun-pdr003.lsp",
       "expectIds": ["FUN007", "FUN008", "FUN009"],
-      "quickFixIds": ["FUN009"],
+      "quickFixIds": ["FUN007", "FUN008", "FUN009"],
       "scopedExternal": {
         "somar": { "fileName": "operacoes.lsp" }
       },
-      "note": "PDR-003 — Decl/Impl incompletos + chamada cross-file (FUN009 via scopedExternal)"
+      "note": "PDR-003 — Decl/Impl incompletos + chamada cross-file (FUN009 via scopedExternal); QF FUN007/008 via Ctrl+Espaço"
     },
     {
       "path": "smoke-sem.lsp",

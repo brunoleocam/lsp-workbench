@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  applyFun007InsertImpl,
+  applyFun008InsertDecl,
   callSnippetFor,
   importBlockFor,
   parseFileSymbols,
@@ -55,9 +57,25 @@ describe("PDR-003 document symbols", () => {
   });
 
   it("ACC-02 only Funcao → FUN008", () => {
-    const src = `Funcao somar(Numero vnA, Numero End vnR); {\n  vnR = vnA;\n}\n`;
+    const src = `Funcao soImpl(Numero vnX, Numero End vnOut); {\n  vnOut = vnX;\n}\n`;
     const hits = analyzeLsp(src);
     assert.ok(hits.some((h) => h.id === "FUN008"));
+  });
+
+  it("FUN008 QF inserts Definir Funcao", () => {
+    const src = `Funcao soImpl(Numero vnX, Numero End vnOut); {\n  vnOut = vnX;\n}\n`;
+    const next = applyFun008InsertDecl(src, "soImpl");
+    assert.ok(next);
+    assert.match(next!, /Definir Funcao soImpl\(Numero vnX, Numero End vnOut\);/);
+    assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN008"));
+  });
+
+  it("FUN007 QF inserts Funcao stub", () => {
+    const src = `Definir Funcao soDecl(Numero vnX, Numero End vnOut);\n`;
+    const next = applyFun007InsertImpl(src, "soDecl");
+    assert.ok(next);
+    assert.match(next!, /Funcao soDecl\(Numero vnX, Numero End vnOut\); \{/);
+    assert.ok(!analyzeLsp(next!).some((h) => h.id === "FUN007"));
   });
 
   it("ACC-06 LSPDoc parse", () => {

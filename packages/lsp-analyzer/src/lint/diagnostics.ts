@@ -1215,23 +1215,32 @@ export function analyzeLsp(
   // FUN007 / FUN008 / FUN009 — funções customizadas (PDR-003)
   {
     const symbols = parseFileSymbols(source);
+    const lines = source.replace(/\r\n/g, "\n").split("\n");
     for (const fn of symbols.functions) {
       if (fn.hasDecl && !fn.hasImpl) {
+        const lineIdx = fn.declLine >= 0 ? fn.declLine : 0;
+        const col = lines[lineIdx]?.toLowerCase().indexOf(fn.name.toLowerCase());
         push(
           hits,
           "FUN007",
           `Função '${fn.name}' declarada (Definir Funcao) sem implementação (Funcao … { }).`,
-          fn.declLine >= 0 ? fn.declLine : 0,
-          "error"
+          lineIdx,
+          "error",
+          col !== undefined && col >= 0 ? col : undefined,
+          col !== undefined && col >= 0 ? col + fn.name.length : undefined
         );
       }
       if (fn.hasImpl && !fn.hasDecl) {
+        const lineIdx = fn.implLine >= 0 ? fn.implLine : 0;
+        const col = lines[lineIdx]?.toLowerCase().indexOf(fn.name.toLowerCase());
         push(
           hits,
           "FUN008",
           `Função '${fn.name}' implementada sem Definir Funcao correspondente.`,
-          fn.implLine >= 0 ? fn.implLine : 0,
-          "error"
+          lineIdx,
+          "error",
+          col !== undefined && col >= 0 ? col : undefined,
+          col !== undefined && col >= 0 ? col + fn.name.length : undefined
         );
       }
     }

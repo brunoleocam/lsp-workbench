@@ -69,6 +69,8 @@ import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
 import {
   callSnippetFor,
   markdownForFunction,
+  applyFun007InsertImpl,
+  applyFun008InsertDecl,
   type CustomFunctionSymbol,
 } from "./document-symbols";
 import { mergeEligible } from "./symbol-scope";
@@ -294,8 +296,8 @@ function quickFixCompletions(
     }
     item.range = line.range;
     item.sortText = sortText;
-    // Inclui word + trecho da linha para não sumir com filtro do Ctrl+Espaço
-    item.filterText = `${word || line.text} ${line.text} ${label} ${detail}`;
+    // Prefixo = palavra sob o cursor (Ctrl+Espaço em qualquer ponto da linha com alerta)
+    item.filterText = `${word || "_"} ${label} ${detail} ${line.text}`;
     if (preselect) item.preselect = true;
     // extras NÃO podem sobrepor line.range (senão o VS Code corrompe o texto)
     if (extras.length) item.additionalTextEdits = extras;
@@ -344,7 +346,8 @@ function quickFixCompletions(
     item.insertText = word;
     item.range = wordRange;
     item.sortText = sortText;
-    item.filterText = `${word || line.text} ${line.text} ${filterExtra} ${label}`;
+    // Prefixo = palavra sob o cursor → Ctrl+Espaço em qualquer token da linha grifada
+    item.filterText = `${word || "_"} ${label} ${filterExtra} ${line.text}`;
     if (preselect) item.preselect = true;
     item.command = {
       command: APPLY_TEXT_EDITS_CMD,
@@ -376,6 +379,38 @@ function quickFixCompletions(
   };
 
   for (const hit of hits) {
+    if (hit.id === "FUN007") {
+      const name = hit.message.match(/Função '(\w+)'/i)?.[1];
+      if (name) {
+        const next = applyFun007InsertImpl(src, name);
+        if (next && next !== src) {
+          pushWholeDocFix(
+            `QF: Implementar Funcao ${name}`,
+            "LSP · FUN007 — stub Funcao … { }",
+            next,
+            "00_QF_FUN007",
+            `Funcao ${name} FUN007`
+          );
+        }
+      }
+      continue;
+    }
+    if (hit.id === "FUN008") {
+      const name = hit.message.match(/Função '(\w+)'/i)?.[1];
+      if (name) {
+        const next = applyFun008InsertDecl(src, name);
+        if (next && next !== src) {
+          pushWholeDocFix(
+            `QF: Definir Funcao ${name}`,
+            "LSP · FUN008 — inserir declaração",
+            next,
+            "00_QF_FUN008",
+            `Definir Funcao ${name} FUN008`
+          );
+        }
+      }
+      continue;
+    }
     if (hit.id === "FUN001") {
       const opt = truncarRewriteOptions(line.text)[0];
       if (opt) {

@@ -55,6 +55,7 @@ import { SENIOR_LSP_LANGUAGE_ID } from "./language";
 import { IGNORE_DIAGNOSTIC_CMD } from "./suppressions";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
 import { applyImportCustomFunction } from "./import-function";
+import { applyFun007InsertImpl, applyFun008InsertDecl } from "./document-symbols";
 import { APPLY_TEXT_EDITS_CMD, serializeFullDocumentReplace } from "./apply-edits";
 
 function definedNames(source: string): Set<string> {
@@ -868,6 +869,50 @@ async function fun009Actions(
   return [action];
 }
 
+function fun008Actions(
+  document: vscode.TextDocument,
+  diagnostic: vscode.Diagnostic
+): vscode.CodeAction[] {
+  const name = /Função '([^']+)'/.exec(diagnostic.message)?.[1];
+  if (!name) return [];
+  const next = applyFun008InsertDecl(document.getText(), name);
+  if (!next || next === document.getText()) return [];
+  const action = new vscode.CodeAction(
+    `Inserir Definir Funcao ${name}`,
+    vscode.CodeActionKind.QuickFix
+  );
+  action.diagnostics = [diagnostic];
+  action.isPreferred = true;
+  action.command = {
+    command: APPLY_TEXT_EDITS_CMD,
+    title: action.title,
+    arguments: [document.uri.toString(), [serializeFullDocumentReplace(document, next)]],
+  };
+  return [action];
+}
+
+function fun007Actions(
+  document: vscode.TextDocument,
+  diagnostic: vscode.Diagnostic
+): vscode.CodeAction[] {
+  const name = /Função '([^']+)'/.exec(diagnostic.message)?.[1];
+  if (!name) return [];
+  const next = applyFun007InsertImpl(document.getText(), name);
+  if (!next || next === document.getText()) return [];
+  const action = new vscode.CodeAction(
+    `Implementar Funcao ${name}`,
+    vscode.CodeActionKind.QuickFix
+  );
+  action.diagnostics = [diagnostic];
+  action.isPreferred = true;
+  action.command = {
+    command: APPLY_TEXT_EDITS_CMD,
+    title: action.title,
+    arguments: [document.uri.toString(), [serializeFullDocumentReplace(document, next)]],
+  };
+  return [action];
+}
+
 function actionsForDiagnostic(
   document: vscode.TextDocument,
   diagnostic: vscode.Diagnostic
@@ -879,6 +924,8 @@ function actionsForDiagnostic(
   if (code === "FUN001") return fun001Actions(document, diagnostic);
   if (code === "FUN005") return fun005Actions(document, diagnostic);
   if (code === "FUN006") return fun006Actions(document, diagnostic);
+  if (code === "FUN007") return fun007Actions(document, diagnostic);
+  if (code === "FUN008") return fun008Actions(document, diagnostic);
   if (code === "SEM001") return sem001Actions(document, diagnostic);
   if (code === "SEM002") return sem002Actions(document, diagnostic);
   if (code === "SEM003") return sem003Actions(document, diagnostic);

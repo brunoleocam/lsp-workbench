@@ -17,7 +17,7 @@ Pasta aberta pelo launch **Run LSP Workbench Extension**.
 | `smoke-syn.lsp` | SYN001–009 (+ RUL008) |
 | `smoke-rul.lsp` | RUL001–018 (menos RUL008) |
 | `smoke-fun.lsp` | FUN001–006 |
-| `smoke-fun-pdr003.lsp` | FUN007–009 (FUN009 com `scopedExternal` no MANIFEST) |
+| `smoke-fun-pdr003.lsp` | FUN007–009 (FUN009 com `scopedExternal` no MANIFEST; QF FUN007/FUN008 via Ctrl+Espaço / 💡) |
 | `smoke-sem.lsp` | SEM001–003 |
 | `smoke-sem004.lsp` | SEM004 |
 | `smoke-sql.lsp` | SQL001–003 |
