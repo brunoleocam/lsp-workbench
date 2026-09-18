@@ -2,7 +2,7 @@
 
 ## Status
 
-Aceito (fases 1–3 foundation entregues; Agent em PDR-006)
+Aceito (fases 1–3 foundation + PDR-006 Agent concluídos)
 
 ## Contexto
 
@@ -20,11 +20,11 @@ Ordem **rígida** para o motor de linguagem:
 
 Não iniciar a fase N+1 do motor antes do aceite da foundation da fase N.
 
-Próxima frente pública (após foundation 2–3):
+Próxima frente pública (após foundation 2–3 e PDR-006): catálogos multi-sistema / Marketplace (conforme backlog e PDR-001).
 
-| Doc | Foco |
-|-----|------|
-| [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer |
+| Doc | Foco | Estado |
+|-----|------|--------|
+| [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer | **Concluído** |
 
 ### Por que a Opção 3 não descarta 1 e 2
 

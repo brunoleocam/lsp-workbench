@@ -16,7 +16,7 @@ Núcleos de linguagem (públicos):
 | `packages/lsp-analyzer` | Lexer/parser/AST/semantic (`ANL*`) | 0.2.0 |
 | `packages/lsp-language-server` | LS + Worker (opt-in) | 0.1.0 |
 
-Roadmap: **UX → analyzer → LS** — [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md). Próximo público: Agent ↔ analyzer ([PDR-006](../pdr/PDR-006-agent-analyzer.md)).
+Roadmap: **UX → analyzer → LS → Agent** — [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md). Agent: [PDR-006](../pdr/PDR-006-agent-analyzer.md). Catálogo local: [PDR-007](../pdr/PDR-007-demobile-catalog-bridge.md).
 
 ## Clean Architecture (extensão)
 
