@@ -25,7 +25,7 @@ Status extensão: `ok` = implementado | `pendente`
 
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
-| RUL001 | Params de função: só `Numero` em `Funcao` | `Funcao …(Alfa|Data|Lista…)` | sim (remove tipo + Definir) | ok | funcoes |
+| RUL001 | Params de função: só `Numero` **com tipo na assinatura** | `Funcao`/`Definir Funcao` com `Alfa|Data|Lista` **ou** param só com nome (`Foo(vaP)`) | sim (Alfa→remove param + Definir global; sem tipo→`Numero vn*`) | ok | funcoes |
 | RUL002 | Retorno por parâmetro (não `vn = TamanhoAlfa(`) | atribuição a out-param funcs | sim | ok | limitacoes, erros-comuns |
 | RUL003 | `EstaNulo` fora da condição `Se` | `Se (EstaNulo(` | sim | ok | erros-comuns, validacao |
 | RUL004 | `FormatarData` 1º arg Numero (não `vd*`) | `FormatarData(vd` | sim | ok | datas, erros-comuns |

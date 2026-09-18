@@ -916,6 +916,7 @@ function quickFixCompletions(
         const extraNames =
           hit.id === "RUL001"
             ? (() => {
+                // Só gera Definir global quando remove param Alfa/Data/Lista (não no caso "add Numero")
                 const p = findRul001Param(line.text);
                 return p ? [p.name] : [];
               })()
@@ -928,8 +929,14 @@ function quickFixCompletions(
           lines.splice(afterLine + 1, 0, text.replace(/\n$/, ""));
           simSrc = lines.join("\n");
         }
+        const title =
+          hit.id === "RUL001" && findRul001Param(line.text)
+            ? `QF: Remover param ilegal + Definir global`
+            : hit.id === "RUL001"
+              ? `QF: Declarar param como Numero na assinatura`
+              : `QF: ${fixer.title}`;
         pushLineFix(
-          `QF: ${fixer.title}`,
+          title,
           `LSP · ${hit.id}`,
           fixed,
           `00_QF_${hit.id}`,

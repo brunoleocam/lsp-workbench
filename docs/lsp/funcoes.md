@@ -12,6 +12,24 @@ Uma função pode receber parâmetros e retornar valores.
 - Valores alterados dentro da função também serão alterados fora dela.
 - **Os parâmetros definidos para as funções devem obrigatoriamente ser Numéricos**
 - **Parâmetros do tipo Alfanuméricos (Alfa) NÃO são suportados por funções definidas nas regras**
+- **Na assinatura, o tipo é obrigatório** (`Numero vnP`). Não use `Definir Alfa vaP` + `Foo(vaP)` — o param solto sem tipo está errado.
+
+**Correto - Parâmetro Numero com tipo na assinatura:**
+
+```lsp
+Definir Funcao Foo(Numero vnP);
+
+Funcao Foo(Numero vnP); {
+  vnP = vnP + 1;
+}
+```
+
+**Incorreto - param sem tipo (Definir não substitui o tipo no param):**
+
+```lsp
+Definir Alfa vaP;
+Definir Funcao Foo(vaP);    @ NÃO @
+```
 
 **Incorreto - NÃO funciona:**
 

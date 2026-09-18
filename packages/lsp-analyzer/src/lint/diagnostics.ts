@@ -1,5 +1,13 @@
 import { analyze as analyzeCore } from "../pipeline";
-import { findRul007Ranges, findRul019CancelRange, findTokenRange, isSyn010OrphanStatement } from "./quick-fixes";
+import {
+  collectFuncParamNames,
+  findRul007Ranges,
+  findRul019CancelRange,
+  findTokenRange,
+  findUntypedFuncParams,
+  hasUntypedFuncParam,
+  isSyn010OrphanStatement,
+} from "./quick-fixes";
 import { LIST_BUILTIN_MEMBERS, OUT_PARAM_FUNCS, RESERVED_WORDS } from "./rule-catalog";
 import {
   extractDefinirComandoSqlArg,
@@ -781,18 +789,33 @@ export function analyzeLsp(
 
     // FUN005 movido para o bloco FUN* abaixo (qualquer Arredonda*)
 
-    // RUL001 Funcao params
-    if (/\bFuncao\s+\w+\s*\([^)]*\b(Alfa|Data|Lista|Cursor)\b/i.test(trimmed)) {
-      const tok = findTokenRange(raw, /\b(Alfa|Data|Lista|Cursor)\b/i);
-      push(
-        hits,
-        "RUL001",
-        "Parâmetros de Funcao devem ser apenas Numero.",
-        i,
-        "error",
-        tok?.start,
-        tok?.end
-      );
+    // RUL001 — params de Funcao/Definir Funcao: só Numero; tipo obrigatório na assinatura
+    if (/\b(?:Definir\s+)?Funcao\s+\w+\s*\(/i.test(trimmed)) {
+      if (/\([^)]*\b(Alfa|Data|Lista|Cursor)\b/i.test(trimmed)) {
+        const tok = findTokenRange(raw, /\b(Alfa|Data|Lista|Cursor)\b/i);
+        push(
+          hits,
+          "RUL001",
+          "Parâmetros de função devem ser apenas Numero (Alfa/Data/Lista não são suportados — use variável global, sem o param na assinatura).",
+          i,
+          "error",
+          tok?.start,
+          tok?.end
+        );
+      } else if (hasUntypedFuncParam(raw)) {
+        const untyped = findUntypedFuncParams(raw);
+        for (const p of untyped) {
+          push(
+            hits,
+            "RUL001",
+            `Parâmetro '${p.name}' sem tipo na assinatura — declare como Numero (ex.: Numero ${p.name.replace(/^va/i, "vn")}). Não use Definir + nome solto no param.`,
+            i,
+            "error",
+            p.start,
+            p.end
+          );
+        }
+      }
     }
 
     // RUL002 / out-param assign
@@ -1098,9 +1121,12 @@ export function analyzeLsp(
 
   // SEM001: prefixados usados sem Definir (só se o arquivo já declara algo).
   // Numero é implícito: vn* sem Definir é válido (compilador trata como Numero = 0).
+  // Params de Definir Funcao / Funcao NÃO são variáveis de arquivo (não alertar SEM001).
+  const funcParamNames = collectFuncParamNames(source);
   if (defined.size > 0) {
     for (const [name, loc] of usedPrefixed) {
       if (defined.has(name)) continue;
+      if (funcParamNames.has(name)) continue;
       if (/^p[a-z]/i.test(name)) continue;
       if (/^vn/i.test(name)) continue;
       if (BUILTIN_OR_KW.test(name)) continue;

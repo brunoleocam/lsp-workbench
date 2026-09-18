@@ -130,8 +130,19 @@ describe("quick-fixes", () => {
     );
   });
 
-  it("RUL001 remove tipo do param", () => {
-    assert.equal(applyRul001Fix("Funcao Foo(Alfa vaP);"), "Funcao Foo(vaP);");
+  it("RUL001 remove param Alfa (vira global, sem nome solto na assinatura)", () => {
+    assert.equal(applyRul001Fix("Funcao Foo(Alfa vaP);"), "Funcao Foo();");
+    assert.equal(
+      applyRul001Fix("Definir Funcao Foo(Alfa vaP, Numero vnX);"),
+      "Definir Funcao Foo(Numero vnX);"
+    );
+  });
+
+  it("RUL001 param sem tipo → Numero na assinatura", () => {
+    assert.equal(
+      applyRul001Fix("Definir Funcao Foo(vaP);"),
+      "Definir Funcao Foo(Numero vnP);"
+    );
   });
 
   it("RUL016 reservada → prefixo", () => {
@@ -384,6 +395,22 @@ describe("analyzeLsp expanded", () => {
   it("detects RUL001 Funcao Alfa param", () => {
     const hits = analyzeLsp("Funcao Foo(Alfa vaX);\n{\n}\n");
     assert.ok(hits.some((h) => h.id === "RUL001"));
+  });
+
+  it("RUL001 param sem tipo em Definir Funcao (não SEM001)", () => {
+    const src = "Definir Numero vnX;\nDefinir Funcao Foo(vaP);\n";
+    const hits = analyzeLsp(src);
+    assert.ok(hits.some((h) => h.id === "RUL001"));
+    assert.equal(
+      hits.some((h) => h.id === "SEM001" && /vaP/i.test(h.message)),
+      false
+    );
+  });
+
+  it("RUL001 QF não gera Definir + param solto", () => {
+    const fixed = applyRul001Fix("Definir Funcao Foo(vaP);");
+    assert.match(fixed, /Definir Funcao Foo\(Numero vnP\);/);
+    assert.equal(/Definir Alfa vaP/.test(fixed), false);
   });
 
   it("detects SQL001 concat SQL", () => {

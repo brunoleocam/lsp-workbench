@@ -9,6 +9,13 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-09-18 — RUL001: tipo obrigatório na assinatura (não SEM001 + Definir)
+
+- **Contexto:** `Definir Funcao Foo(vaP)` gerava SEM001 → QF `Definir Alfa vaP` + param solto (errado).
+- **Texto canônico:**
+  > Params de função: tipo obrigatório na assinatura e só Numero. `Foo(vaP)` → RUL001 → `Numero vnP`. Alfa = variável global, sem param. Não Definir + nome solto.
+- **Status:** SEM001 ignora params; RUL001 cobre tipado ilegal e sem tipo; QFs corrigidos.
+
 ### 2026-09-18 — Ordem de `Definir` no topo do arquivo
 
 - **Contexto:** QFs inseriam `Definir Funcao` / variáveis sem respeitar o bloco inicial ordenado.

@@ -7,7 +7,7 @@ alwaysApply: true
 ## Anti-padrões frequentes (não gerar código assim)
 
 1. **`Retorna`** — não existe; após erro usar `Cancel(1);`.
-2. **Parâmetros de função** — apenas tipo `Numero`; Alfa/Data/Lista via globais ou conversão.
+2. **Parâmetros de função** — apenas tipo `Numero` **na assinatura** (`Definir Funcao Foo(Numero vnP);`). Sem tipo (`Foo(vaP)`) é erro (RUL001). Alfa/Data/Lista não vão no param — use variável global; não faça `Definir Alfa` + `Foo(vaP)`.
 3. **Retorno de função** — por parâmetro (`TamanhoAlfa(va, vn);`), não `vn = Func();` quando a função usa parâmetro de saída.
 4. **Concatenação** — só `Alfa + Alfa`; nunca concatenar dentro de **argumento** de função; nunca `Alfa + Numero` sem `IntParaAlfa` antes.
 5. **Condições com `e` / `ou`** — cada parte entre parênteses: `Se ((a > 0) e (b < 10))`.

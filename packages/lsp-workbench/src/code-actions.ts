@@ -669,14 +669,25 @@ function lineFixerActions(
     const line = document.lineAt(diagnostic.range.start.line);
     const info = findRul001Param(line.text);
     const entry = LINE_FIXERS.find((f) => f.id === "RUL001");
-    if (entry && info) {
+    if (!entry) {
+      /* skip */
+    } else if (info) {
       const fixed = entry.apply(line.text);
       const a = lineReplaceAction(
         document,
         diagnostic,
-        `Remover ${info.tipo} do param → Funcao(... ${info.name}) + ${definirStatement(info.name)}`,
+        `Remover param ${info.tipo} (usar Definir ${info.tipo} ${info.name} global)`,
         fixed,
         [info.name]
+      );
+      if (a) actions.push(a);
+    } else {
+      const fixed = entry.apply(line.text);
+      const a = lineReplaceAction(
+        document,
+        diagnostic,
+        "Declarar param como Numero na assinatura",
+        fixed
       );
       if (a) actions.push(a);
     }

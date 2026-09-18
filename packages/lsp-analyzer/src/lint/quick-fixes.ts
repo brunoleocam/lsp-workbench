@@ -80,21 +80,135 @@ export function applyRul006Fix(line: string): string {
   return `${indent}vaMsg = ${expr};\n${indent}Mensagem(${tipo}, vaMsg);`;
 }
 
-/** RUL001: Funcao Foo(Alfa vaP) → Funcao Foo(vaP) + Definir Alfa vaP */
-export function applyRul001Fix(line: string): string {
+/** Remove params tipados ilegais (Alfa|Data|Lista|Cursor) da assinatura. */
+export function applyRul001RemoveIllegalTyped(line: string): string {
   return line.replace(
-    /\bFuncao\s+(\w+)\s*\(\s*(?:Alfa|Data|Lista|Cursor)\s+(\w+)\s*\)/i,
-    "Funcao $1($2)"
+    /\b((?:Definir\s+)?Funcao\s+\w+\s*\()([^)]*)(\))/i,
+    (_all, open: string, inner: string, close: string) => {
+      const kept = inner
+        .split(",")
+        .map((p) => p.trim())
+        .filter((p) => p && !/^(Alfa|Data|Lista|Cursor)\s+/i.test(p));
+      return `${open}${kept.join(", ")}${close}`;
+    }
   );
 }
 
-/** Extrai nome da var tipada ilegal em Funcao (para Definir). */
+/**
+ * RUL001 QF unificado:
+ * - Alfa/Data/Lista/Cursor tipados → remove o param (usar variável global + Definir).
+ * - Param só com nome → acrescenta `Numero` (único tipo permitido na assinatura).
+ */
+export function applyRul001Fix(line: string): string {
+  if (/\b(?:Definir\s+)?Funcao\s+\w+\s*\([^)]*\b(Alfa|Data|Lista|Cursor)\b/i.test(line)) {
+    return applyRul001RemoveIllegalTyped(line);
+  }
+  if (hasUntypedFuncParam(line)) {
+    return applyRul001AddNumeroFix(line);
+  }
+  return line;
+}
+
+/**
+ * RUL001 (param sem tipo): Foo(vaP) → Foo(Numero vnP) (só Numero é permitido na assinatura).
+ * Não gera `Definir Alfa` + param solto.
+ */
+export function applyRul001AddNumeroFix(line: string): string {
+  return line.replace(
+    /\b((?:Definir\s+)?Funcao\s+\w+\s*\()([^)]*)(\))/i,
+    (_all, open: string, inner: string, close: string) => {
+      const parts = inner.split(",").map((part) => {
+        const raw = part;
+        const t = part.trim();
+        if (!t) return raw;
+        if (/^(Numero|Alfa|Data|Lista|Cursor)\b/i.test(t)) return raw;
+        if (/^End\s+/i.test(t)) return raw;
+        const lead = raw.match(/^\s*/)?.[0] ?? "";
+        const name = t.replace(/^End\s+/i, "").trim();
+        const numeroName = suggestNumeroParamName(name);
+        return `${lead}Numero ${numeroName}`;
+      });
+      return `${open}${parts.join(",")}${close}`;
+    }
+  );
+}
+
+/** vaNome → vnNome (param Numero na assinatura). */
+export function suggestNumeroParamName(name: string): string {
+  if (/^vn/i.test(name) || /^p[a-z]/i.test(name)) return name;
+  if (/^(va|vd|vl)/i.test(name)) return `vn${name.slice(2)}`;
+  if (/^Cur_/i.test(name)) return `vn${name.slice(4)}`;
+  return /^vn/i.test(name) ? name : name.match(/^[A-Za-z_]/) ? `vn${name}` : name;
+}
+
+/** Extrai param tipado ilegal em Funcao (para Definir global). */
 export function findRul001Param(
   line: string
 ): { tipo: string; name: string } | null {
-  const m = /\bFuncao\s+\w+\s*\(\s*(Alfa|Data|Lista|Cursor)\s+(\w+)\s*\)/i.exec(line);
+  const m =
+    /\b(?:Definir\s+)?Funcao\s+\w+\s*\(\s*(?:[^)]*,\s*)*(Alfa|Data|Lista|Cursor)\s+(\w+)/i.exec(
+      line
+    );
   if (!m) return null;
   return { tipo: m[1], name: m[2] };
+}
+
+/** True se a assinatura tem parâmetro sem tipo (só o nome). */
+export function hasUntypedFuncParam(line: string): boolean {
+  const m = /\b(?:Definir\s+)?Funcao\s+\w+\s*\(([^)]*)\)/i.exec(line);
+  if (!m) return false;
+  for (const part of m[1].split(",")) {
+    const t = part.trim();
+    if (!t) continue;
+    if (/^(Numero|Alfa|Data|Lista|Cursor)\s+/i.test(t)) continue;
+    if (/^End\s+(Numero\s+)?\w+$/i.test(t)) continue;
+    if (/^\w+$/.test(t)) return true;
+  }
+  return false;
+}
+
+/** Ranges dos parâmetros sem tipo (para grifo). */
+export function findUntypedFuncParams(
+  line: string
+): { name: string; start: number; end: number }[] {
+  const m = /\b(?:Definir\s+)?Funcao\s+\w+\s*\(([^)]*)\)/i.exec(line);
+  if (!m || m.index === undefined) return [];
+  const inner = m[1];
+  const listStart = m.index + m[0].lastIndexOf("(") + 1;
+  const out: { name: string; start: number; end: number }[] = [];
+  let cursor = 0;
+  for (const part of inner.split(",")) {
+    const idxInInner = inner.indexOf(part, cursor);
+    const t = part.trim();
+    cursor = idxInInner + part.length;
+    if (!t || /^(Numero|Alfa|Data|Lista|Cursor)\s+/i.test(t)) continue;
+    if (/^End\s+/i.test(t)) continue;
+    if (!/^\w+$/.test(t)) continue;
+    const nameOffset = part.indexOf(t);
+    const start = listStart + idxInInner + nameOffset;
+    out.push({ name: t, start, end: start + t.length });
+  }
+  return out;
+}
+
+/** Nomes de parâmetros em assinaturas Definir Funcao / Funcao (para não alertar SEM001). */
+export function collectFuncParamNames(source: string): Set<string> {
+  const names = new Set<string>();
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  for (const line of lines) {
+    const m = /\b(?:Definir\s+)?Funcao\s+\w+\s*\(([^)]*)\)/i.exec(line);
+    if (!m) continue;
+    for (const part of m[1].split(",")) {
+      const t = part.trim();
+      if (!t) continue;
+      const named = t.match(
+        /^(?:(?:Numero|Alfa|Data|Lista|Cursor)\s+)?(?:End\s+)?(\w+)$/i
+      );
+      if (named) names.add(named[1].toLowerCase());
+      else if (/^\w+$/.test(t)) names.add(t.toLowerCase());
+    }
+  }
+  return names;
 }
 
 /** RUL009: Se (vn = 1) após ExecSQLEx → Se (vn = 0) */
@@ -1196,9 +1310,9 @@ export const LINE_FIXERS: Array<{
 }> = [
   {
     id: "RUL001",
-    title: "Remover tipo do param (só Nome) + Definir Tipo nome",
+    title: "Param de função: só Numero na assinatura (ou global se Alfa)",
     apply: applyRul001Fix,
-    tokenRe: /\b(Alfa|Data|Lista|Cursor)\b/i,
+    tokenRe: /\b(Alfa|Data|Lista|Cursor)\b|\b(?:va|vn|vd|vl)\w+\b/i,
   },
   { id: "RUL002", title: "Usar parâmetro de saída (não atribuir retorno)", apply: applyRul002Fix },
   { id: "RUL003", title: "EstaNulo fora do Se; depois Se (vn = 0)", apply: applyRul003Fix },
