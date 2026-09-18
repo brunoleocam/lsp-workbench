@@ -20,7 +20,7 @@ alwaysApply: true
 
 ## Regras de ouro (detalhe)
 
-- **Parâmetros de função:** apenas tipo `Numero`. Outros tipos usar variáveis globais ou conversão.
+- **Parâmetros de função:** apenas tipo `Numero` **na assinatura** (`Definir Funcao Foo(Numero vnP);`). Sem tipo (`Foo(vaP)`) = RUL001. Alfa/Data/Lista = variável global (sem o param). Não `Definir Alfa` + `Foo(vaP)`.
 - **Condições compostas:** em `Se`/`Enquanto` com `e` ou `ou`, cada condição entre parênteses: `Se ((a > 0) e (b < 10))`.
 - **Retorno:** funções retornam por parâmetro (ex.: `TamanhoAlfa(vaTexto, vnTamanho);`), não por atribuição direta.
 - **Interrupção:** usar `Cancel(1);` após mensagem de erro; não existe `Retorna`.
