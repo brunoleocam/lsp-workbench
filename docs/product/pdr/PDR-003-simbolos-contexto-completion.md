@@ -13,7 +13,7 @@ Desenvolvedores precisam de Ctrl+Espaço / hover / signature help para funções
 
 ## Personas
 
-- Dev Demóbile editando vários `.lsp` / `.lspt` (e `.txt` de regra) no mesmo workspace
+- Dev editando vários `.lsp` / `.lspt` (e `.txt` de regra) no mesmo workspace
 - Dev editando um arquivo isolado (protótipo / trecho)
 - Dev com workspace grande que quer limitar o índice a pastas/arquivos escolhidos
 
@@ -243,6 +243,6 @@ No modo **Projeto**, `lsp.contexts` vazio = índice = workspace inteiro. Se `lsp
 
 Complementar `docs/product/tdd/TDD-extension.md` e fixtures em `packages/lsp-workbench` com ACC-01…12.
 
-Estado: ACC-01…08 e ACC-10 cobertos por testes unitários na **0.1.3**; ACC-09/11/12 e demo manual em `exemplos/contexto-projeto/`. Itens que eram backlog deste PDR (semantic tokens, SQL embutido, stubs HCM/ERP) foram entregues na **0.2.0** via [PDR-004](PDR-004-paridade-ux.md). Catálogos multi-sistema completos e bridge Demóbile → IDE: [PDR-007](PDR-007-demobile-catalog-bridge.md).
+Estado: ACC-01…08 e ACC-10 cobertos por testes unitários na **0.1.3**; ACC-09/11/12 e demo manual em `exemplos/contexto-projeto/`. Itens que eram backlog deste PDR (semantic tokens, SQL embutido, stubs HCM/ERP) foram entregues na **0.2.0** via [PDR-004](PDR-004-paridade-ux.md). Catálogos multi-sistema completos: backlog futuro.
 
 Demo manual: [`exemplos/contexto-projeto/`](../../../exemplos/contexto-projeto/).

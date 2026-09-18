@@ -25,13 +25,13 @@
 ### Documentação
 
 - Status produto alinhado a 0.2.0 / analyzer 0.2.0 / LS 0.1.0
-- PDR-006 (Agent ↔ analyzer) e PDR-007 (bridge Demóbile)
+- PDR-006 (Agent ↔ analyzer)
 - Removida matriz competitiva / referências a extensões de terceiros
 
-### Adicionado (PDR-006 / PDR-007)
+### Adicionado (PDR-006 / catálogo local)
 
 - CLI `scripts/analyze-lsp.mjs` para Agent validar ANL*
-- Setting `lsp.demobile.catalogPath` + completion de tabelas a partir do JSON local
+- Setting de path de catálogo JSON local + completion de tabelas (no-op se ausente)
 - Fallback in-process se o Language Server falhar ao iniciar
 
 ### Adicionado (PDR-005 — Opção 2)

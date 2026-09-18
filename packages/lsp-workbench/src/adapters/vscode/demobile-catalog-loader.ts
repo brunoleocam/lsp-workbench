@@ -9,7 +9,7 @@ import {
 
 const DEFAULT_REL = path.join("docs", "banco-senior", ".generated", "catalog.json");
 
-/** Resolve path absoluto do catálogo Demóbile (setting ou default na 1ª pasta do workspace). */
+/** Resolve path absoluto do catálogo local de tabelas (setting ou default na 1ª pasta do workspace). */
 export function resolveDemobileCatalogPath(): string | undefined {
   const cfg = vscode.workspace.getConfiguration("lsp");
   const configured = (cfg.get<string>("demobile.catalogPath", "") || "").trim();
@@ -48,7 +48,7 @@ export function demobileTableCompletions(
   if (!catalog) return [];
   return tablesMatchingPrefix(catalog, prefix).map((t) => ({
     label: t.name,
-    detail: "Demóbile table",
+    detail: "Tabela (catálogo local)",
     documentation: t.description,
   }));
 }

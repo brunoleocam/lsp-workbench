@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |-------|-------|
-| Status | Aceito — **P0 em andamento** (CLI + skills; format/eval P1+) |
+| Status | **Concluído** (P0–P3) |
 | Data | 2026-09-18 |
 | Artefato | `packages/lsp-workbench-agent` (+ harness `.cursor/`) |
 | Pré-requisito | PDR-005 Opção 2 foundation (`@lsp-workbench/analyzer` 0.2.0) |
@@ -20,21 +20,20 @@ Fronteira (ADR-002): Agent **não** vira IDE (sem tokens/outline/completion em t
 
 ## Levas
 
-| Leva | Entrega | Aceite |
-|------|---------|--------|
-| **P0** | CLI/script `analyze-lsp` no monorepo (Node, consome analyzer) + skill `lsp-validar` / command `/validar-lsp` obrigados a rodar e reportar ANL* + IDs canônicos | Fixture com `Retorna;` → ANL010 ou RUL007 no relatório Agent | **Feito** (`scripts/analyze-lsp.mjs`) |
-| **P1** | `/formatar-lsp` e trechos mecânicos de `/refatorar-lsp` preferem `format()` / APIs de refactor do núcleo (ou script) antes do LLM | Diff estável em fixture de indentação |
-| **P2** | Snippets/referência de membros Cursor/Lista alinhados a `domain/members` (doc gerada ou espelho) | Geração não inventa membro inexistente |
-| **P3** | Eval Agent inclui fixtures da extensão (`smoke-sem.lsp`, etc.) | EVAL-agent atualizado |
+| Leva | Entrega | Aceite | Estado |
+|------|---------|--------|--------|
+| **P0** | CLI `scripts/analyze-lsp.mjs` + `@lsp-validar` / `/validar-lsp` | ANL* no relatório | **Feito** |
+| **P1** | `scripts/format-lsp.mjs` + `scripts/refactor-lsp.mjs` + skills/commands | Diff estável | **Feito** |
+| **P2** | `reference-membros.md` gerado de `domain/members.ts` | Sem inventar membros | **Feito** |
+| **P3** | EVAL-agent com fixtures/CLI | EVAL atualizado | **Feito** |
 
 ## Não-objetivos
 
 - Language Server dentro do Agent
 - Substituir geradores PDR-002 por analyzer
-- Publicar Demóbile no Agent público
+- Incluir dicionários / regras de cliente no Agent público
 
 ## Disciplina
 
-- IDs: mesma fonte `docs/product/regras-estaticas-lsp.md`
-- Script versionado em `scripts/` ou `packages/lsp-workbench-agent/bin/`
-- README Agent + EVAL atualizados ao fechar P0
+- IDs: `docs/product/regras-estaticas-lsp.md`
+- Regenerar membros: `node scripts/generate-members-reference.mjs`

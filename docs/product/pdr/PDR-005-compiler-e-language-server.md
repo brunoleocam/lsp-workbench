@@ -9,7 +9,7 @@
 
 ## Problema
 
-Heurísticas em `diagnostics.ts` cobrem regras Demóbile (SYN/RUL/…), mas tipagem fina, schema/Tabela, unused real e isolamento de processo sob carga pedem um núcleo de análise reutilizável e, depois, um Language Server opcional.
+Heurísticas em `diagnostics.ts` cobrem regras de ouro (SYN/RUL/…), mas tipagem fina, schema/Tabela, unused real e isolamento de processo sob carga pedem um núcleo de análise reutilizável e, depois, um Language Server opcional.
 
 ## Opção 2 — Analyzer (`packages/lsp-analyzer`)
 
@@ -66,5 +66,5 @@ Heurísticas em `diagnostics.ts` cobrem regras Demóbile (SYN/RUL/…), mas tipa
 ```text
 PDR-004 (UX) → PDR-005 Opção 2 (analyzer) → PDR-005 Opção 3 (LS/Worker)
          ↓
-    PDR-006 (Agent consome analyzer) · PDR-007 (bridge Demóbile)
+    PDR-006 (Agent consome analyzer)
 ```

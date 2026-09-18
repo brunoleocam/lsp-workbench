@@ -12,8 +12,8 @@ alwaysApply: false
 | Situação | Ação |
 |----------|------|
 | Sintaxe / geração LSP | `docs/lsp/` + `lsp-gerar` / `lsp-linguagem` |
-| Regra Demóbile / pode-não-pode | `docs/senior/` + `lsp-demobile` / `lsp-regras-senior.mdc` |
-| Tabelas, chaves, enums, SQL Senior | `docs/banco-senior/` + `lsp-banco` |
+| Regra de negócio / pode-não-pode | `docs/senior/` (se presente) |
+| Tabelas, chaves, enums, SQL Senior | `docs/banco-senior/` + `lsp-banco` (se presente) |
 | Validar `.lsp` | `lsp-revisar` / `lsp-validar` |
 
 ## MCPs opcionais (se configurados)

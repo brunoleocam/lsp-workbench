@@ -93,6 +93,14 @@ Emitidos pela AST (Opção 2). A extensão faz **merge** com SYN/RUL (dedupe vs 
 | ANL010 | `Retorna;` / `Retorne;` inválidos | AST / token | sim (via RUL007) | ok | analyzer |
 | ANL011 | `e` / `ou` com partes mal parentizadas | AST condição | sim (via SYN003) | ok | analyzer |
 
+## DEM — Catálogo local de tabelas
+
+Só quando existir JSON no path configurado de catálogo local (ou default `docs/banco-senior/.generated/catalog.json` na 1ª pasta do workspace).
+
+| ID | Regra | Detecção | QF | Ext | Fonte |
+|----|-------|----------|----|-----|-------|
+| DEM001 | Identificador E*/R*/USU_* ausente do catálogo local | heurística + catálogo | nao (+ ignore) | ok | catálogo local |
+
 ## Mapa de equivalência (IDs antigos do skill)
 
 | Antes (skill antigo) | Agora (canônico) |

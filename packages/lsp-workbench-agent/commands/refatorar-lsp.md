@@ -7,9 +7,11 @@ Analisar o código, melhorar organização (funções, blocos, literais), gerar 
 ## Passos
 
 1. Entender a responsabilidade do trecho/arquivo.
-2. Aplicar transformações de **@lsp-refatorar** (extrair funções, envolver `Se`/`Enquanto`/`Para`, `Inicio`/`Fim` → `{ }`, `\` → `+` quando fizer sentido).
-3. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; sem concat em argumentos; `Cancel(1)` sem `Retorna`.
-4. Comentários `@ ... @` só onde esclarecem intenção.
-5. Opcional: alinhar layout com **@lsp-formatar**.
-6. Entregar o relatório obrigatório da skill (feitos / não feitos / riscos de lógica).
-7. Recomendar `/validar-lsp` ao final.
+2. Mecânicos primeiro (PDR-006):
+   - `node scripts/refactor-lsp.mjs <arquivo> --kind braces --write`
+   - `node scripts/refactor-lsp.mjs <arquivo> --kind concat --write`
+3. Demais transformações de **@lsp-refatorar** (extrair funções, envolver `Se`/`Enquanto`/`Para`).
+4. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; sem concat em argumentos; `Cancel(1)` sem `Retorna`.
+5. Comentários `@ ... @` só onde esclarecem intenção.
+6. Layout: `node scripts/format-lsp.mjs <arquivo> --write`.
+7. Entregar o relatório obrigatório da skill; recomendar `/validar-lsp` ao final.

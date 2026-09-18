@@ -2,13 +2,12 @@
 
 ## Visão
 
-Monorepo com três artefatos (ADR-001):
+Monorepo com artefatos públicos (ADR-001):
 
 | Artefato | Package | Visibilidade |
 |----------|---------|--------------|
 | Extensão IDE | `packages/lsp-workbench` | público |
 | Agent Cursor | `packages/lsp-workbench-agent` | público |
-| Plugin Demóbile | `packages/lsp-workbench-demobile` | gitignored |
 
 Núcleos de linguagem (públicos):
 
@@ -17,7 +16,7 @@ Núcleos de linguagem (públicos):
 | `packages/lsp-analyzer` | Lexer/parser/AST/semantic (`ANL*`) | 0.2.0 |
 | `packages/lsp-language-server` | LS + Worker (opt-in) | 0.1.0 |
 
-Roadmap: **UX → analyzer → LS** — [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md). Próximo: Agent (PDR-006) e bridge Demóbile (PDR-007).
+Roadmap: **UX → analyzer → LS** — [ADR-006](../adr/ADR-006-roadmap-opcoes-1-2-3.md). Próximo público: Agent ↔ analyzer ([PDR-006](../pdr/PDR-006-agent-analyzer.md)).
 
 ## Clean Architecture (extensão)
 
@@ -66,16 +65,17 @@ flowchart LR
 - SOLID e Clean Code em todo PR.
 - README + CHANGELOG atualizados ao fechar leva.
 - Implementação própria; IDs canônicos SYN/RUL/FUN/SEM/SQL + ANL*.
-- Demóbile privado nunca no remoto público.
+- Conteúdo sensível de cliente (modelo de dados / regras internas) nunca no remoto público.
 
 ## Mapa de docs
 
 | Doc | Uso |
 |-----|-----|
+| [DEVELOPER.md](../DEVELOPER.md) | Guia do mantenedor |
+| [CHANGELOG-plataforma.md](../CHANGELOG-plataforma.md) | Status de implementação |
 | [PDR-003](../pdr/PDR-003-simbolos-contexto-completion.md) | Símbolos / contextos |
 | [PDR-004](../pdr/PDR-004-paridade-ux.md) | UX IDE (concluído) |
 | [PDR-005](../pdr/PDR-005-compiler-e-language-server.md) | Analyzer + LS |
 | [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent ↔ analyzer |
-| [PDR-007](../pdr/PDR-007-demobile-catalog-bridge.md) | Demóbile → catálogos IDE |
 | [TDD-paridade-ux](../tdd/TDD-paridade-ux.md) | Casos ACC-* |
 | [EVAL-paridade-ux](../eval/EVAL-paridade-ux.md) | Checklist |

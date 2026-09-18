@@ -10,7 +10,7 @@ Nomes genéricos (“lsp”, “LSP – Senior…”) já existem no Marketplace
 
 ## Decisão
 
-Marca-guarda-chuva **LSP Workbench**; artefatos `lsp-workbench`, `lsp-workbench-agent`, `lsp-workbench-demobile`.
+Marca-guarda-chuva **LSP Workbench**; artefatos públicos `lsp-workbench` (extensão) e `lsp-workbench-agent` (Agent).
 
 ## Consequências
 

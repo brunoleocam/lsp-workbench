@@ -10,8 +10,8 @@ Autocomplete/hover/diagnostics em tempo real exigem extension host; geração e 
 
 ## Decisão
 
-IDE features → extensão **LSP Workbench**. Raciocínio, geradores e checklists → **LSP Workbench Agent**. Demóbile só no plugin privado.
+IDE features → extensão **LSP Workbench**. Raciocínio, geradores e checklists → **LSP Workbench Agent**.
 
 ## Consequências
 
-Dois artefatos públicos + um privado; config `lsp.*` compartilhada conceitualmente.
+Dois artefatos públicos; config `lsp.*` compartilhada conceitualmente.

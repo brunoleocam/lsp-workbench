@@ -24,6 +24,5 @@ Mesmas chaves para extensão (settings.json) e Agent (`lsp.config.json` na raiz 
 | `lsp.fallback.defaultSystem` | `""` | Status bar SingleFile; catálogo por sistema ainda só SENIOR (+ stubs) |
 | `lsp.semantic.embeddedSqlHighlight.enabled` | false | **Reserva** — highlight SQL dedicado |
 | `lsp.server.enabled` | false | Language Server opt-in (PDR-005) |
-| `lsp.demobile.catalogPath` | `""` | JSON local PDR-007; vazio = `docs/banco-senior/.generated/catalog.json` |
 
 Agent `@lsp-formatar` lê `lsp.config.json` se presente; senão usa defaults.

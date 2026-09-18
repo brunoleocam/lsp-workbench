@@ -8,29 +8,29 @@
 
 ## Problema
 
-Desenvolvedores de regras na Linguagem Senior de Programação (LSP) precisam de: (1) suporte IDE rico, (2) Agent Cursor alinhado às regras de ouro, (3) dados internos Demóbile (banco + regras) sem vazar em repositório público. Não havia uma plataforma única que unisse extensão + Agent + plugin privado com a mesma disciplina de regras.
+Desenvolvedores de regras na Linguagem Senior de Programação (LSP) precisam de: (1) suporte IDE rico, (2) Agent Cursor alinhado às regras de ouro. Não havia uma plataforma única que unisse extensão + Agent com a mesma disciplina de regras.
 
 ## Personas
 
-- Dev Demóbile escrevendo/revisando `.lsp` / `.lspt` no Cursor
-- Dev externo usando só linguagem (sem schema Demóbile)
-- Mantenedor da plataforma (Bruno / TI Demóbile)
+- Dev escrevendo/revisando `.lsp` / `.lspt` no Cursor
+- Mantenedor da plataforma
 
-## Escopo (3 artefatos)
+## Escopo (artefatos públicos)
 
 1. **LSP Workbench** — extensão VS Code/Cursor (format, diagnostics, completion, hover, go-to-def, refactors)
 2. **LSP Workbench Agent** — plugin Cursor (rules/skills/commands + geradores)
-3. **LSP Workbench Demóbile** — plugin local gitignored (banco-senior + senior)
+
+Núcleos: `lsp-analyzer`, `lsp-language-server` (opt-in).
 
 ## Não-objetivos (esta leva)
 
 - Publicar no Marketplace nesta sprint
 - Copiar código de extensões de terceiros
-- Incluir dicionário Oracle Demóbile no artefato público
+- Incluir dicionários Oracle / regras de cliente no artefato público
 
 ## Métricas de sucesso
 
 - Geradores (`/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`) produzem código que passa checklist de regras de ouro
 - Formatter da extensão: snapshot estável com indent 2 e braces
-- Clone público do repo **não** contém `docs/banco-senior` nem `docs/senior`
+- Clone público do repo **não** contém pastas sensíveis listadas no `.gitignore` (ex.: `docs/banco-senior`, `docs/senior`)
 - Eval Agent: taxa de asserts críticos ≥ baseline documentada em EVAL-agent.md

@@ -24,7 +24,7 @@ Princípio: teste que falha → mínimo → refatorar. Runner: `packages/lsp-wor
 | ID | Caso | Expectativa |
 |----|------|-------------|
 | ACC-SNP-01 | Prefixos `se`, `definir`, `SQL_Criar`, `lista`, `cursor` | Snippets contribuídos existem |
-| ACC-SNP-02 | Corpo usa `{ }` | Sem `Inicio`/`Fim` nos snippets Demóbile-default |
+| ACC-SNP-02 | Corpo usa `{ }` | Sem `Inicio`/`Fim` nos snippets padrão |
 
 ## ACC-GRM — Grammar
 

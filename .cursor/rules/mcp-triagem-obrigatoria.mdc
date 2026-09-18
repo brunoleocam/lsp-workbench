@@ -5,13 +5,13 @@ alwaysApply: true
 
 ## Objetivo
 
-Antes de responder, avaliar se é necessário consultar ferramenta/MCP. Se for, consultar primeiro. Neste workspace, **preferir evidência em `docs/lsp`, `docs/senior` e `docs/banco-senior`** antes de MCP externo.
+Antes de responder, avaliar se é necessário consultar ferramenta/MCP. Se for, consultar primeiro. Neste workspace, **preferir evidência em `docs/lsp`** (e, se existirem localmente, `docs/senior` / `docs/banco-senior`) antes de MCP externo.
 
 ## Checklist (mental)
 
 - **Linguagem LSP / sintaxe / padrões?** → `docs/lsp/` + skills `lsp-gerar` / `lsp-linguagem` (não inventar).
-- **Regra Demóbile / o que pode no Sapiens?** → `docs/senior/` (fluxo + insights + `regras/`).
-- **Tabela, coluna, chave, enum, SQL Senior?** → `docs/banco-senior/` + skill `lsp-banco`.
+- **Regra de negócio / o que pode no Sapiens?** → `docs/senior/` (fluxo + insights + `regras/`), se a pasta existir no workspace.
+- **Tabela, coluna, chave, enum, SQL Senior?** → `docs/banco-senior/` + skill `lsp-banco`, se a pasta existir.
 - **Planejamento / critérios / edge cases?** → `spec-driven` (se disponível).
 - **Quebrar em tarefas?** → `task-master-ai` (se disponível).
 - **Debug lógico passo a passo?** → `sequential-thinking` (se disponível).

@@ -23,6 +23,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 2. Ler só o arquivo necessário:
    - Sintaxe e limitações → [reference-sintaxe.md](reference-sintaxe.md)
    - Padrões (SQL, HTTP, erros) → [reference-padroes.md](reference-padroes.md)
+   - Membros Cursor/Lista → [reference-membros.md](reference-membros.md) (**não inventar**)
    - Snippets → [snippets.md](snippets.md)
    - Exemplos → [examples.md](examples.md) e pasta `exemplos/`
 3. Gerar ou editar respeitando as regras de ouro.

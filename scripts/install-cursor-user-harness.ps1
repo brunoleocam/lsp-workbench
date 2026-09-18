@@ -60,5 +60,4 @@ if (Test-Path -LiteralPath $cmdsSrc) {
 
 Write-Host ''
 Write-Host 'OK. Reinicie o Cursor (ou abra um novo Agent chat).'
-Write-Host 'Nota: docs/banco-senior e docs/senior ficam SO neste pacote.'
-Write-Host '      Para Demobile (tabelas/regras internas), abra esta pasta como workspace.'
+Write-Host 'Nota: docs/banco-senior e docs/senior, se existirem, ficam so neste workspace (gitignored).'

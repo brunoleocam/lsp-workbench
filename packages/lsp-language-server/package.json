@@ -2,6 +2,7 @@
   "name": "@lsp-workbench/language-server",
   "version": "0.1.0",
   "description": "Language Server + Worker for LSP Workbench (Opção 3 foundation).",
+  "type": "commonjs",
   "main": "./out/server.js",
   "bin": {
     "lsp-workbench-language-server": "./out/server.js"

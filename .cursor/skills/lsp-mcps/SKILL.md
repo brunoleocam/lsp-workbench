@@ -1,6 +1,6 @@
 ---
 name: lsp-mcps
-description: Ponte para a tabela canônica de MCPs no projeto LSP Demóbile; não duplicar conteúdo aqui.
+description: Ponte para a tabela canônica de MCPs neste workspace LSP; não duplicar conteúdo aqui.
 ---
 # MCPs neste workspace
 

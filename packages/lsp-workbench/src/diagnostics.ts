@@ -24,6 +24,11 @@ export type AnalyzeLspOptions = {
   ignoreIds?: string[];
   /** Funções elegíveis em outros arquivos do escopo (chave = nome lower). */
   scopedExternal?: Map<string, { fileName: string }>;
+  /**
+   * Nomes de tabela do catálogo local (JSON). Se presente, emite DEM001
+   * para identificadores Senior (prefixos E, R, USU_) ausentes do catálogo.
+   */
+  demobileTableNames?: ReadonlySet<string> | readonly string[];
 };
 
 function stripStringsAndComments(line: string): string {
@@ -57,11 +62,11 @@ export function lineSuppressions(lines: string[]): Map<number, Set<string>> {
   };
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    for (const m of line.matchAll(/@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+)\b/gi)) {
+    for (const m of line.matchAll(/@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+)\b/gi)) {
       add(i, m[1]);
     }
     for (const m of line.matchAll(
-      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+)\b/gi
+      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+)\b/gi
     )) {
       add(i + 1, m[1]);
     }
@@ -1270,6 +1275,38 @@ export function analyzeLsp(
     }
   } catch {
     // analyzer opcional — não quebra heurísticas RUL/SYN/FUN
+  }
+
+  // DEM001 — tabela Senior citada mas ausente do catálogo local
+  if (opts.demobileTableNames) {
+    const known = new Set(
+      [...opts.demobileTableNames].map((n) => String(n).toUpperCase())
+    );
+    const TABLE_ID = /\b((?:E|R)\d{3}[A-Z0-9]+|USU_[A-Z][A-Z0-9_]*)\b/gi;
+    const reported = new Set<string>();
+    for (let i = 0; i < lines.length; i++) {
+      const stripped = stripStringsAndComments(lines[i]);
+      // Também vasculha literais SQL (strings) — strip remove conteúdo; re-scan raw para strings
+      const raw = lines[i];
+      const scan = `${stripped} ${raw}`;
+      for (const m of scan.matchAll(TABLE_ID)) {
+        const name = m[1].toUpperCase();
+        const key = `${i}:${name}`;
+        if (reported.has(key)) continue;
+        if (known.has(name)) continue;
+        reported.add(key);
+        const col = raw.toUpperCase().indexOf(name);
+        push(
+          hits,
+          "DEM001",
+          `Tabela ${name} não encontrada no catálogo local`,
+          i,
+          "warning",
+          col >= 0 ? col : undefined,
+          col >= 0 ? col + name.length : undefined
+        );
+      }
+    }
   }
 
   const suppressedByLine = lineSuppressions(lines);

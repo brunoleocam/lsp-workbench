@@ -13,9 +13,6 @@ import {
   TextDocumentSyncKind,
   DiagnosticSeverity,
   Diagnostic,
-  CompletionItem,
-  CompletionItemKind,
-  TextDocumentPositionParams,
   TextDocumentChangeEvent,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -165,11 +162,30 @@ function toLspDiagnostics(diags: WorkerDiagnostic[], doc: TextDocument): Diagnos
 }
 
 async function validate(doc: TextDocument): Promise<void> {
+  const version = doc.version;
   const diags = await runAnalyze(doc.getText());
+  const current = documents.get(doc.uri);
+  if (!current || current.version !== version) {
+    return;
+  }
   connection.sendDiagnostics({
     uri: doc.uri,
     diagnostics: toLspDiagnostics(diags, doc),
   });
+}
+
+const validateTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+function scheduleValidate(doc: TextDocument): void {
+  const prev = validateTimers.get(doc.uri);
+  if (prev) clearTimeout(prev);
+  validateTimers.set(
+    doc.uri,
+    setTimeout(() => {
+      validateTimers.delete(doc.uri);
+      void validate(doc);
+    }, 200)
+  );
 }
 
 connection.onInitialize((_params: InitializeParams) => {
@@ -177,10 +193,7 @@ connection.onInitialize((_params: InitializeParams) => {
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,
-      completionProvider: {
-        resolveProvider: false,
-        triggerCharacters: ["."],
-      },
+      // Completion rica permanece na extensão até migração completa (PDR-005).
     },
     serverInfo: {
       name: "LSP Workbench Language Server",
@@ -193,31 +206,18 @@ connection.onInitialized(() => {
   ensureWorker();
 });
 
-/** Completion mínima (placeholder até migrar providers para o LS). */
-connection.onCompletion((_params: TextDocumentPositionParams): CompletionItem[] => {
-  return [
-    {
-      label: "Definir",
-      kind: CompletionItemKind.Keyword,
-      detail: "LSP keyword",
-    },
-    {
-      label: "Se",
-      kind: CompletionItemKind.Keyword,
-      detail: "LSP keyword",
-    },
-  ];
-});
-
 documents.onDidOpen((e: TextDocumentChangeEvent<TextDocument>) => {
-  void validate(e.document);
+  scheduleValidate(e.document);
 });
 
 documents.onDidChangeContent((e: TextDocumentChangeEvent<TextDocument>) => {
-  void validate(e.document);
+  scheduleValidate(e.document);
 });
 
 documents.onDidClose((e: TextDocumentChangeEvent<TextDocument>) => {
+  const t = validateTimers.get(e.document.uri);
+  if (t) clearTimeout(t);
+  validateTimers.delete(e.document.uri);
   connection.sendDiagnostics({ uri: e.document.uri, diagnostics: [] });
 });
 

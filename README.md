@@ -1,57 +1,140 @@
 # LSP Workbench
 
-Monorepo da plataforma **LSP Workbench** — Linguagem Senior de Programação no Cursor/VS Code.
+![LSP Workbench](assets/icon.png)
 
-**Remoto:** https://github.com/brunoleocam/lsp-workbench
+**Linguagem Senior de Programação** no Cursor e no VS Code — extensão IDE, Agent e documentação da linguagem.
 
-| Artefato | Pasta | Público |
-|----------|-------|---------|
-| Extensão IDE | [`packages/lsp-workbench`](packages/lsp-workbench) | Sim |
-| Agent Cursor | [`packages/lsp-workbench-agent`](packages/lsp-workbench-agent) | Sim |
-| Plugin Demóbile | `packages/lsp-workbench-demobile` | **Não** (gitignored) |
+Remoto: https://github.com/brunoleocam/lsp-workbench
 
-## Roadmap
+## Visão geral
 
-1. **UX IDE** — [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) (**concluída**, extensão 0.2.0)
-2. **Analyzer** — [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) (foundation 0.2.0)
-3. **Language Server + Worker** — PDR-005 (foundation 0.1.0, opt-in)
-4. **Agent ↔ analyzer** — [PDR-006](docs/product/pdr/PDR-006-agent-analyzer.md)
-5. **Bridge Demóbile → IDE** — [PDR-007](docs/product/pdr/PDR-007-demobile-catalog-bridge.md)
+O LSP Workbench reúne, no fluxo normal de edição e no chat do Cursor:
 
-Arquitetura: [`docs/product/architecture/ARCHITECTURE.md`](docs/product/architecture/ARCHITECTURE.md)
+- colorização, snippets e semantic tokens para `.lsp` / `.lspt`
+- autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
+- diagnósticos com IDs canônicos (SYN/RUL/FUN/SEM/SQL + ANL*)
+- formatação (`Format Document`) e refactors
+- contextos multiarquivo e modo arquivo único
+- Agent Cursor com commands e skills alinhados às regras de ouro da linguagem
 
-Docs de engenharia: [`docs/product/`](docs/product/) (PDR, ADR, TDD, Eval).  
-Extensão (0.2.0): [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md) · [`CHANGELOG.md`](packages/lsp-workbench/CHANGELOG.md).  
-Analyzer: [`packages/lsp-analyzer`](packages/lsp-analyzer).  
-Language Server: [`packages/lsp-language-server`](packages/lsp-language-server).  
-Linguagem: [`docs/lsp/`](docs/lsp/). Exemplos: [`exemplos/`](exemplos/).
+## Principais recursos
 
-Config compartilhada: [`lsp.config.json`](lsp.config.json).
+### Extensão IDE (`packages/lsp-workbench`, 0.2.0)
 
-## Teste local
+Language id: **`senior-lsp`** · extensões: **`.lsp`**, **`.lspt`**
 
-Guia: [`docs/product/LOCAL-TEST.md`](docs/product/LOCAL-TEST.md).
+- Formatação canônica (indentação, braces, parâmetros)
+- Diagnósticos e quick fixes
+- Completion e hover de builtins SENIOR
+- Semantic tokens, Outline, snippets (~30)
+- Contextos nomeados (`lsp.contexts`) e escopo de símbolos
+- Refactors: envolver com `Se` / `Enquanto` / `Para` / bloco; `Inicio/Fim` ↔ `{ }`; `\` → `+`
+- SQL embutido opt-in (formatação em `ExecSql` / `.SQL` / `SQL_DefinirComando`)
+- Language Server opt-in (`lsp.server.enabled`, default `false`)
 
-Marca (logo): [`assets/`](assets/).
+### Agent Cursor (`packages/lsp-workbench-agent`)
 
-## Setup rápido (público)
+| Command | Função |
+|---------|--------|
+| `/validar-lsp` | Regras + sintaxe + semântica (IDs) |
+| `/formatar-lsp` | Layout canônico |
+| `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
+| `/gerar-lista-lsp` | Lista dinâmica a partir dos campos |
+| `/gerar-cursor-lsp` | Cursor simples/completo (+ SQL) |
+| `/gerar-http-lsp` | Chamada HTTP + parse JSON/XML |
 
-1. Abra esta pasta no Cursor.
-2. Extensão: `cd packages/lsp-workbench && npm install && npm test`
-3. Agent: skills/commands em `.cursor/` ou plugin agent local.
+Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-validar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-revisar` · `@lsp-logs`
 
-## Setup Demóbile (interno)
+## Como configurar
 
-`docs/banco-senior/` e `docs/senior/` são **privados** (`.gitignore`).
+### 1. Extensão (desenvolvimento local)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\install-demobile-plugin.ps1
+cd packages\lsp-workbench
+npm install
+npm test
 ```
 
-## Commands Agent
+Abra a **raiz do monorepo** no Cursor/VS Code → painel **Run and Debug** → **Run LSP Workbench Extension** (F5).
 
-`/validar-lsp` · `/formatar-lsp` · `/refatorar-lsp` · `/gerar-lista-lsp` · `/gerar-cursor-lsp` · `/gerar-http-lsp`
+Detalhes: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md).
 
-## Mapa Agent
+### 2. Agent
 
-Ver [`AGENTS.md`](AGENTS.md).
+Instale o plugin local (junction) a partir de `packages/lsp-workbench-agent` (ver [LOCAL-TEST.md](docs/product/LOCAL-TEST.md)) e use **Developer: Reload Window**.
+
+No próprio monorepo, o harness em [`.cursor/`](.cursor/) já espelha skills e commands públicos.
+
+### 3. Associate `.txt` de regra (opcional)
+
+```json
+{
+  "files.associations": {
+    "**/HR/HR*.txt": "senior-lsp",
+    "**/TR/TR*.txt": "senior-lsp"
+  }
+}
+```
+
+## Como usar
+
+### Arquivo único
+
+Abra um `.lsp` ou `.lspt` — a extensão ativa `senior-lsp` sem configuração extra.
+
+### Contextos multiarquivo
+
+Exemplo em `.vscode/settings.json`:
+
+```json
+{
+  "lsp.symbols.scope": "project",
+  "lsp.contexts": [
+    {
+      "name": "HR",
+      "rootDir": "HR",
+      "filePattern": "HR*.lspt",
+      "includeSubdirectories": false,
+      "system": "HCM"
+    }
+  ]
+}
+```
+
+Comandos: **LSP Workbench: Criar/Editar/Remover Contexto**, **Alternar Escopo de Símbolos**, **Selecionar Sistema (Fallback)**.
+
+### Formatação e SQL embutido
+
+```json
+{
+  "lsp.format.enabled": true,
+  "lsp.format.indentSize": 2,
+  "lsp.format.embeddedSql.enabled": false,
+  "lsp.format.embeddedSql.dialect": "sql"
+}
+```
+
+### Language Server (opt-in)
+
+```powershell
+cd packages\lsp-analyzer
+npm install
+npm run compile
+cd ..\lsp-language-server
+npm install
+npm test
+```
+
+Settings: `lsp.server.enabled` = `true` → **Reload Window**. Diagnósticos ANL* passam a ter source `LSP Analyzer`.
+
+## Exemplos e linguagem
+
+| Recurso | Onde |
+|---------|------|
+| Exemplos `.lsp` | [`exemplos/`](exemplos/) |
+| Docs da linguagem | [`docs/lsp/`](docs/lsp/) |
+| Config compartilhada | [`lsp.config.json`](lsp.config.json) |
+
+## Para mantenedores
+
+Arquitetura, build, changelog de plataforma e PDRs/ADRs: [`docs/product/`](docs/product/) · guia do desenvolvedor: [`docs/product/DEVELOPER.md`](docs/product/DEVELOPER.md).

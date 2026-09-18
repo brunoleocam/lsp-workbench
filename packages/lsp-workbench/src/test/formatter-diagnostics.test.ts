@@ -33,4 +33,23 @@ describe("analyzeLsp", () => {
     const hits = analyzeLsp(`Se (a > 0 e b < 10) {\n}`);
     assert.ok(hits.some((h) => h.id === "SYN003"));
   });
+
+  it("DEM001 when table missing from local catalog", () => {
+    const hits = analyzeLsp(`vaSql = "SELECT * FROM E999ZZZ";`, {
+      demobileTableNames: ["E120PED"],
+    });
+    assert.ok(hits.some((h) => h.id === "DEM001" && /E999ZZZ/.test(h.message)));
+  });
+
+  it("DEM001 silent when table is in catalog", () => {
+    const hits = analyzeLsp(`vaSql = "SELECT * FROM E120PED";`, {
+      demobileTableNames: ["E120PED"],
+    });
+    assert.ok(!hits.some((h) => h.id === "DEM001"));
+  });
+
+  it("DEM001 not emitted without catalog option", () => {
+    const hits = analyzeLsp(`vaSql = "SELECT * FROM E999ZZZ";`);
+    assert.ok(!hits.some((h) => h.id === "DEM001"));
+  });
 });

@@ -2,7 +2,7 @@
 
 Plugin Cursor (Agent) do **LSP Workbench**: rules, skills e commands para a [Linguagem Senior de Programação](https://documentacao.senior.com.br/tecnologia).
 
-Complementa a extensão **LSP Workbench** (IDE). **Não inclui** dicionário de tabelas nem regras de um ERP/cliente (isso é o plugin Demóbile local).
+Complementa a extensão **LSP Workbench** (IDE). Escopo: sintaxe, padrões e geradores da linguagem — não inclui dicionários Oracle nem regras de cliente.
 
 ## Commands
 
@@ -23,7 +23,7 @@ Complementa a extensão **LSP Workbench** (IDE). **Não inclui** dicionário de 
 
 | Sim | Não |
 |-----|-----|
-| Sintaxe e padrões LSP | Tabelas/regras Demóbile |
+| Sintaxe e padrões LSP | Dicionários / regras de cliente |
 | Cursores, SQL/HTTP na linguagem | Dump Oracle privado |
 
 ## Licença

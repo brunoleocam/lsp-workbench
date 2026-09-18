@@ -25,6 +25,7 @@ import {
   startLanguageServer,
   stopLanguageServer,
 } from "./language-client";
+import { getDemobileCatalog } from "./adapters/vscode/demobile-catalog-loader";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
 
@@ -103,7 +104,11 @@ export function activate(context: vscode.ExtensionContext): void {
       const hits = filterSuppressedHits(
         doc.uri.toString(),
         lines,
-        analyzeLsp(doc.getText(), { ignoreIds: ignore, scopedExternal })
+        analyzeLsp(doc.getText(), {
+          ignoreIds: ignore,
+          scopedExternal,
+          demobileTableNames: getDemobileCatalog()?.tables.map((t) => t.name),
+        })
       );
       const diags = hits.map((h) => {
         const severity =

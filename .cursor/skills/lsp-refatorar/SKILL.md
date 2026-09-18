@@ -7,12 +7,23 @@ description: Refatora LSP — extrai funções, envolve blocos, converte Inicio/
 
 Melhora estrutura e legibilidade **mantendo** regras de ouro (`lsp-nucleo`). Diferente de `@lsp-formatar` (só whitespace).
 
+## Preferência determinística (PDR-006)
+
+Para `Inicio`/`Fim` → braces e `\` → `+`, preferir na raiz:
+
+```powershell
+node scripts/refactor-lsp.mjs <arquivo.lsp> --kind braces --write
+node scripts/refactor-lsp.mjs <arquivo.lsp> --kind concat --write
+```
+
+Demais transformações (extrair função, wrap Se/Enquanto) seguem o fluxo abaixo com LLM.
+
 ## Fluxo
 
 1. **Entender** responsabilidade do arquivo/trecho
-2. **Aplicar** transformações pedidas ou óbvias (lista abaixo)
+2. **Aplicar** mecânicos via script quando couber; demais transformações da lista
 3. **Comentar** só decisões não óbvias (`@ ... @`)
-4. **Formatar** no padrão (`@lsp-formatar`) se o layout ficar inconsistente
+4. **Formatar** com `scripts/format-lsp.mjs` / `@lsp-formatar`
 5. Entregar **relatório final** (melhorias + riscos de lógica)
 
 ## Transformações suportadas

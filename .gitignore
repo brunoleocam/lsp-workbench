@@ -9,7 +9,7 @@ Thumbs.db
 *.log
 logs/
 
-# Demóbile privado — não versionar em remoto público
+# Conteúdo local privado — não versionar em remoto público
 docs/banco-senior/
 docs/senior/
 packages/lsp-workbench-demobile/

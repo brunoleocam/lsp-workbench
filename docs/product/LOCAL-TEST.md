@@ -71,29 +71,19 @@ Smoke:
 - `/validar-lsp` em um `.lsp` com `Retorna;`
 - `@lsp-linguagem` em dúvida de sintaxe
 
-Harness em `.cursor/` do monorepo já espelha skills/commands.
+Harness em `.cursor/` do monorepo já espelha skills/commands públicos.
 
 Próximo: [PDR-006](pdr/PDR-006-agent-analyzer.md) — validar via analyzer.
 
-## 3. Plugin Demóbile (privado)
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\install-demobile-plugin.ps1
-```
-
-Reload Window. No Agent: `@lsp-demobile` e pergunta sobre tabela `E120PED` (deve apontar `docs/banco-senior`).
-
-Próximo: [PDR-007](pdr/PDR-007-demobile-catalog-bridge.md).
-
-## 4. Gitignore (sanity)
+## 3. Gitignore (sanity)
 
 ```powershell
 git status
 ```
 
-**Não** versionar: `docs/banco-senior/`, `docs/senior/`, `packages/lsp-workbench-demobile/`, `node_modules/`.
+**Não** versionar: `docs/banco-senior/`, `docs/senior/`, pastas locais listadas no `.gitignore`, `node_modules/`.
 
-## 5. Eval manual Agent
+## 4. Eval manual Agent
 
 Seguir [`eval/EVAL-agent.md`](eval/EVAL-agent.md).
 

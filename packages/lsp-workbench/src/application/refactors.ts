@@ -24,9 +24,12 @@ export function wrapSelection(
       wrapped = `Para (vnI = 0; vnI < vnN; vnI = vnI + 1) {\n${indentBlock(body)}\n}`;
       break;
     case "bloco":
-    default:
       wrapped = `{\n${indentBlock(body)}\n}`;
       break;
+    default: {
+      const _exhaustive: never = kind;
+      throw new Error(`wrap kind inválido: ${String(_exhaustive)}`);
+    }
   }
   return source.slice(0, start) + wrapped + source.slice(end);
 }

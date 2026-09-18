@@ -1,6 +1,6 @@
 /**
- * Catálogo Demóbile local (PDR-007) — JSON gerado, nunca embutido no VSIX.
- * Path configurável via `lsp.demobile.catalogPath`.
+ * Catálogo local de tabelas (JSON gerado, nunca embutido no VSIX).
+ * Path configurável via setting de catálogo na extensão.
  */
 
 export type DemobileColumn = { name: string; type?: string };
