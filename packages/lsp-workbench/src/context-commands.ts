@@ -122,11 +122,11 @@ export function registerContextCommands(context: vscode.ExtensionContext): void 
       }
       const pick = await vscode.window.showQuickPick(
         contexts.map((c) => ({ label: c.name, description: c.rootDir })),
-        { title: "Remover contexto" }
+        { title: "Apagar contexto" }
       );
       if (!pick) return;
       await updateContexts((list) => list.filter((c) => c.name !== pick.label));
-      void vscode.window.showInformationMessage(`Contexto '${pick.label}' removido.`);
+      void vscode.window.showInformationMessage(`Contexto '${pick.label}' apagado.`);
     }),
 
     vscode.commands.registerCommand("lspWorkbench.addToContext", async () => {
@@ -246,8 +246,12 @@ export function registerStatusBar(context: vscode.ExtensionContext): void {
     } else {
       const ctx = resolution.contextName ? ` · ${resolution.contextName}` : "";
       item.text = `$(folder) LSP · ${settings.scope}${ctx}`;
-      item.tooltip = "Alternar escopo de símbolos";
-      item.command = "lspWorkbench.toggleSymbolScope";
+      item.tooltip = resolution.contextName?.startsWith("Relatório")
+        ? "Escopo do projeto de relatório (PDR-010) — Mostrar escopo"
+        : "Alternar escopo de símbolos";
+      item.command = resolution.contextName?.startsWith("Relatório")
+        ? "lspWorkbench.mostrarEscopoRelatorio"
+        : "lspWorkbench.toggleSymbolScope";
       item.show();
     }
   };

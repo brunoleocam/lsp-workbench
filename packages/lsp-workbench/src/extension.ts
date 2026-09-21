@@ -25,7 +25,9 @@ import {
   startLanguageServer,
   stopLanguageServer,
 } from "./language-client";
-import { getDemobileCatalog } from "./adapters/vscode/demobile-catalog-loader";
+import { getLocalCatalog } from "./adapters/vscode/local-catalog-loader";
+import { registerReportCommands } from "./report-commands";
+import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
 
@@ -39,7 +41,8 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
       { language: SENIOR_LSP_LANGUAGE_ID, scheme: "*" },
-      createLspCompletionProvider()
+      createLspCompletionProvider(),
+      "."
     )
   );
 
@@ -50,6 +53,7 @@ export function activate(context: vscode.ExtensionContext): void {
   registerSemanticTokens(context);
   registerOutlineProvider(context);
   registerRefactorActions(context);
+  registerReportCommands(context);
 
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(SENIOR_LSP_LANGUAGE_ID, {
@@ -119,14 +123,20 @@ export function activate(context: vscode.ExtensionContext): void {
     const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
     const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
     const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
-    const demobileTableNames = getDemobileCatalog()?.tables.map((t) => t.name);
+    const catalogTableNames = getLocalCatalog()?.tables.map((t) => t.name);
+    const reportOpts = loadReportAnalyzeOpts(doc.uri.fsPath);
 
     // 1ª passada síncrona — RUL/FUN/SYN aparecem mesmo se o índice demorar.
     try {
       const quick = filterSuppressedHits(
         key,
         lines,
-        analyzeLsp(doc.getText(), { ignoreIds: ignore, demobileTableNames })
+        analyzeLsp(doc.getText(), {
+          ignoreIds: ignore,
+          catalogTableNames,
+          reportContext: reportOpts?.reportContext,
+          knownGlobals: reportOpts?.knownGlobals,
+        })
       );
       collection.set(doc.uri, hitsToDiagnostics(doc, quick));
     } catch (err) {
@@ -150,7 +160,9 @@ export function activate(context: vscode.ExtensionContext): void {
           analyzeLsp(doc.getText(), {
             ignoreIds: ignore,
             scopedExternal,
-            demobileTableNames,
+            catalogTableNames,
+            reportContext: reportOpts?.reportContext,
+            knownGlobals: reportOpts?.knownGlobals,
           })
         );
         if (refreshSeqByUri.get(key) !== seq) return;

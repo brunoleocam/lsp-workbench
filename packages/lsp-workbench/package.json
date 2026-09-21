@@ -15,7 +15,14 @@
     "onCommand:lspWorkbench.addToContext",
     "onCommand:lspWorkbench.removeFromContext",
     "onCommand:lspWorkbench.toggleSymbolScope",
-    "onCommand:lspWorkbench.selectFallbackSystem"
+    "onCommand:lspWorkbench.selectFallbackSystem",
+    "onCommand:lspWorkbench.gerarRelatorio",
+    "onCommand:lspWorkbench.copiarRegraRelatorio",
+    "onCommand:lspWorkbench.importarContextoDe",
+    "onCommand:lspWorkbench.exportarContextoPara",
+    "onCommand:lspWorkbench.adicionarContextoRelatorio",
+    "onCommand:lspWorkbench.mostrarEscopoRelatorio",
+    "onCommand:lspWorkbench.exportarRelatorioMultiTrecho"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -167,10 +174,16 @@
           "default": false,
           "description": "Usa o Language Server + Worker (Opção 3) para diagnósticos do analyzer. Desligado por padrão mantém diagnósticos in-process (Opção 1). Recarregue a janela após alterar."
         },
+        "lsp.catalog.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path do catálogo local de tabelas (JSON). Vazio = tenta docs/banco-senior/.generated/catalog.json e depois docs/banco-senior-base/.generated/catalog.json (PDR-009). Ausente = completion de tabelas no-op."
+        },
         "lsp.demobile.catalogPath": {
           "type": "string",
           "default": "",
-          "description": "Path do catálogo local de tabelas (JSON). Vazio = docs/banco-senior/.generated/catalog.json na 1ª pasta do workspace. Se o arquivo não existir, completion de tabelas fica no-op."
+          "description": "Deprecated: use lsp.catalog.path.",
+          "deprecationMessage": "Use lsp.catalog.path instead."
         }
       }
     },
@@ -185,7 +198,7 @@
       },
       {
         "command": "lspWorkbench.removeContext",
-        "title": "LSP Workbench: Remover Contexto"
+        "title": "LSP Workbench: Apagar Contexto"
       },
       {
         "command": "lspWorkbench.addToContext",
@@ -202,6 +215,34 @@
       {
         "command": "lspWorkbench.selectFallbackSystem",
         "title": "LSP Workbench: Selecionar Sistema (Fallback)"
+      },
+      {
+        "command": "lspWorkbench.gerarRelatorio",
+        "title": "LSP Workbench: Gerar Projeto de Relatório"
+      },
+      {
+        "command": "lspWorkbench.copiarRegraRelatorio",
+        "title": "LSP Workbench: Copiar Regra do Relatório"
+      },
+      {
+        "command": "lspWorkbench.exportarRelatorioMultiTrecho",
+        "title": "LSP Workbench: Visualizar Todas as Regras"
+      },
+      {
+        "command": "lspWorkbench.importarContextoDe",
+        "title": "LSP Workbench: Importar Contexto de…"
+      },
+      {
+        "command": "lspWorkbench.exportarContextoPara",
+        "title": "LSP Workbench: Exportar Contexto para…"
+      },
+      {
+        "command": "lspWorkbench.adicionarContextoRelatorio",
+        "title": "LSP Workbench: Importar Contexto de… (legado)"
+      },
+      {
+        "command": "lspWorkbench.mostrarEscopoRelatorio",
+        "title": "LSP Workbench: Mostrar Escopo do Relatório"
       }
     ]
   },

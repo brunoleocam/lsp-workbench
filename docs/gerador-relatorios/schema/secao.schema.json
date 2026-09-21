@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lsp-workbench.local/schemas/secao.schema.json",
+  "title": "Projeto de Relatório — secao.json",
+  "type": "object",
+  "required": ["tipo", "nome"],
+  "additionalProperties": false,
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome Senior da seção (igual à pasta)."
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "Detalhe",
+        "Subtitulo",
+        "Subtotal",
+        "Adicional",
+        "Cabecalho",
+        "Cabecalho_Colunas",
+        "Titulo",
+        "Total_Geral",
+        "Rodape_Cabecalho",
+        "Rodape_Titulo",
+        "Pagina_Fundo"
+      ]
+    },
+    "tabelaBase": {
+      "type": "string",
+      "description": "Tabela base (Detalhe). Ex. E012FAM."
+    },
+    "classificacao": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Campos de ordem/quebra."
+    },
+    "secaoLigSql": {
+      "type": "string",
+      "description": "Detalhe cujo SQL engloba campos desta seção."
+    },
+    "imprimir": { "type": "boolean", "default": true }
+  }
+}

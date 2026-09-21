@@ -63,7 +63,7 @@ Status extensão: `ok` = implementado | `pendente`
 
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
-| SEM001 | Variável prefixada usada sem `Definir` (exceto `vn*` — Numero implícito = 0) | `va*`/`vd*`/`vl*`/`Cur_*` fora do set (se há Definir) | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis |
+| SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório, `E*` da Entrada via `knownGlobals` | qualquer id (não keyword/builtin/função/tabela/`vn*`) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008 |
 | SEM002 | `Abrir`/`Fechar` pareados (arquivo) | alerta na linha do `Abrir` órfão | sim (Fechar / Completar) | ok | arquivos |
 | SEM003 | Cursor: `.AbrirCursor` ↔ `.FecharCursor` | alerta na linha do AbrirCursor órfão | sim (FecharCursor / Completar) | ok | cursores / lsp.md |
 | SEM004 | Lista: campo usado sem `AdicionarCampo` | `vl.Campo` ∉ set de AdicionarCampo | sim (inserir AdicionarCampo) | ok | listas |
@@ -102,6 +102,17 @@ Só quando existir JSON no path configurado de catálogo local (ou default `docs
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
 | DEM001 | Identificador E*/R*/USU_* ausente do catálogo local | heurística + catálogo | nao (+ ignore) | ok | catálogo local |
+
+## GER — Projeto de relatório (PDR-008)
+
+Só quando o arquivo `.lsp` está sob um projeto com `relatorio.json` (resolver sobe diretórios) **e** o contexto de evento é passado ao `analyzeLsp`.
+
+| ID | Regra | Detecção | QF | Ext | Fonte |
+|----|-------|----------|----|-----|-------|
+| GER001 | `InsClauSQL*` / `SubstituiFrom` / `DeleteFieldSQL` / `InsSQLWhereSimples` só na Pré-Seleção | API fora de `Pre-Selecao.lsp` | nao (+ ignore) | ok | gerador-relatorios |
+| GER002 | Não usar `ListaSecao` / `AlteraControle` na Pré-Seleção | chamada nesses nomes em Pré-Seleção | nao (+ ignore) | ok | modelo-gerador |
+| GER003 | `ListaSecao("Nome")` — seção deve existir no projeto | string ∉ pastas `Secoes/` | nao | ok | PDR-008 |
+| GER004 | 1º arg de `InsClauSQL*` / `InsSQLWhereSimples` — seção Detalhe conhecida | string ∉ seções do manifesto | nao | ok | PDR-008 |
 
 ## Mapa de equivalência (IDs antigos do skill)
 

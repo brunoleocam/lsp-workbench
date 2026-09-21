@@ -193,4 +193,8 @@ export const IMPLEMENTED_RULE_IDS = [
   "SQL007",
   "SQL008",
   "SQL009",
+  "GER001",
+  "GER002",
+  "GER003",
+  "GER004",
 ] as const;

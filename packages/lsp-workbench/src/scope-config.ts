@@ -1,5 +1,5 @@
 /**
- * Configuração de escopo de símbolos (PDR-003).
+ * Configuração de escopo de símbolos (PDR-003 + PDR-010).
  * Puro / testável — paths como string (use `/` ou path.normalize).
  */
 
@@ -21,8 +21,28 @@ export type ScopeSettings = {
   fallbackSystem: string;
 };
 
+/** Overlay de projeto de relatório (PDR-010) — vence `lsp.contexts`. */
+export type ReportScopeOverlay = {
+  rootAbs: string;
+  name: string;
+  /** Roots absolutos: pasta do relatório + `contextoExtra` resolvidos. */
+  includeRootsAbs: string[];
+  system?: string;
+};
+
 export function normalizePath(p: string): string {
   return p.replace(/\\/g, "/").replace(/\/+$/, "");
+}
+
+/** Arquivo sob alguma pasta root, ou igual a um path de arquivo listado. */
+export function pathUnderRoots(fileAbs: string, rootsAbs: string[]): boolean {
+  const file = normalizePath(fileAbs);
+  for (const raw of rootsAbs) {
+    const root = normalizePath(raw);
+    if (!root) continue;
+    if (file === root || file.startsWith(root + "/")) return true;
+  }
+  return false;
 }
 
 function escapeRegex(s: string): string {
@@ -143,7 +163,8 @@ export function mergeIgnoreIds(
 
 /**
  * Resolve pares do arquivo atual no escopo.
- * - file: só ele
+ * - file: só ele (vence overlay de relatório)
+ * - reportOverlay (PDR-010): só peers sob root ∪ contextoExtra (vence lsp.contexts)
  * - project sem contexts: todos os candidatos do workspace
  * - project/mixed com contexts: só arquivos do mesmo contexto nomeado; fora → só ele (SingleFile)
  * - mixed sem contexts: só ele
@@ -153,12 +174,27 @@ export function resolvePeerFiles(opts: {
   workspaceRootAbs: string;
   candidateFilesAbs: string[];
   settings: ScopeSettings;
+  reportOverlay?: ReportScopeOverlay;
 }): { mode: "scoped" | "singleFile"; contextName?: string; peers: string[]; system?: string } {
-  const { currentFileAbs, workspaceRootAbs, candidateFilesAbs, settings } = opts;
+  const { currentFileAbs, workspaceRootAbs, candidateFilesAbs, settings, reportOverlay } = opts;
   const current = normalizePath(currentFileAbs);
 
   if (settings.scope === "file") {
     return { mode: "singleFile", peers: [current], system: settings.fallbackSystem || undefined };
+  }
+
+  if (reportOverlay) {
+    const roots = reportOverlay.includeRootsAbs.map(normalizePath);
+    const peers = candidateFilesAbs
+      .map(normalizePath)
+      .filter((f) => pathUnderRoots(f, roots));
+    if (!peers.includes(current)) peers.push(current);
+    return {
+      mode: "scoped",
+      contextName: `Relatório · ${reportOverlay.name}`,
+      peers,
+      system: reportOverlay.system || settings.fallbackSystem || undefined,
+    };
   }
 
   const contexts = settings.contexts ?? [];

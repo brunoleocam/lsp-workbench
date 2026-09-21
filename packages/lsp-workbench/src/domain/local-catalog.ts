@@ -1,26 +1,26 @@
 /**
  * Catálogo local de tabelas (JSON gerado, nunca embutido no VSIX).
- * Path configurável via setting de catálogo na extensão.
+ * Path configurável via `lsp.catalog.path` (PDR-009).
  */
 
-export type DemobileColumn = { name: string; type?: string };
-export type DemobileTable = {
+export type LocalCatalogColumn = { name: string; type?: string };
+export type LocalCatalogTable = {
   name: string;
   description?: string;
-  columns: DemobileColumn[];
+  columns: LocalCatalogColumn[];
 };
-export type DemobileCatalog = {
+export type LocalCatalog = {
   version: number;
   generatedAt?: string;
-  tables: DemobileTable[];
+  tables: LocalCatalogTable[];
   enums?: unknown[];
 };
 
-let cached: { path: string; mtimeMs: number; catalog: DemobileCatalog } | undefined;
+let cached: { path: string; mtimeMs: number; catalog: LocalCatalog } | undefined;
 
-export function parseDemobileCatalogJson(raw: string): DemobileCatalog | undefined {
+export function parseLocalCatalogJson(raw: string): LocalCatalog | undefined {
   try {
-    const data = JSON.parse(raw) as DemobileCatalog;
+    const data = JSON.parse(raw) as LocalCatalog;
     if (!data || !Array.isArray(data.tables)) return undefined;
     return {
       version: Number(data.version) || 1,
@@ -44,11 +44,11 @@ export function parseDemobileCatalogJson(raw: string): DemobileCatalog | undefin
 }
 
 /** Carrega catálogo de um path no disco (Node fs). Retorna undefined se ausente/inválido. */
-export function loadDemobileCatalogFromFile(
+export function loadLocalCatalogFromFile(
   fsPath: string,
   readFile: (p: string) => string,
   statMtimeMs: (p: string) => number | undefined
-): DemobileCatalog | undefined {
+): LocalCatalog | undefined {
   if (!fsPath) return undefined;
   const mtime = statMtimeMs(fsPath);
   if (mtime === undefined) {
@@ -58,7 +58,7 @@ export function loadDemobileCatalogFromFile(
   if (cached && cached.path === fsPath && cached.mtimeMs === mtime) {
     return cached.catalog;
   }
-  const catalog = parseDemobileCatalogJson(readFile(fsPath));
+  const catalog = parseLocalCatalogJson(readFile(fsPath));
   if (!catalog) {
     cached = undefined;
     return undefined;
@@ -68,16 +68,32 @@ export function loadDemobileCatalogFromFile(
 }
 
 export function tablesMatchingPrefix(
-  catalog: DemobileCatalog,
+  catalog: LocalCatalog,
   prefix: string,
   limit = 40
-): DemobileTable[] {
+): LocalCatalogTable[] {
   const p = prefix.toUpperCase();
   if (!p) return catalog.tables.slice(0, limit);
   return catalog.tables.filter((t) => t.name.startsWith(p)).slice(0, limit);
 }
 
+/** Colunas de uma tabela (nome case-insensitive). */
+export function columnsForTable(
+  catalog: LocalCatalog,
+  tableName: string,
+  prefix = "",
+  limit = 500
+): LocalCatalogColumn[] {
+  const t = catalog.tables.find((x) => x.name === tableName.toUpperCase());
+  if (!t) return [];
+  const p = prefix.toUpperCase();
+  const cols = p
+    ? t.columns.filter((c) => c.name.toUpperCase().startsWith(p))
+    : t.columns;
+  return cols.slice(0, limit);
+}
+
 /** Export para testes — limpa cache. */
-export function clearDemobileCatalogCache(): void {
+export function clearLocalCatalogCache(): void {
   cached = undefined;
 }

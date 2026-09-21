@@ -12,6 +12,20 @@ type ManifestFile = {
   note?: string;
   /** Simula peers elegíveis (FUN009). */
   scopedExternal?: Record<string, { fileName: string }>;
+  /** Contexto de projeto de relatório (GER*). */
+  reportContext?: {
+    eventKind:
+      | "pre-selecao"
+      | "selecao"
+      | "inicializacao"
+      | "finalizacao"
+      | "funcoes-globais"
+      | "imprimir-pagina"
+      | "antes-imprimir"
+      | "depois-imprimir"
+      | "outro";
+    sectionNames: string[];
+  };
 };
 
 type Manifest = {
@@ -33,7 +47,10 @@ describe("smoke fixtures (MANIFEST)", () => {
       const scopedExternal = file.scopedExternal
         ? new Map(Object.entries(file.scopedExternal))
         : undefined;
-      const hits = analyzeLsp(src, { scopedExternal });
+      const hits = analyzeLsp(src, {
+        scopedExternal,
+        reportContext: file.reportContext,
+      });
       const found = new Set(hits.map((h) => h.id.toUpperCase()));
 
       for (const id of file.expectIds) {

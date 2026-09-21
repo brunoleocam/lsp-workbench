@@ -260,3 +260,89 @@ describe("PDR-003 FUN009 + import", () => {
     assert.match(block, /Definir Funcao somar/);
   });
 });
+
+describe("PDR-010 report scope overlay", () => {
+  const candidates = [
+    "C:/ws/Relatorios/RDCG183/Definicao/Pre-Selecao.lsp",
+    "C:/ws/Relatorios/RDCG183/Definicao/Funcoes-Globais.lsp",
+    "C:/ws/Relatorios/RDCG184/Definicao/Pre-Selecao.lsp",
+    "C:/ws/Relatorios/FUNCOES/comum.lsp",
+  ];
+
+  it("SCO-01/02 peers only under report root", () => {
+    const r = resolvePeerFiles({
+      currentFileAbs: candidates[0],
+      workspaceRootAbs: "C:/ws",
+      candidateFilesAbs: candidates,
+      settings: { scope: "project", contexts: [], fallbackSystem: "" },
+      reportOverlay: {
+        rootAbs: "C:/ws/Relatorios/RDCG183",
+        name: "RDCG183",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+      },
+    });
+    assert.equal(r.mode, "scoped");
+    assert.equal(r.contextName, "Relatório · RDCG183");
+    assert.ok(r.peers.some((p) => p.includes("RDCG183/Definicao/Funcoes-Globais.lsp")));
+    assert.ok(!r.peers.some((p) => p.includes("RDCG184")));
+  });
+
+  it("SCO-03 contextoExtra expands peers", () => {
+    const r = resolvePeerFiles({
+      currentFileAbs: candidates[0],
+      workspaceRootAbs: "C:/ws",
+      candidateFilesAbs: candidates,
+      settings: { scope: "project", contexts: [], fallbackSystem: "" },
+      reportOverlay: {
+        rootAbs: "C:/ws/Relatorios/RDCG183",
+        name: "RDCG183",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCG183", "C:/ws/Relatorios/FUNCOES"],
+      },
+    });
+    assert.ok(r.peers.some((p) => p.includes("FUNCOES/comum.lsp")));
+    assert.ok(!r.peers.some((p) => p.includes("RDCG184")));
+  });
+
+  it("SCO-04 file scope wins over report overlay", () => {
+    const r = resolvePeerFiles({
+      currentFileAbs: candidates[0],
+      workspaceRootAbs: "C:/ws",
+      candidateFilesAbs: candidates,
+      settings: { scope: "file", contexts: [], fallbackSystem: "" },
+      reportOverlay: {
+        rootAbs: "C:/ws/Relatorios/RDCG183",
+        name: "RDCG183",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+      },
+    });
+    assert.equal(r.mode, "singleFile");
+    assert.deepEqual(r.peers, [candidates[0].replace(/\\/g, "/")]);
+  });
+
+  it("report overlay wins over lsp.contexts", () => {
+    const r = resolvePeerFiles({
+      currentFileAbs: candidates[0],
+      workspaceRootAbs: "C:/ws",
+      candidateFilesAbs: candidates,
+      settings: {
+        scope: "project",
+        contexts: [
+          {
+            name: "tudo",
+            rootDir: "Relatorios",
+            filePattern: "**/*.lsp",
+            includeSubdirectories: true,
+          },
+        ],
+        fallbackSystem: "",
+      },
+      reportOverlay: {
+        rootAbs: "C:/ws/Relatorios/RDCG183",
+        name: "RDCG183",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+      },
+    });
+    assert.ok(!r.peers.some((p) => p.includes("RDCG184")));
+    assert.equal(r.contextName, "Relatório · RDCG183");
+  });
+});

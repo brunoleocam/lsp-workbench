@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-21T00:00:00.000Z",
+  "source": "example — replace with your local catalog.json from R996/R998",
+  "policy": "USU_* tables and columns excluded from base catalog",
+  "tables": [
+    {
+      "name": "E012FAM",
+      "description": "Cadastros - Famílias",
+      "primaryKey": ["CodEmp", "CodFam"],
+      "columns": [
+        { "name": "CodEmp", "type": "Número(4)" },
+        { "name": "CodFam", "type": "Alfa(6)" },
+        { "name": "DesFam", "type": "Alfa(50)" },
+        { "name": "TipPro", "type": "Alfa(1)" }
+      ]
+    },
+    {
+      "name": "E075PRO",
+      "description": "Cadastros - Produtos",
+      "primaryKey": ["CodEmp", "CodPro"],
+      "columns": [
+        { "name": "CodEmp", "type": "Número(4)" },
+        { "name": "CodPro", "type": "Alfa(14)" },
+        { "name": "DesPro", "type": "Alfa(50)" }
+      ]
+    }
+  ]
+}

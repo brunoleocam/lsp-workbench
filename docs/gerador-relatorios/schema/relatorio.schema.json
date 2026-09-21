@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lsp-workbench.local/schemas/relatorio.schema.json",
+  "title": "Projeto de Relatório — relatorio.json",
+  "type": "object",
+  "required": ["codigo", "descricao", "detalhePrincipal"],
+  "additionalProperties": false,
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_]+$",
+      "description": "Sigla do relatório (ex. RDCG183)."
+    },
+    "descricao": { "type": "string" },
+    "categoria": { "type": "string", "description": "Categoria no menu Senior." },
+    "tipoRelatorio": {
+      "type": "string",
+      "enum": ["Padrao", "MestreDetalhe"],
+      "default": "Padrao"
+    },
+    "detalhePrincipal": {
+      "type": "string",
+      "description": "Nome da pasta em Secoes/ (ex. Detalhe_1)."
+    },
+    "orientacao": {
+      "type": "string",
+      "enum": ["Retrato", "Paisagem"],
+      "description": "Somente documentação no MVP; não validado."
+    },
+    "contextoExtra": {
+      "type": "array",
+      "description": "Paths relativos à pasta do relatório (pastas ou .lsp) unidos ao escopo de símbolos (PDR-010).",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "default": []
+    }
+  }
+}

@@ -36,14 +36,14 @@ describe("analyzeLsp", () => {
 
   it("DEM001 when table missing from local catalog", () => {
     const hits = analyzeLsp(`vaSql = "SELECT * FROM E999ZZZ";`, {
-      demobileTableNames: ["E120PED"],
+      catalogTableNames: ["E120PED"],
     });
     assert.ok(hits.some((h) => h.id === "DEM001" && /E999ZZZ/.test(h.message)));
   });
 
   it("DEM001 silent when table is in catalog", () => {
     const hits = analyzeLsp(`vaSql = "SELECT * FROM E120PED";`, {
-      demobileTableNames: ["E120PED"],
+      catalogTableNames: ["E120PED"],
     });
     assert.ok(!hits.some((h) => h.id === "DEM001"));
   });

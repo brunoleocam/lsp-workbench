@@ -9,6 +9,13 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-09-21 — SEM001: qualquer variável, não só prefixos
+
+- **Contexto:** Códigos legados usam nomes sem `va`/`vn`/`vd`/`vl`/`Cur_` (ex. `controle`). Prefixo é boa prática (SYN006/RUL008 no Definir), não requisito para detectar uso sem Definir.
+- **Texto canônico:**
+  > SEM001 alerta qualquer identificador usado sem `Definir` (exceto `vn*` implícito, keywords, builtins, funções, tabelas `E012*`/`R*`/`USU_*`, membros `.Campo`). `E*` de Entrada no relatório vêm de `Entrada.json` (`knownGlobals`).
+- **Status:** implementado em `diagnostics.ts` (analyzer).
+
 ### 2026-09-18 — RUL001: tipo obrigatório na assinatura (não SEM001 + Definir)
 
 - **Contexto:** `Definir Funcao Foo(vaP)` gerava SEM001 → QF `Definir Alfa vaP` + param solto (errado).

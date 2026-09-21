@@ -6,23 +6,18 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
-const root = String.raw`c:\Dev\Documentacao-LSP-Linguagem-Senior-de-Programacao`;
+const root = path.join(__dirname, "..");
 const brandDir = path.join(root, "assets");
 const srcJpg = path.join(brandDir, "brand-source.jpg");
-const fallbackJpg = String.raw`C:\Users\TI09.DEMOBILE\AppData\Local\Temp\lsp-logo-src.jpg`;
 
 (async () => {
-  const src = fs.existsSync(srcJpg) ? srcJpg : fallbackJpg;
-  if (!fs.existsSync(src)) {
+  if (!fs.existsSync(srcJpg)) {
     throw new Error("Fonte nao encontrada: assets/brand-source.jpg");
   }
 
   fs.mkdirSync(brandDir, { recursive: true });
-  const icon512 = await sharp(src).resize(512, 512).png().toBuffer();
+  const icon512 = await sharp(srcJpg).resize(512, 512).png().toBuffer();
   fs.writeFileSync(path.join(brandDir, "icon.png"), icon512);
-  if (src !== srcJpg) {
-    fs.copyFileSync(src, srcJpg);
-  }
 
   const b64 = icon512.toString("base64");
   const svg = `<?xml version="1.0" encoding="UTF-8"?>

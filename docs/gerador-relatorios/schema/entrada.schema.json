@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lsp-workbench.local/schemas/entrada.schema.json",
+  "title": "Projeto de Relatório — Entrada.json",
+  "type": "object",
+  "required": ["parametros"],
+  "additionalProperties": false,
+  "properties": {
+    "parametros": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nome", "descricao", "tipo"],
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "pattern": "^E[A-Za-z0-9_]+$",
+            "description": "Variável de entrada (prefixo E)."
+          },
+          "descricao": { "type": "string" },
+          "tipo": {
+            "type": "string",
+            "enum": ["Alfa", "Numero", "Data", "Cadeia"]
+          },
+          "tamanho": { "type": "integer", "minimum": 0 },
+          "edicao": { "type": "string" },
+          "tabelaCampo": {
+            "type": "string",
+            "description": "Tabela.Campo quando ligado a cadastro."
+          },
+          "abrangencia": { "type": "boolean", "default": false },
+          "senha": { "type": "boolean", "default": false },
+          "relacionarSql": { "type": "boolean", "default": false },
+          "valores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["valor", "descricao"],
+              "properties": {
+                "valor": { "type": "string" },
+                "descricao": { "type": "string" },
+                "padrao": { "type": "boolean" }
+              }
+            }
+          },
+          "ignorar": { "type": "boolean", "default": false }
+        }
+      }
+    }
+  }
+}

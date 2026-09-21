@@ -14,6 +14,7 @@ import {
 } from "./scope-config";
 import { eligibleFromSymbols, type ScopedFunction } from "./symbol-scope";
 import { SENIOR_LSP_LANGUAGE_ID } from "./language";
+import { loadReportScopeOverlay } from "./domain/report-project-loader";
 
 type CacheEntry = { symbols: FileSymbols; mtime?: number };
 
@@ -131,6 +132,7 @@ export class WorkspaceSymbolIndex {
       workspaceRootAbs: root,
       candidateFilesAbs: candidates,
       settings,
+      reportOverlay: loadReportScopeOverlay(current),
     });
 
     const localSymbols = await this.getSymbols(document.uri, document.getText());

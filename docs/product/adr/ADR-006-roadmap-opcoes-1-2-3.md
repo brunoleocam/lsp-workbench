@@ -25,7 +25,10 @@ Frentes após o motor:
 | Doc | Foco | Estado |
 |-----|------|--------|
 | [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer | **Concluído** |
-| [PDR-007](../pdr/PDR-007-catalogo-local-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** |
+| [PDR-007](../pdr/PDR-007-catalogo-local-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** (+ [PDR-009](../pdr/PDR-009-catalogo-base-overlay.md) base/overlay) |
+| [PDR-008](../pdr/PDR-008-projeto-relatorio.md) | Projeto multi-arquivo de relatório + GER* | **MVP** |
+| [PDR-010](../pdr/PDR-010-escopo-projeto-relatorio.md) | Escopo implícito por pasta de relatório | **MVP** |
+| [ADR-007](ADR-007-formato-projeto-relatorio.md) | Formato pastas + JSON semântico | **Aceito** |
 
 Próximo público: catálogos multi-sistema / Marketplace (PDR-001 / backlog UX). Smoke F5 da suíte de fixtures validado (2026-09-21).
 

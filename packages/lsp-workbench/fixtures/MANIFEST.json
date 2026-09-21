@@ -117,20 +117,27 @@
       "quickFixIds": ["SQL001", "SQL002", "SQL003", "SQL004", "SQL005", "SQL006", "SQL007", "SQL008", "SQL009"]
     },
     {
-      "path": "syntax-missing-semi.lsp",
-      "expectIds": ["SYN001"],
-      "legacy": true
-    },
-    {
-      "path": "rule-retorna.lsp",
-      "expectIds": ["RUL007"],
-      "legacy": true,
-      "quickFixIds": ["RUL007"]
-    },
-    {
       "path": "format-if.lsp",
       "expectIds": [],
       "note": "Fixture de format (não de diagnóstico)"
+    },
+    {
+      "path": "smoke-ger.lsp",
+      "expectIds": ["GER001", "GER003", "GER004"],
+      "note": "GER* fora da Pré-Seleção",
+      "reportContext": {
+        "eventKind": "antes-imprimir",
+        "sectionNames": ["Detalhe_1", "Adicional_X"]
+      }
+    },
+    {
+      "path": "smoke-ger-pre.lsp",
+      "expectIds": ["GER002", "GER004"],
+      "note": "GER* na Pré-Seleção",
+      "reportContext": {
+        "eventKind": "pre-selecao",
+        "sectionNames": ["Detalhe_1", "Adicional_X"]
+      }
     }
   ]
 }

@@ -14,11 +14,13 @@ docs/banco-senior/
 docs/senior/
 packages/lsp-workbench-demobile/
 **/docs/banco-senior/.generated/
+**/docs/banco-senior-base/.generated/
+# Catálogo completo (schema Senior) — só local; no git fica catalog.example.json
+docs/banco-senior-base/catalog.json
 
-# Local / temp
-BKP/
-output/
-temp/
-*.bak
-.env
-.env.*
+# Scratch / exports de cliente — não versionar na raiz
+/aulas.txt
+/lsp.md
+/*.GER
+/RDCG*.lsp
+/RDCG*.GER

@@ -187,7 +187,7 @@ F12 / Ctrl+clique em função customizada → declaração/implementação no ar
 |---------|---------------|
 | `LSP Workbench: Criar Contexto` | Wizard: nome, rootDir, filePattern, system; persiste em `lsp.contexts` |
 | `LSP Workbench: Editar Contexto` | Selecionar contexto → editar settings ou abrir membro |
-| `LSP Workbench: Remover Contexto` | Remove entrada de `lsp.contexts` |
+| `LSP Workbench: Apagar Contexto` | Remove entrada de `lsp.contexts` |
 | `LSP Workbench: Adicionar ao Contexto` | Arquivo/pasta atual (ou picker) → `files` / ajuste de pattern |
 | `LSP Workbench: Remover do Contexto` | Remove da allowlist (não apaga disco) |
 | `LSP Workbench: Selecionar Sistema (Fallback)` | Só SingleFile / modo `file` |

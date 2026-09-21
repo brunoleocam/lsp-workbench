@@ -520,6 +520,19 @@ describe("analyzeLsp expanded", () => {
     assert.ok(hits.some((h) => h.id === "SEM001"));
   });
 
+  it("SEM001 alerta variavel sem prefixo (ex. controle)", () => {
+    const hits = analyzeLsp("Definir Numero vnA;\ncontrole = 1;\n");
+    assert.ok(hits.some((h) => h.id === "SEM001" && /controle/i.test(h.message)));
+  });
+
+  it("SEM001 nao alerta controle se Definir existir", () => {
+    const hits = analyzeLsp("Definir Numero controle;\ncontrole = 1;\n");
+    assert.equal(
+      hits.some((h) => h.id === "SEM001" && /controle/i.test(h.message)),
+      false
+    );
+  });
+
   it("SEM001 não alerta vn* (Numero implícito)", () => {
     const hits = analyzeLsp("Definir Alfa vaA;\nvnB = 1;\n");
     assert.equal(hits.some((h) => h.id === "SEM001"), false);

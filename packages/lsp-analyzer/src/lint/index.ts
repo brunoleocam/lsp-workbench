@@ -1,4 +1,4 @@
-/** Barrel do lint heurístico (SYN/RUL/FUN/SEM/SQL/DEM) + merge ANL*. */
+/** Barrel do lint heurístico (SYN/RUL/FUN/SEM/SQL/DEM/GER) + merge ANL*. */
 export type { AnalyzeLspOptions, DiagnosticHit } from "./diagnostics";
 export { analyzeLsp, lineSuppressions } from "./diagnostics";
 export * from "./quick-fixes";
@@ -7,3 +7,5 @@ export * from "./symbol-scope";
 export * from "./function-catalog";
 export * from "./rule-catalog";
 export * from "./sql-native-heuristics";
+export * from "./report-project";
+export { collectGerDiagnostics } from "./ger-diagnostics";

@@ -80,7 +80,7 @@ import {
   type CustomFunctionSymbol,
 } from "./document-symbols";
 import { mergeEligible } from "./symbol-scope";
-import { demobileTableCompletions } from "./adapters/vscode/demobile-catalog-loader";
+import { localTableCompletions, localColumnCompletions, isTableColumnCompletionContext } from "./adapters/vscode/local-catalog-loader";
 
 function toKind(kind: "keyword" | "function" | "type"): vscode.CompletionItemKind {
   switch (kind) {
@@ -1272,10 +1272,53 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         return new vscode.CompletionList(qfItems, false);
       }
 
+      // Após "E012FAM." — somente campos dessa tabela (sem builtins/funções/variáveis).
+      if (isTableColumnCompletionContext(linePrefix)) {
+        const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
+        const catalogColItems = catalogColRaw.map((t, i) => {
+          const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+          item.insertText = t.insertText;
+          item.detail = t.detail;
+          if (t.documentation) item.documentation = t.documentation;
+          item.sortText = `0${String(i).padStart(3, "0")}`;
+          const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
+          const suf = m?.[1]?.length ?? 0;
+          item.range = new vscode.Range(
+            position.line,
+            position.character - suf,
+            position.line,
+            position.character
+          );
+          return item;
+        });
+        return new vscode.CompletionList(catalogColItems, false);
+      }
+
       const defItem = definirCompletion(document, position, word, wordRange);
-      const demobileItems =
+      const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
+      const catalogColItems = catalogColRaw.map((t, i) => {
+        const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+        item.insertText = t.insertText;
+        item.detail = t.detail;
+        if (t.documentation) item.documentation = t.documentation;
+        item.sortText = `1${String(i).padStart(3, "0")}`;
+        if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
+          const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
+          const suf = m?.[1]?.length ?? 0;
+          item.range = new vscode.Range(
+            position.line,
+            position.character - suf,
+            position.line,
+            position.character
+          );
+        } else {
+          item.range = wordRange;
+        }
+        return item;
+      });
+      const catalogTableItems =
         word.length >= 1 && /^[A-Za-z_]/.test(word)
-          ? demobileTableCompletions(word).map((t, i) => {
+          ? localTableCompletions(word).map((t, i) => {
               const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
               item.detail = t.detail;
               if (t.documentation) {
@@ -1291,10 +1334,17 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         ...(defItem ? [defItem] : []),
         ...customItems,
         ...fnItems,
-        ...demobileItems,
+        ...catalogColItems,
+        ...catalogTableItems,
       ];
 
-      if (fnItems.length || defItem || customItems.length || demobileItems.length) {
+      if (
+        fnItems.length ||
+        defItem ||
+        customItems.length ||
+        catalogTableItems.length ||
+        catalogColItems.length
+      ) {
         return new vscode.CompletionList(base, false);
       }
 

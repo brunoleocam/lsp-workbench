@@ -22,6 +22,26 @@
 
 ## Unreleased
 
+### Adicionado (PDR-010 — escopo implícito de relatório)
+
+- Auto-escopo de símbolos sob `relatorio.json` + `Definicao`/`Secoes` (isola irmãos)
+- Comandos: **Importar Contexto de…** / **Exportar Contexto para…** (pasta, arquivo ou `lsp.contexts`)
+- Status bar / **Mostrar Escopo do Relatório**
+
+### Adicionado (PDR-009 — catálogo base + overlay)
+
+- Starter público: `catalog.example.json` + SQL R996/R998 (sem dump completo no git)
+- `catalog.json` local gitignored; scripts `catalog-from-r996-tsv.mjs` / `export-banco-senior-base.mjs`
+- `build-local-catalog.mjs` mescla base local + overlay `docs/banco-senior/`
+- Resolução de catálogo: overlay `.generated` → base `.generated` → base `catalog.json`
+
+### Adicionado (PDR-008 — projeto de relatório)
+
+- Comandos: `lspWorkbench.gerarRelatorio`, `copiarRegraRelatorio`, `exportarRelatorioMultiTrecho`
+- Diagnostics **GER001–GER004** (contexto Pré-Seleção / seções)
+- Completion de colunas via `tabelaBase` + catálogo local (`E012FAM.`)
+- Scaffold via comando / `/gerar-relatorio` (Agent); testes GER* em temp + smoke-ger*
+
 ### Corrigido
 
 - SYN009: QF Ctrl+Espaço via comando dedicado (`applySyn009`) — evita sumir no suggest com literal longo; range do alerta no literal; CRLF no fixer

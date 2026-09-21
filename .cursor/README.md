@@ -8,7 +8,7 @@ Padrão `lsp-<ação>`: `lsp-linguagem`, `lsp-gerar`, `lsp-validar`, `lsp-format
 
 ## Commands
 
-`/validar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`.
+`/validar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`.
 
 ## Pacotes
 

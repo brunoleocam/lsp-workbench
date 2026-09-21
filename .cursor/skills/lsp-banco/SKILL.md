@@ -1,9 +1,9 @@
 ﻿---
 name: lsp-banco
-description: Ao definir tabelas, colunas, chaves, JOINs, enumerações ou SQL Oracle do ERP Senior, consultar docs/banco-senior antes de responder ou gerar LSP. Usar em toda menção a E*/R*/USU_* ou campos CODEMP, NUMPED, etc.
+description: Ao definir tabelas, colunas, chaves, JOINs, enumerações ou SQL Oracle do ERP Senior, consultar o catálogo local (docs/banco-senior-base e overlay docs/banco-senior se existir) antes de responder ou gerar LSP.
 ---
 
-# Consulta ao modelo de dados – docs/banco-senior
+# Consulta ao modelo de dados – catálogo local
 
 **Obrigatório** sempre que a tarefa envolver:
 
@@ -13,34 +13,21 @@ description: Ao definir tabelas, colunas, chaves, JOINs, enumerações ou SQL Or
 - **Enumerações** / listas de valores de campo,
 - **SQL** (SELECT/INSERT/UPDATE) contra o Oracle do Senior em contexto LSP.
 
-**Ferramenta/MCP:** nenhuma — evidência nos arquivos do repositório `docs/banco-senior/`.
+**Ferramenta/MCP:** nenhuma — evidência nos arquivos do workspace.
 
 ## Ordem de leitura (mínimo útil)
 
-1. **`docs/banco-senior/README.md`** — visão da pasta e links.
-2. Conforme a dúvida:
-   - **Convenção de nomes / prefixos:** `docs/banco-senior/convencoes-nomenclatura.md`
-   - **Fluxo de negócio (pedido → NF → título, etc.):** `docs/banco-senior/dominios-fluxos.md`
-   - **Tabelas mais usadas e colunas típicas:** `docs/banco-senior/tabelas-principais.md`
-   - **CODEMP, CODFIL, NUMPED, NUMNFV, exemplos de JOIN:** `docs/banco-senior/chaves-relacionamentos.md`
-   - **Trechos de SQL homologados por domínio:** `docs/banco-senior/exemplos-por-dominio.md`
-   - **NVL, datas, `sys_context`, placeholders LSP `:vn`:** `docs/banco-senior/sintaxe-oracle-senior.md`
-   - **Enumerações / listas:** `docs/banco-senior/dicionario-dados/dominios-enumeracoes-r996lsf.md` e `dominios-enumeracoes-r996lsf-r998lsf.md`
-3. **Uma tabela específica:** `docs/banco-senior/dicionario-dados/tabelas/<NOME_TABELA>.md`  
-   - Título `# CODIGO – Descrição` é a descrição canônica (alinhado à regra `documentacao-veracidade.mdc`).
-   - Relacionamentos LNK e enums do campo, quando presentes no mesmo arquivo.
+1. **`docs/banco-senior-base/README.md`** — como gerar `catalog.json` (R996/R998) e contrato do JSON.
+2. Se existir overlay de cliente (gitignore no repo público):
+   - **`docs/banco-senior/README.md`** e markdowns de domínio/tabelas.
+3. Sem `catalog.json` / overlay: dizer que não há dicionário local; não inventar colunas — orientar a gerar via `scripts/catalog-from-r996-tsv.mjs` (ver `docs/banco-senior-base/`).
 
-## Integração com LSP
+## Integração com a extensão
 
-- Regra do projeto: **`lsp-banco-senior.mdc`** (placeholders, CODEMP/CODFIL, boas práticas).
-- Documentação de **funções SQL/cursor na linguagem:** `docs/lsp/sql.md`, `docs/lsp/cursores.md`.
-- Geração completa de `.lsp`: usar antes o **`lsp-gerar`**.
+- Setting: `lsp.catalog.path` (opcional; senão resolve paths PDR-009).
+- Completion `Tabela.Campo` e DEM001 dependem do catálogo local.
 
 ## O que não fazer
 
-- Inventar coluna, tipo ou valor de enum sem abrir o `.md` da tabela (ou enums / exemplos homologados).
-- Descrever finalidade de tabela ERP sem bater com o título do arquivo em `dicionario-dados/tabelas/`.
-
-## Se o arquivo da tabela não existir
-
-Dizer explicitamente que não há entrada no dicionário local; não preencher lacuna com suposição — pedir confirmação ou outra fonte homologada.
+- Inventar coluna, tipo ou valor de enum sem evidência no catálogo/markdown local.
+- Assumir overlay Demobile ou de outro cliente em clone público sem essas pastas.

@@ -17,6 +17,28 @@ import {
 } from "./sql-native-heuristics";
 import { parseFileSymbols } from "./document-symbols";
 import { findCustomCalls, localEligibleNames } from "./symbol-scope";
+import { collectGerDiagnostics } from "./ger-diagnostics";
+import type { ReportContext } from "./report-project";
+import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+
+const BUILTIN_FUNC_NAMES = new Set(
+  LSP_FUNCTION_CATALOG.map((e) => e.label.toLowerCase())
+);
+
+const TYPE_WORDS = new Set([
+  "alfa",
+  "numero",
+  "data",
+  "lista",
+  "cursor",
+  "tabela",
+  "grid",
+]);
+
+/** Tabela Senior (E012FAM / R070EMP / USU_*) — não é variável SEM001. */
+function isSeniorTableId(name: string): boolean {
+  return /^(e|r)\d{3}[a-z0-9]*$/i.test(name) || /^usu_[a-z]/i.test(name);
+}
 
 export type DiagnosticHit = {
   id: string;
@@ -36,7 +58,19 @@ export type AnalyzeLspOptions = {
    * Nomes de tabela do catálogo local (JSON). Se presente, emite DEM001
    * para identificadores Senior (prefixos E, R, USU_) ausentes do catálogo.
    */
+  catalogTableNames?: ReadonlySet<string> | readonly string[];
+  /**
+   * @deprecated Use `catalogTableNames`.
+   */
   demobileTableNames?: ReadonlySet<string> | readonly string[];
+  /**
+   * Contexto de projeto de relatório (PDR-008). Se presente, emite GER*.
+   */
+  reportContext?: ReportContext;
+  /**
+   * Globais conhecidas (ex. E* de Entrada.json) — evitam SEM001 falso.
+   */
+  knownGlobals?: readonly string[];
 };
 
 function stripStringsAndComments(line: string): string {
@@ -70,11 +104,13 @@ export function lineSuppressions(lines: string[]): Map<number, Set<string>> {
   };
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    for (const m of line.matchAll(/@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+)\b/gi)) {
+    for (const m of line.matchAll(
+      /@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+)\b/gi
+    )) {
       add(i, m[1]);
     }
     for (const m of line.matchAll(
-      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+)\b/gi
+      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+)\b/gi
     )) {
       add(i + 1, m[1]);
     }
@@ -107,6 +143,9 @@ export function analyzeLsp(
   let sawNonDefinirStmt = false;
   let afterExecSqlEx = 0; // janela de linhas após ExecSQLEx (RUL009)
   const defined = new Set<string>();
+  for (const g of opts.knownGlobals ?? []) {
+    if (g) defined.add(g.toLowerCase());
+  }
   /** tipo do Definir: alfa|numero|data|lista|cursor */
   const definedTypes = new Map<string, string>();
   /** Alfas que receberam atribuição com aspecto de SQL (RUL018). */
@@ -776,19 +815,23 @@ export function analyzeLsp(
         fileCloses.set(handle, (fileCloses.get(handle) ?? 0) + 1);
       }
     }
-    // Coleta ids prefixados usados (SEM001) — colunas no texto da linha do documento
-    for (const m of raw.matchAll(/\b((?:va|vn|vd|vl)[A-Za-z_]\w*|Cur_[A-Za-z_]\w*)\b/g)) {
+    // SEM001 — qualquer identificador usado (prefixo va*/vn*/… é só boa prática).
+    // Exclui: membro .Campo, chamada Func(, strings, keywords, builtins, tabelas E012*.
+    for (const m of raw.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\b/g)) {
       const display = m[1];
       const key = display.toLowerCase();
       if (usedPrefixed.has(key)) continue;
-      // ignorar se só aparece dentro de string pura (heurística: aspas ao redor no raw)
-      const before = raw.slice(0, m.index);
+      const idx = m.index!;
+      const before = raw.slice(0, idx);
       const quoteCount = (before.match(/"/g) || []).length;
       if (quoteCount % 2 === 1) continue;
+      if (idx > 0 && raw[idx - 1] === ".") continue;
+      const after = raw.slice(idx + display.length);
+      if (/^\s*\(/.test(after)) continue;
       usedPrefixed.set(key, {
         line: i,
-        start: m.index!,
-        end: m.index! + display.length,
+        start: idx,
+        end: idx + display.length,
         display,
       });
     }
@@ -1125,17 +1168,27 @@ export function analyzeLsp(
     }
   }
 
-  // SEM001: prefixados usados sem Definir (só se o arquivo já declara algo).
-  // Numero é implícito: vn* sem Definir é válido (compilador trata como Numero = 0).
+  // SEM001: identificador usado sem Definir (só se o arquivo já declara algo).
+  // Prefixo va/vn/vd/vl/Cur_/E* é boa prática (SYN006/RUL008), não pré-requisito.
+  // Numero implícito: vn* sem Definir é válido (compilador trata como Numero = 0).
   // Params de Definir Funcao / Funcao NÃO são variáveis de arquivo (não alertar SEM001).
   const funcParamNames = collectFuncParamNames(source);
+  const localFnNames = new Set(
+    parseFileSymbols(source).functions.map((f) => f.name.toLowerCase())
+  );
   if (defined.size > 0) {
     for (const [name, loc] of usedPrefixed) {
       if (defined.has(name)) continue;
       if (funcParamNames.has(name)) continue;
+      if (localFnNames.has(name)) continue;
+      if (opts.scopedExternal?.has(name)) continue;
       if (/^p[a-z]/i.test(name)) continue;
       if (/^vn/i.test(name)) continue;
       if (BUILTIN_OR_KW.test(name)) continue;
+      if (RESERVED_WORDS.has(name)) continue;
+      if (BUILTIN_FUNC_NAMES.has(name)) continue;
+      if (TYPE_WORDS.has(name)) continue;
+      if (isSeniorTableId(name)) continue;
       push(
         hits,
         "SEM001",
@@ -1322,10 +1375,18 @@ export function analyzeLsp(
     // analyzer opcional — não quebra heurísticas RUL/SYN/FUN
   }
 
+  // GER* — projeto de relatório (PDR-008)
+  if (opts.reportContext) {
+    for (const h of collectGerDiagnostics(source, opts.reportContext)) {
+      hits.push(h);
+    }
+  }
+
   // DEM001 — tabela Senior citada mas ausente do catálogo local
-  if (opts.demobileTableNames) {
+  const catalogNames = opts.catalogTableNames ?? opts.demobileTableNames;
+  if (catalogNames) {
     const known = new Set(
-      [...opts.demobileTableNames].map((n) => String(n).toUpperCase())
+      [...catalogNames].map((n) => String(n).toUpperCase())
     );
     const TABLE_ID = /\b((?:E|R)\d{3}[A-Z0-9]+|USU_[A-Z][A-Z0-9_]*)\b/gi;
     const reported = new Set<string>();

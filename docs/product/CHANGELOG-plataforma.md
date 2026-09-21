@@ -2,6 +2,52 @@
 
 Histórico de implementação do monorepo (não confundir com o [CHANGELOG da extensão](../../packages/lsp-workbench/CHANGELOG.md)).
 
+## 2026-09-21 — PDR-010 (escopo implícito por projeto de relatório)
+
+| Artefato | Estado |
+|----------|--------|
+| Docs | [PDR-010](pdr/PDR-010-escopo-projeto-relatorio.md); ADR-007 / schema `contextoExtra` |
+| Extensão | Overlay em `resolvePeerFiles`; comandos adicionar/mostrar escopo |
+| Analyzer | `isReportProjectLayout`, `parseRelatorioMeta.contextoExtra` |
+
+## 2026-09-21 — Licença MIT + política de reuso (llutti)
+
+| Artefato | Estado |
+|----------|--------|
+| [`LICENSE`](../../LICENSE) | MIT na raiz (Copyright Bruno Campos) — packages já declaravam MIT |
+| [`CREDITS.md`](../../CREDITS.md) | Atribuição a [llutti/vscode-language-lsp](https://github.com/llutti/vscode-language-lsp) |
+| [PDR-001](pdr/PDR-001-plataforma-lsp.md) | Removido não-objetivo “não copiar terceiros”; permitido copiar/inspirar com créditos |
+
+## 2026-09-21 — PDR-009 (catálogo base + overlay)
+
+| Artefato | Estado |
+|----------|--------|
+| Docs | [PDR-009](pdr/PDR-009-catalogo-base-overlay.md); PDR-007 atualizado |
+| Base / contrato | `docs/banco-senior-base/` (`catalog.example.json`; `catalog.json` **local**/gitignore) |
+| Build | `scripts/build-local-catalog.mjs` mescla base + `docs/banco-senior/` |
+| Extensão | Fallback de path: overlay `.generated` → base `.generated` |
+
+## 2026-09-21 — PDR-008 / ADR-007 (projeto de relatório)
+
+| Artefato | Estado |
+|----------|--------|
+| Docs | [PDR-008](pdr/PDR-008-projeto-relatorio.md), [ADR-007](adr/ADR-007-formato-projeto-relatorio.md), schemas em `docs/gerador-relatorios/schema/` |
+| Scaffold / testes | comando Gerar Relatório; `report-scaffold.test.ts` + smoke-ger* |
+| Extensão | `lspWorkbench.gerarRelatorio`, copiar regra, export multi-trecho, completion de colunas |
+| Analyzer | Resolver de projeto + diagnostics **GER001–GER004** |
+| Agent | `/gerar-relatorio` |
+
+### Roadmap
+
+| Fase | Estado |
+|------|--------|
+| P0 Docs + fixture | Feito |
+| P1 Scaffold | Feito |
+| P2 GER* | Feito |
+| P3 Banco / colunas | Feito (quando catálogo local existir) |
+| P4 Copiar / export | Feito |
+| Visual / `.GER` | Fora de escopo |
+
 ## 2026-09-18 — analyzer 0.3.0 / LS 0.2.0 (paridade diagnostics)
 
 | Artefato | Versão / estado |
