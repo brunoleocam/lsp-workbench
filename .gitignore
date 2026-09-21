@@ -3,6 +3,7 @@ node_modules/
 **/out/
 **/dist/
 *.vsix
+*.tgz
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
