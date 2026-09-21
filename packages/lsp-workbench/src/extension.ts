@@ -7,7 +7,7 @@ import { registerLanguageFeatures } from "./language-features";
 import { registerContextCommands, registerStatusBar } from "./context-commands";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
 import { SENIOR_LSP_LANGUAGE_ID } from "./language";
-import { APPLY_TEXT_EDITS_CMD, applySerializedTextEdits } from "./apply-edits";
+import { APPLY_TEXT_EDITS_CMD, applySerializedTextEdits, APPLY_SYN009_CMD, applySyn009OnLine } from "./apply-edits";
 import { registerSemanticTokens } from "./adapters/vscode/semantic-tokens-provider";
 import { registerOutlineProvider } from "./adapters/vscode/outline-provider";
 import { registerRefactorActions } from "./adapters/vscode/refactors-provider";
@@ -212,6 +212,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(APPLY_TEXT_EDITS_CMD, applySerializedTextEdits)
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(APPLY_SYN009_CMD, applySyn009OnLine)
   );
 
   context.subscriptions.push(

@@ -22,9 +22,14 @@
 
 ## Unreleased
 
+### Corrigido
+
+- SYN009: QF Ctrl+Espaço via comando dedicado (`applySyn009`) — evita sumir no suggest com literal longo; range do alerta no literal; CRLF no fixer
+- SEM001 + SYN009 na mesma linha: ambos via `command` (mesmo mecanismo no suggest)
+
 ### Documentação
 
-- Status produto alinhado a 0.2.0 / analyzer 0.2.0 / LS 0.1.0
+- Status produto alinhado a 0.2.0 / analyzer 0.3.0 / LS 0.2.0
 - PDR-006 (Agent ↔ analyzer)
 - Removida matriz competitiva / referências a extensões de terceiros
 

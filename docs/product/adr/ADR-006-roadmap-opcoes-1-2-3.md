@@ -27,7 +27,7 @@ Frentes após o motor:
 | [PDR-006](../pdr/PDR-006-agent-analyzer.md) | Agent consome o mesmo analyzer | **Concluído** |
 | [PDR-007](../pdr/PDR-007-catalogo-local-bridge.md) | Catálogo local → IDE (JSON + DEM001) | **Concluído** |
 
-Próximo público: catálogos multi-sistema / Marketplace (PDR-001 / backlog UX).
+Próximo público: catálogos multi-sistema / Marketplace (PDR-001 / backlog UX). Smoke F5 da suíte de fixtures validado (2026-09-21).
 
 ### Por que a Opção 3 não descarta 1 e 2
 

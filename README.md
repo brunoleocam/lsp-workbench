@@ -6,66 +6,67 @@
 
 Remoto: https://github.com/brunoleocam/lsp-workbench
 
-## Visão geral
+## Status (0.2.0)
 
-O LSP Workbench reúne, no fluxo normal de edição e no chat do Cursor:
+| Artefato | Versão |
+|----------|--------|
+| Extensão `packages/lsp-workbench` | **0.2.0** |
+| Analyzer `@lsp-workbench/analyzer` | **0.3.0** |
+| Language Server (opt-in) | **0.2.0** |
+| Agent `packages/lsp-workbench-agent` | PDR-006 |
+
+Roadmap do motor (PDR-003…007 / ADR-006): **foundation concluída**. Próximo foco público: Marketplace / catálogos multi-sistema.
+
+A extensão cobre o **subconjunto estático** de regras (SYN/RUL/FUN/SEM/SQL + ANL/DEM) em [`docs/product/regras-estaticas-lsp.md`](docs/product/regras-estaticas-lsp.md) — não o manual `lsp.md` inteiro.
+
+## Visão geral
 
 - colorização, snippets e semantic tokens para `.lsp` / `.lspt`
 - autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
-- diagnósticos com IDs canônicos (SYN/RUL/FUN/SEM/SQL + ANL*)
-- formatação (`Format Document`) e refactors
+- diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
+- formatação e refactors
 - contextos multiarquivo e modo arquivo único
-- Agent Cursor com commands e skills alinhados às regras de ouro da linguagem
+- Agent Cursor alinhado às regras de ouro
 
-## Principais recursos
+## Extensão IDE
 
-### Extensão IDE (`packages/lsp-workbench`, 0.2.0)
+Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 
-Language id: **`senior-lsp`** · extensões: **`.lsp`**, **`.lspt`**
-
-- Formatação canônica (indentação, braces, parâmetros)
-- Diagnósticos e quick fixes
-- Completion e hover de builtins SENIOR
-- Semantic tokens, Outline, snippets (~30)
-- Contextos nomeados (`lsp.contexts`) e escopo de símbolos
-- Refactors: envolver com `Se` / `Enquanto` / `Para` / bloco; `Inicio/Fim` ↔ `{ }`; `\` → `+`
-- SQL embutido opt-in (formatação em `ExecSql` / `.SQL` / `SQL_DefinirComando`)
+- Formatação, diagnostics, QF, completion/hover (~214 builtins)
+- Semantic tokens, Outline, snippets
+- Contextos (`lsp.contexts`) e escopo de símbolos
+- Refactors e SQL embutido opt-in
 - Language Server opt-in (`lsp.server.enabled`, default `false`)
 
-### Agent Cursor (`packages/lsp-workbench-agent`)
+## Agent Cursor
 
 | Command | Função |
 |---------|--------|
 | `/validar-lsp` | Regras + sintaxe + semântica (IDs) |
 | `/formatar-lsp` | Layout canônico |
 | `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
-| `/gerar-lista-lsp` | Lista dinâmica a partir dos campos |
-| `/gerar-cursor-lsp` | Cursor simples/completo (+ SQL) |
-| `/gerar-http-lsp` | Chamada HTTP + parse JSON/XML |
+| `/gerar-lista-lsp` | Lista dinâmica |
+| `/gerar-cursor-lsp` | Cursor (+ SQL) |
+| `/gerar-http-lsp` | HTTP + parse JSON/XML |
 
 Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-validar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-revisar` · `@lsp-logs`
 
-## Como configurar
-
-### 1. Extensão (desenvolvimento local)
+## Configurar (dev)
 
 ```powershell
-cd packages\lsp-workbench
+cd packages\lsp-analyzer
+npm install
+npm run compile
+cd ..\lsp-workbench
 npm install
 npm test
 ```
 
-Abra a **raiz do monorepo** no Cursor/VS Code → painel **Run and Debug** → **Run LSP Workbench Extension** (F5).
+Abra a **raiz do monorepo** → **Run and Debug** → **Run LSP Workbench Extension** (F5).
 
-Detalhes: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md).
+Setup detalhado: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md) · mantenedores: [docs/product/DEVELOPER.md](docs/product/DEVELOPER.md).
 
-### 2. Agent
-
-Instale o plugin local (junction) a partir de `packages/lsp-workbench-agent` (ver [LOCAL-TEST.md](docs/product/LOCAL-TEST.md)) e use **Developer: Reload Window**.
-
-No próprio monorepo, o harness em [`.cursor/`](.cursor/) já espelha skills e commands públicos.
-
-### 3. Associate `.txt` de regra (opcional)
+### Associate `.txt` de regra (opcional)
 
 ```json
 {
@@ -76,15 +77,13 @@ No próprio monorepo, o harness em [`.cursor/`](.cursor/) já espelha skills e c
 }
 ```
 
-## Como usar
+## Usar
 
 ### Arquivo único
 
-Abra um `.lsp` ou `.lspt` — a extensão ativa `senior-lsp` sem configuração extra.
+Abra um `.lsp` / `.lspt` — ativa `senior-lsp` sem config extra.
 
 ### Contextos multiarquivo
-
-Exemplo em `.vscode/settings.json`:
 
 ```json
 {
@@ -101,40 +100,22 @@ Exemplo em `.vscode/settings.json`:
 }
 ```
 
-Comandos: **LSP Workbench: Criar/Editar/Remover Contexto**, **Alternar Escopo de Símbolos**, **Selecionar Sistema (Fallback)**.
-
-### Formatação e SQL embutido
+### Formatação / SQL / Language Server
 
 ```json
 {
   "lsp.format.enabled": true,
   "lsp.format.indentSize": 2,
   "lsp.format.embeddedSql.enabled": false,
-  "lsp.format.embeddedSql.dialect": "sql"
+  "lsp.server.enabled": false
 }
 ```
 
-### Language Server (opt-in)
-
-```powershell
-cd packages\lsp-analyzer
-npm install
-npm run compile
-cd ..\lsp-language-server
-npm install
-npm test
-```
-
-Settings: `lsp.server.enabled` = `true` → **Reload Window**. Diagnósticos ANL* passam a ter source `LSP Analyzer`.
-
-## Exemplos e linguagem
+## Docs
 
 | Recurso | Onde |
 |---------|------|
-| Exemplos `.lsp` | [`exemplos/`](exemplos/) |
-| Docs da linguagem | [`docs/lsp/`](docs/lsp/) |
-| Config compartilhada | [`lsp.config.json`](lsp.config.json) |
-
-## Para mantenedores
-
-Arquitetura, build, changelog de plataforma e PDRs/ADRs: [`docs/product/`](docs/product/) · guia do desenvolvedor: [`docs/product/DEVELOPER.md`](docs/product/DEVELOPER.md).
+| Exemplos | [`exemplos/`](exemplos/) |
+| Linguagem | [`docs/lsp/`](docs/lsp/) |
+| Produto (PDR/ADR) | [`docs/product/`](docs/product/) |
+| Regras estáticas | [`docs/product/regras-estaticas-lsp.md`](docs/product/regras-estaticas-lsp.md) |

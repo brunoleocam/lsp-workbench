@@ -20,7 +20,7 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | 2 Analyzer | **0.3.0** (lint unificado) |
 | 3 Language Server | **0.2.0** (paridade diagnostics) |
 | 4–5 Agent + catálogo | Concluídos |
-| Próximo | Higiene residual → **teste local F5** → Marketplace / Cursor |
+| Próximo | **Pré-Marketplace** (VSIX / publicação) |
 
 ## 2026-09-18 — foundation 0.2.0 / LS 0.1.0 (histórico)
 
@@ -42,7 +42,8 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | **3 — Language Server** | [PDR-005](pdr/PDR-005-compiler-e-language-server.md) | **Foundation** LS+Worker (opt-in) |
 | **4 — Agent ↔ analyzer** | [PDR-006](pdr/PDR-006-agent-analyzer.md) | **Concluído** (P0–P3) |
 
-Próximo foco público: Marketplace / catálogos multi-sistema (conforme PDR-001 / backlog UX).
+Próximo foco público: Marketplace / catálogos multi-sistema (PDR-001 / backlog UX).  
+Smoke F5 da suíte `fixtures/smoke-*.lsp` (QF Ctrl+Espaço / Ctrl+.) validado em 2026-09-21.
 
 ### Extensão 0.2.0 (resumo)
 

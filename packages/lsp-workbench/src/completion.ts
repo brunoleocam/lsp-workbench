@@ -42,6 +42,7 @@ import {
   applySyn007CloseComment,
   applySyn007CloseCommentLine,
   applySyn010DefinirStub,
+  applySyn009BreakString,
   applySyn004InicioFim,
   syn004PairLineEdits,
   isDefinirCursorHandle,
@@ -64,8 +65,10 @@ import {
 import { filterSuppressedHits, IGNORE_DIAGNOSTIC_CMD, isLineSuppressed } from "./suppressions";
 import {
   APPLY_TEXT_EDITS_CMD,
+  APPLY_SYN009_CMD,
   serializeFullDocumentReplace,
   serializeLineReplace,
+  serializeTextEdit,
   type SerializedTextEdit,
 } from "./apply-edits";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
@@ -283,7 +286,8 @@ function quickFixCompletions(
   document: vscode.TextDocument,
   line: vscode.TextLine,
   word: string,
-  wordRange: vscode.Range
+  wordRange: vscode.Range,
+  position: vscode.Position
 ): vscode.CompletionItem[] {
   const src = document.getText();
   const lines = src.replace(/\r\n/g, "\n").split("\n");
@@ -294,6 +298,23 @@ function quickFixCompletions(
     analyzeLsp(src).filter((h) => h.line === line.lineNumber)
   );
   const items: vscode.CompletionItem[] = [];
+
+  // Literal longo / dentro de aspas: range zero no cursor. Ambos SEM001 e SYN009
+  // usam pushCommandFix (mesmo mecanismo) — additionalTextEdits vs command fazia
+  // o suggest mostrar só o Definir; e additionalTextEdits com \\n escondia o SYN009.
+  const inString =
+    (line.text.slice(0, position.character).match(/"/g) || []).length % 2 === 1;
+  const longToken = word.length > 48 || inString;
+  const qfInsert = longToken ? "" : word;
+  const qfRange = longToken
+    ? new vscode.Range(position, position)
+    : wordRange;
+  const lineKeys = (line.text.match(/\b(?:va|vn|vd|vl|Cur_)[A-Za-z_]\w*/gi) || [])
+    .slice(0, 6)
+    .join(" ");
+  const filterWord = [word || "_", lineKeys].filter(Boolean).join(" ");
+  const filterLine = line.text.length > 64 ? line.text.slice(0, 48) : line.text;
+  const hasSyn009 = hits.some((h) => h.id === "SYN009");
 
   const pushLineFix = (
     label: string,
@@ -313,8 +334,7 @@ function quickFixCompletions(
     }
     item.range = line.range;
     item.sortText = sortText;
-    // Prefixo = palavra sob o cursor (Ctrl+Espaço em qualquer ponto da linha com alerta)
-    item.filterText = `${word || "_"} ${label} ${detail} ${line.text}`;
+    item.filterText = `${filterWord} ${label} ${detail} ${filterLine}`;
     if (preselect) item.preselect = true;
     // extras NÃO podem sobrepor line.range (senão o VS Code corrompe o texto)
     if (extras.length) item.additionalTextEdits = extras;
@@ -336,18 +356,18 @@ function quickFixCompletions(
   ) => {
     const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Issue);
     item.detail = detail;
-    item.insertText = word;
-    item.range = wordRange;
+    item.insertText = qfInsert;
+    item.range = qfRange;
     item.additionalTextEdits = edits;
     item.sortText = sortText;
-    item.filterText = `${word || line.text} ${line.text} ${filterExtra} ${label}`;
+    item.filterText = `${filterWord} ${filterExtra} ${label} ${filterLine}`;
     item.preselect = true;
     items.push(item);
   };
 
   /**
    * QF multi-linha / doc inteiro via command (Ctrl+Espaço).
-   * Primary = no-op no wordRange (bate o filtro do suggest); edits reais no command.
+   * Primary = no-op no cursor (bate o filtro); edits reais no command.
    */
   const pushCommandFix = (
     label: string,
@@ -358,13 +378,13 @@ function quickFixCompletions(
     preselect = true
   ) => {
     if (!edits.length) return;
-    const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Issue);
+    // Keyword: Issue some no Cursor quando há outro Keyword (Definir) na lista.
+    const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Keyword);
     item.detail = detail;
-    item.insertText = word;
-    item.range = wordRange;
+    item.insertText = qfInsert;
+    item.range = qfRange;
     item.sortText = sortText;
-    // Prefixo = palavra sob o cursor → Ctrl+Espaço em qualquer token da linha grifada
-    item.filterText = `${word || "_"} ${label} ${filterExtra} ${line.text}`;
+    item.filterText = `${filterWord} ${label} ${filterExtra} ${filterLine}`;
     if (preselect) item.preselect = true;
     item.command = {
       command: APPLY_TEXT_EDITS_CMD,
@@ -541,20 +561,18 @@ function quickFixCompletions(
       const name = line.text.slice(hit.startCol, hit.endCol);
       if (/^(va|vn|vd|vl|Cur_)/i.test(name) && !isDefined(src, name)) {
         const { afterLine, text } = buildDefinirInsertEdit(src, line.lineNumber, name);
-        const defItem = new vscode.CompletionItem(
-          definirStatement(name),
-          vscode.CompletionItemKind.Keyword
+        pushCommandFix(
+          `QF: ${definirStatement(name)}`,
+          "LSP · Quick Fix SEM001",
+          hasSyn009 ? "00_QF_SEM001_b" : "00_QF_SEM001",
+          [
+            serializeTextEdit(
+              vscode.TextEdit.insert(new vscode.Position(afterLine + 1, 0), text)
+            ),
+          ],
+          `${name} Definir SEM001`,
+          !hasSyn009
         );
-        defItem.detail = "LSP · Quick Fix SEM001";
-        defItem.insertText = name;
-        defItem.range = new vscode.Range(line.lineNumber, hit.startCol, line.lineNumber, hit.endCol);
-        defItem.additionalTextEdits = [
-          vscode.TextEdit.insert(new vscode.Position(afterLine + 1, 0), text),
-        ];
-        defItem.sortText = "00_QF_SEM001";
-        defItem.filterText = `${word} ${name} Definir SEM001 ${line.text}`;
-        defItem.preselect = true;
-        items.push(defItem);
       }
       continue;
     }
@@ -853,6 +871,30 @@ function quickFixCompletions(
       continue;
     }
 
+    if (hit.id === "SYN009") {
+      const fixed = applySyn009BreakString(line.text);
+      if (fixed === line.text) continue;
+      // Não embutir o literal quebrado em insertText/command.args/docs — o suggest do Cursor
+      // descarta o item. Só uri+linha; o comando relê e aplica.
+      const item = new vscode.CompletionItem(
+        "QF: Quebrar literal longo (SYN009)",
+        vscode.CompletionItemKind.Keyword
+      );
+      item.detail = "LSP · SYN009 — inserir \\ ~coluna 80";
+      item.insertText = qfInsert;
+      item.range = qfRange;
+      item.sortText = "00_QF_SYN009_a";
+      item.filterText = `${filterWord} Quebrar SYN009`;
+      item.preselect = true;
+      item.command = {
+        command: APPLY_SYN009_CMD,
+        title: "QF: Quebrar literal longo (SYN009)",
+        arguments: [uri, line.lineNumber],
+      };
+      items.push(item);
+      continue;
+    }
+
     if (hit.id === "SYN010") {
       const end =
         line.lineNumber + 1 < document.lineCount
@@ -867,7 +909,7 @@ function quickFixCompletions(
       del.insertText = "";
       del.range = new vscode.Range(line.range.start, end);
       del.sortText = "00_QF_SYN010";
-      del.filterText = `${word || line.text} ${line.text} SYN010`;
+      del.filterText = `${filterWord} SYN010 ${filterLine}`;
       del.preselect = true;
       items.push(del);
       const stub = applySyn010DefinirStub(line.text);
@@ -997,10 +1039,10 @@ function quickFixCompletions(
         vscode.CompletionItemKind.Issue
       );
       item.detail = `LSP · silencia ${hit.id} sem alterar o código`;
-      item.insertText = word;
-      item.range = wordRange;
+      item.insertText = qfInsert;
+      item.range = qfRange;
       item.sortText = `01_IGNORE_${hit.id}`;
-      item.filterText = `${word || line.text} ${line.text} Ignorar ${hit.id}`;
+      item.filterText = `${filterWord} ${filterLine} Ignorar ${hit.id}`;
       item.command = {
         command: IGNORE_DIAGNOSTIC_CMD,
         title: `Ignorar ${hit.id}`,
@@ -1113,10 +1155,17 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       const line = document.lineAt(position);
       const linePrefix = line.text.slice(0, position.character);
       const quotes = (linePrefix.match(/"/g) || []).length;
-      const wordRange =
+      const rawWordRange =
         document.getWordRangeAtPosition(position, /[A-Za-z_][\w]*/) ??
         new vscode.Range(position, position);
-      const word = document.getText(wordRange);
+      const rawWord = document.getText(rawWordRange);
+      // Dentro de literal / token gigante: zera a palavra do filtro senão o suggest
+      // exige casar AAA… e esconde QFs (exceto SEM001 que repetia o token no filter).
+      const inStringOrLong = quotes % 2 === 1 || rawWord.length > 48;
+      const wordRange = inStringOrLong
+        ? new vscode.Range(position, position)
+        : rawWordRange;
+      const word = inStringOrLong ? "" : rawWord;
 
       const memberSuggestions = completeMembersAt(document.getText(), linePrefix);
       if (memberSuggestions.length) {
@@ -1139,7 +1188,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         return new vscode.CompletionList(memberItems, false);
       }
 
-      const qfItems = quickFixCompletions(document, line, word, wordRange);
+      const qfItems = quickFixCompletions(document, line, word, wordRange, position);
       const lineHasAlerts = qfItems.length > 0;
 
       let system = "";
@@ -1194,8 +1243,9 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         if (mask) {
           return new vscode.CompletionList([...qfItems, ...mask.items], false);
         }
+        // Só QFs da linha — incomplete:false evita o cliente refiltrar e sumir o SYN009.
         if (lineHasAlerts) {
-          return new vscode.CompletionList(qfItems, true);
+          return new vscode.CompletionList(qfItems, false);
         }
         return [];
       }
@@ -1214,6 +1264,12 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
           [...qfItems, ...rewrite.items, ...customItems, ...fnItems],
           false
         );
+      }
+
+      // Com alerta na linha: só QFs (SEM001+SYN009 juntos). Não misturar Definir duplicado /
+      // catálogo — o suggest priorizava Keyword "Definir" e escondia o quebrar literal.
+      if (lineHasAlerts) {
+        return new vscode.CompletionList(qfItems, false);
       }
 
       const defItem = definirCompletion(document, position, word, wordRange);
@@ -1237,10 +1293,6 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         ...fnItems,
         ...demobileItems,
       ];
-
-      if (lineHasAlerts) {
-        return new vscode.CompletionList(base, true);
-      }
 
       if (fnItems.length || defItem || customItems.length || demobileItems.length) {
         return new vscode.CompletionList(base, false);

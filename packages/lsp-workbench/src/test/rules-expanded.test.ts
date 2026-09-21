@@ -322,6 +322,11 @@ describe("quick-fixes", () => {
       'vaLonga = "' + "A".repeat(100) + '";'
     );
     assert.match(broken, /\\\n/);
+    const brokenCr = applySyn009BreakString(
+      'vaLonga = "' + "A".repeat(100) + '";\r'
+    );
+    assert.match(brokenCr, /\\\n/);
+    assert.ok(brokenCr.endsWith("\r") || brokenCr.includes('";'));
   });
 
   it("FUN001 Truncar", () => {

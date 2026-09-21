@@ -27,6 +27,7 @@ import {
   applySyn005MoveDefinir,
   applySyn007CloseComment,
   applySyn010DefinirStub,
+  applySyn009BreakString,
   applySyn004PairFix,
   applySyn004InicioFim,
   findSql002Criar,
@@ -799,6 +800,21 @@ function syn007Actions(
   ];
 }
 
+function syn009Actions(
+  document: vscode.TextDocument,
+  diagnostic: vscode.Diagnostic
+): vscode.CodeAction[] {
+  const line = document.lineAt(diagnostic.range.start.line);
+  const fixed = applySyn009BreakString(line.text);
+  const a = lineReplaceAction(
+    document,
+    diagnostic,
+    "Quebrar literal longo com \\ (SYN009)",
+    fixed
+  );
+  return a ? [a] : [];
+}
+
 function syn004Actions(
   document: vscode.TextDocument,
   diagnostic: vscode.Diagnostic
@@ -983,6 +999,7 @@ function actionsForDiagnostic(
   if (code === "SYN004") return syn004Actions(document, diagnostic);
   if (code === "SYN005") return syn005Actions(document, diagnostic);
   if (code === "SYN007") return syn007Actions(document, diagnostic);
+  if (code === "SYN009") return syn009Actions(document, diagnostic);
   if (code === "SYN010") return syn010Actions(document, diagnostic);
   if (code === "SYN006" || code === "RUL008") return prefixRenameActions(document, diagnostic, code);
   return lineFixerActions(document, diagnostic);

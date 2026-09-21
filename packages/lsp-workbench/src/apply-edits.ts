@@ -1,7 +1,14 @@
 import * as vscode from "vscode";
+import { applySyn009BreakString } from "./quick-fixes";
 
 /** Aplica TextEdits serializáveis via CompletionItem.command (Ctrl+Espaço). */
 export const APPLY_TEXT_EDITS_CMD = "lsp-workbench.applyTextEdits";
+
+/**
+ * SYN009 via Ctrl+Espaço: args mínimos (uri + linha).
+ * Embutir o literal quebrado em command/insertText/docs faz o suggest do Cursor sumir o item.
+ */
+export const APPLY_SYN009_CMD = "lsp-workbench.applySyn009";
 
 export type SerializedTextEdit = {
   startLine: number;
@@ -58,5 +65,22 @@ export async function applySerializedTextEdits(
       e.newText
     );
   }
+  return vscode.workspace.applyEdit(we);
+}
+
+/** Lê a linha no editor e aplica applySyn009BreakString (sem payload grande no CompletionItem). */
+export async function applySyn009OnLine(uriStr: string, lineNumber: number): Promise<boolean> {
+  if (!uriStr || lineNumber < 0) return false;
+  const uri = vscode.Uri.parse(uriStr);
+  let doc = vscode.workspace.textDocuments.find((d) => d.uri.toString() === uriStr);
+  if (!doc) {
+    doc = await vscode.workspace.openTextDocument(uri);
+  }
+  if (lineNumber >= doc.lineCount) return false;
+  const line = doc.lineAt(lineNumber);
+  const fixed = applySyn009BreakString(line.text);
+  if (fixed === line.text) return false;
+  const we = new vscode.WorkspaceEdit();
+  we.replace(uri, line.range, fixed);
   return vscode.workspace.applyEdit(we);
 }

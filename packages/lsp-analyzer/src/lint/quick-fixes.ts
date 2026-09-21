@@ -1302,7 +1302,10 @@ export function applySyn008RemoveExtraBrace(line: string): string {
 
 /** SYN009: quebra literal longo com `\` ~col 80. */
 export function applySyn009BreakString(line: string): string {
-  const m = line.match(/^(\s*)(.*?)(")([^"]{80,})(")(.*)$/);
+  // CRLF / split("\n") pode deixar `\r` no fim — `$` no JS casa antes do `\r` e o match falha.
+  const eol = /\r$/.test(line) ? "\r" : "";
+  const src = line.replace(/\r$/, "");
+  const m = src.match(/^(\s*)(.*?)(")([^"]{80,})(")(.*)$/);
   if (!m) return line;
   const indent = m[1];
   const before = m[2];
@@ -1311,7 +1314,7 @@ export function applySyn009BreakString(line: string): string {
   let breakAt = 80;
   const sp = body.lastIndexOf(" ", 80);
   if (sp >= 40) breakAt = sp + 1;
-  return `${indent}${before}"${body.slice(0, breakAt)}\\\n${indent}  ${body.slice(breakAt)}"${after}`;
+  return `${indent}${before}"${body.slice(0, breakAt)}\\\n${indent}  ${body.slice(breakAt)}"${after}${eol}`;
 }
 
 /** Localiza colunas de `Retorna;` / `Retorne;` na linha. */

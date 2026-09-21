@@ -6,7 +6,7 @@
 |-----------------|----------|
 | [DEVELOPER.md](DEVELOPER.md) | Build, F5, packages, manutenção |
 | [CHANGELOG-plataforma.md](CHANGELOG-plataforma.md) | Status e histórico de implementação |
-| [LOCAL-TEST.md](LOCAL-TEST.md) | Checklist de teste local |
+| [LOCAL-TEST.md](LOCAL-TEST.md) | Setup local (npm / F5 / Agent) |
 | [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) | Clean Architecture + mapa de packages |
 | [pdr/](pdr/) | Product Design Requirements |
 | [adr/](adr/) | Architecture Decision Records |

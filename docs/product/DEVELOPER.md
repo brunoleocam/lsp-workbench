@@ -8,8 +8,8 @@ Mantenedores do monorepo público. Usuário final: ver [README.md](../../README.
 |---------|-------|----------------|
 | `packages/lsp-workbench` | Extensão VS Code/Cursor | 0.2.0 |
 | `packages/lsp-workbench-agent` | Agent Cursor (rules/skills/commands) | — |
-| `packages/lsp-analyzer` | Lexer/parser/AST + diagnostics `ANL*` + `format` | 0.2.0 |
-| `packages/lsp-language-server` | Language Server + Worker (opt-in) | 0.1.0 |
+| `packages/lsp-analyzer` | Lexer/parser/AST + `analyzeLsp` (SYN/RUL/… + ANL*) | 0.3.0 |
+| `packages/lsp-language-server` | Language Server + Worker (opt-in) | 0.2.0 |
 
 Remoto: https://github.com/brunoleocam/lsp-workbench
 
@@ -36,7 +36,7 @@ npm test
 
 F5 na raiz do monorepo: launch **Run LSP Workbench Extension**.
 
-Checklist completo: [LOCAL-TEST.md](LOCAL-TEST.md).
+Setup: [LOCAL-TEST.md](LOCAL-TEST.md).
 
 ### Scripts úteis (raiz)
 

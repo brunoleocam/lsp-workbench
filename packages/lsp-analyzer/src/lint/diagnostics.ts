@@ -429,14 +429,20 @@ export function analyzeLsp(
     }
 
     // SYN009 string longa sem \
-    if (/"[^"]{100,}"/.test(raw) && !/\\\s*$/.test(trimmed)) {
-      push(
-        hits,
-        "SYN009",
-        "Literal longo: prefira quebrar com \\ ~coluna 80.",
-        i,
-        "warning"
-      );
+    {
+      const sm = raw.match(/"([^"]{100,})"/);
+      if (sm && !/\\\s*$/.test(trimmed)) {
+        const start = raw.indexOf(sm[0]);
+        push(
+          hits,
+          "SYN009",
+          "Literal longo: prefira quebrar com \\ ~coluna 80.",
+          i,
+          "warning",
+          start,
+          start + sm[0].length
+        );
+      }
     }
 
     // SQL001 concat em SQL
