@@ -1,5 +1,13 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.2 — 2026-09-23
+
+### Documentação
+
+- README usuário: passo a passo (`.vscode/settings.json`, associação `.txt`, multiarquivo/`lsp.contexts`, relatório, catálogo)
+- Build/F5/publish concentrados em [Documentação para desenvolvedores](../../docs/product/DEVELOPER.md)
+- Marketplace: imagens do README com URL absoluta (`raw.githubusercontent.com/.../packages/lsp-workbench/media/`) — paths relativos `media/` resolviam para a raiz do monorepo e davam 404
+
 ## 0.2.1 — 2026-09-23
 
 ### Documentação (Marketplace / GitHub)

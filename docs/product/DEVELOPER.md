@@ -1,14 +1,15 @@
-# Guia do desenvolvedor — LSP Workbench
+# Documentação para desenvolvedores — LSP Workbench
 
-Mantenedores do monorepo público. Usuário final: ver [README.md](../../README.md) na raiz.
+Mantenedores do monorepo público.  
+**Usuário final / configuração da extensão:** [README.md](../../README.md) na raiz · guia Marketplace: [packages/lsp-workbench/README.md](../../packages/lsp-workbench/README.md).
 
 ## Monorepo
 
 | Package | Papel | Versão (ref.) |
 |---------|-------|----------------|
-| `packages/lsp-workbench` | Extensão VS Code/Cursor | 0.2.0 |
+| `packages/lsp-workbench` | Extensão VS Code/Cursor | 0.2.1 |
 | `packages/lsp-workbench-agent` | Agent Cursor (rules/skills/commands) | — |
-| `packages/lsp-analyzer` | Lexer/parser/AST + `analyzeLsp` (SYN/RUL/… + ANL*) | 0.3.0 |
+| `packages/lsp-analyzer` | Lexer/parser/AST + `analyzeLsp` | 0.3.0 |
 | `packages/lsp-language-server` | Language Server + Worker (opt-in) | 0.2.0 |
 
 Remoto: https://github.com/brunoleocam/lsp-workbench
@@ -18,25 +19,39 @@ Arquitetura: [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) · [AD
 ## Build e teste
 
 ```powershell
-# Extensão
-cd packages\lsp-workbench
-npm install
-npm test
-
-# Analyzer
-cd ..\lsp-analyzer
+cd packages\lsp-analyzer
 npm install
 npm run compile
 
-# Language Server
+cd ..\lsp-workbench
+npm install
+npm test
+```
+
+Na **raiz do monorepo**: Run and Debug → **Run LSP Workbench Extension** (F5).
+
+Setup detalhado: [LOCAL-TEST.md](LOCAL-TEST.md).
+
+### Language Server (opt-in)
+
+```powershell
+cd packages\lsp-analyzer
+npm run compile
 cd ..\lsp-language-server
 npm install
 npm test
 ```
 
-F5 na raiz do monorepo: launch **Run LSP Workbench Extension**.
+Na extensão: `lsp.server.enabled` = `true` → **Reload Window**.
 
-Setup: [LOCAL-TEST.md](LOCAL-TEST.md).
+### Publicar VSIX / Marketplace
+
+Ver [packages/lsp-workbench/PUBLISH.md](../../packages/lsp-workbench/PUBLISH.md).
+
+```powershell
+cd packages\lsp-workbench
+npm run package:vsix
+```
 
 ### Scripts úteis (raiz)
 
@@ -45,16 +60,20 @@ Setup: [LOCAL-TEST.md](LOCAL-TEST.md).
 | `scripts/extract-lsp-functions.mjs` | Extrai builtins a partir de `docs/lsp` |
 | `scripts/generate-tmgrammar.mjs` | Regenera TextMate |
 | `scripts/analyze-lsp.mjs` | CLI do analyzer (Agent / CI local) |
+| `scripts/package-extension.mjs` | Empacota VSIX com analyzer vendored |
 | `scripts/sync-brand-assets.js` | Regenera logo/icon a partir de `assets/` |
 
-## Configuração
+## Configuração da extensão (referência)
 
-Chaves `lsp.*` — [ADR-003](adr/ADR-003-config-unificada.md). Defaults também em `packages/lsp-workbench/package.json` e `lsp.config.json`.
+Chaves `lsp.*` — [ADR-003](adr/ADR-003-config-unificada.md).  
+Passo a passo para o usuário (multiarquivo, `.txt`, catálogo): [README.md](../../README.md#configuração-passo-a-passo).
+
+Defaults em `packages/lsp-workbench/package.json` e `lsp.config.json`.
 
 ## Documentação de produto
 
-Índice: [README.md](README.md) · Status/changelog: [CHANGELOG-plataforma.md](CHANGELOG-plataforma.md) · IDs de diagnóstico: [regras-estaticas-lsp.md](regras-estaticas-lsp.md)
+Índice: [README.md](README.md) · Status: [CHANGELOG-plataforma.md](CHANGELOG-plataforma.md) · IDs: [regras-estaticas-lsp.md](regras-estaticas-lsp.md)
 
 ## Conteúdo local privado
 
-Pastas listadas no `.gitignore` (ex.: docs de modelo de dados e regras de cliente) **não** entram no remoto público. Não documentar nem publicar conteúdo sensível neste repositório.
+Pastas no `.gitignore` (dicionário/regras de cliente) **não** entram no remoto público. Não publicar dados sensíveis.

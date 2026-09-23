@@ -20,6 +20,9 @@
 
 **Instalar a extensão:** [Marketplace — LSP Workbench](https://marketplace.visualstudio.com/items?itemName=brunoleocam.lsp-workbench) · `ext install brunoleocam.lsp-workbench`
 
+Guia completo na extensão: [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md)  
+**Documentação para desenvolvedores:** [`docs/product/DEVELOPER.md`](docs/product/DEVELOPER.md)
+
 ---
 
 ## Prévia
@@ -43,30 +46,11 @@
   <img src="packages/lsp-workbench/media/08-validation.gif" alt="Validação e quick fix" width="720">
 </p>
 
-Guia completo do usuário (settings, atalhos, catálogo): [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md).
-
 ---
 
-## O que é este repositório
+## O que a extensão faz
 
-Monorepo da plataforma:
-
-| Pacote | Função |
-|--------|--------|
-| [`packages/lsp-workbench`](packages/lsp-workbench) | Extensão VS Code / Cursor |
-| [`packages/lsp-analyzer`](packages/lsp-analyzer) | Analyzer / lint compartilhado |
-| [`packages/lsp-language-server`](packages/lsp-language-server) | Language Server (opt-in) |
-| [`packages/lsp-workbench-agent`](packages/lsp-workbench-agent) | Agent Cursor (skills / commands) |
-| [`docs/lsp`](docs/lsp) | Documentação da linguagem |
-| [`docs/gerador-relatorios`](docs/gerador-relatorios) | Modelo mental do Gerador de Relatórios |
-
-Versões atuais: extensão **0.2.1** · analyzer **0.3.x** · LS opt-in. Detalhe de produto: [`docs/product/`](docs/product/).
-
----
-
-## Extensão IDE (usuário)
-
-Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`**
+Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`** (e `.txt` se você associar — ver abaixo)
 
 - Coloração, snippets e semantic tokens
 - Autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
@@ -74,66 +58,87 @@ Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`**
 - Diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
 - Formatação e refactors
 - Contextos multiarquivo e modo arquivo único
-- Catálogo local de tabelas/campos (`lsp.catalog.path`)
-- Projeto de relatório (Gerador Senior) com escopo por pasta
-- Language Server opt-in (`lsp.server.enabled`, default `false`)
+- Catálogo local de tabelas/campos
+- Projeto de relatório (Gerador Senior)
 
 ---
 
-## Agent Cursor
+## Configuração (passo a passo)
 
-| Command | Função |
-|---------|--------|
-| `/compilar-lsp` | Pré-compilação: regras + sintaxe + semântica (IDs) |
-| `/depurar-lsp` | Resumo + ordem de execução + cursores/SQL |
-| `/formatar-lsp` | Layout canônico |
-| `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
-| `/gerar-relatorio` | Scaffold de projeto de relatório |
-| `/escopo-relatorio` | Escopo do relatório aberto |
-| `/copiar-regra-relatorio` | Juntar regras `.lsp` do relatório |
-| `/gerar-lista-lsp` | Lista dinâmica |
-| `/gerar-cursor-lsp` | Cursor (+ SQL) |
-| `/gerar-http-lsp` | HTTP + parse JSON/XML |
+As settings da extensão começam com `lsp.*`. Você pode editar de dois jeitos:
 
-Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-depurar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
+| Onde | Caminho típico | Quando usar |
+|------|----------------|-------------|
+| **Workspace** (recomendado para time) | `.vscode/settings.json` na raiz do projeto | Contextos, catálogo, associações de arquivo do projeto |
+| **Usuário** | Settings do VS Code/Cursor → busca `LSP Workbench` | Preferências pessoais (indentação, format on save) |
+
+Abrir o arquivo do workspace:
+
+1. Na raiz do projeto, crie a pasta `.vscode` se não existir.
+2. Crie ou edite `.vscode/settings.json`.
+3. Cole as chaves abaixo conforme a necessidade.
+4. Salve. Em poucos casos (Language Server) será preciso **Developer: Reload Window**.
 
 ---
 
-## Configurar (desenvolvimento)
+### 1. Começar sem configuração
 
-```powershell
-cd packages\lsp-analyzer
-npm install
-npm run compile
-cd ..\lsp-workbench
-npm install
-npm test
-```
+1. Instale a extensão.
+2. Abra um arquivo `.lsp` ou `.lspt`.
+3. No canto inferior direito, confirme **Linguagem Senior**.
+4. Use Ctrl+Espaço, hover e Problems — já funciona em arquivo único.
 
-Abra a **raiz do monorepo** → **Run and Debug** → **Run LSP Workbench Extension** (F5).
+---
 
-Setup detalhado: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md) · mantenedores: [docs/product/DEVELOPER.md](docs/product/DEVELOPER.md) · publicar: [packages/lsp-workbench/PUBLISH.md](packages/lsp-workbench/PUBLISH.md).
+### 2. Associar arquivos `.txt` de regra Senior
 
-### Associar `.txt` de regra (opcional)
+Muitas regras exportadas do Senior vêm como `.txt` (ex.: `HR123.txt`). A extensão **não** associa `.txt` automaticamente (evita conflitar com texto comum).
+
+**Passo a passo:**
+
+1. Abra `.vscode/settings.json` do **workspace** (pasta do projeto).
+2. Adicione `files.associations` mapeando o padrão dos seus arquivos para `senior-lsp`.
+3. Salve e reabra o `.txt` (ou clique no modo de linguagem no status bar e escolha **Linguagem Senior** uma vez).
+
+Exemplo (ajuste pastas/prefixos ao seu layout):
 
 ```json
 {
   "files.associations": {
     "**/HR/HR*.txt": "senior-lsp",
-    "**/TR/TR*.txt": "senior-lsp"
+    "**/TR/TR*.txt": "senior-lsp",
+    "**/*.lspt": "senior-lsp"
   }
 }
 ```
 
+| Campo | Significado |
+|-------|-------------|
+| Chave (`**/HR/HR*.txt`) | Glob relativo ao workspace |
+| Valor (`senior-lsp`) | Language id da extensão LSP Workbench |
+
+Como conferir: abra o `.txt` → status bar deve mostrar **Linguagem Senior** → highlight e completion ativos.
+
 ---
 
-## Usar no workspace
+### 3. Configurar multiarquivo (contextos)
 
-### Arquivo único
+Por padrão (`lsp.symbols.scope` = `project`), o completion “enxerga” símbolos de todo o workspace. Em pastas grandes isso mistura regras de módulos diferentes.
 
-Abra um `.lsp` / `.lspt` — ativa `senior-lsp` sem config extra.
+**Objetivo:** delimitar quais pastas/arquivos entram no índice (Ctrl+Espaço, Go to Definition, etc.).
 
-### Contextos multiarquivo
+**Passo a passo:**
+
+1. Decida o escopo global:
+   - `project` — workspace inteiro (default)
+   - `file` — só o arquivo aberto
+   - `mixed` — arquivo atual + contextos em `lsp.contexts`
+2. Liste contextos em `lsp.contexts` (nome, pasta raiz, padrão de arquivo).
+3. Salve `.vscode/settings.json`.
+4. Abra um arquivo do contexto e use **Ctrl+Espaço** / F12 — só devem aparecer símbolos desse conjunto.
+5. (Opcional) Command Palette → **LSP Workbench: Criar Contexto** / **Editar Contexto** / **Alternar Escopo de Símbolos**.
+
+Exemplo completo:
 
 ```json
 {
@@ -145,14 +150,44 @@ Abra um `.lsp` / `.lspt` — ativa `senior-lsp` sem config extra.
       "filePattern": "HR*.lspt",
       "includeSubdirectories": false,
       "system": "HCM"
+    },
+    {
+      "name": "TR",
+      "rootDir": "TR",
+      "filePattern": "TR*.txt",
+      "includeSubdirectories": true,
+      "files": ["shared/helpers.lsp"]
     }
   ]
 }
 ```
 
-### Projeto de relatório (Gerador)
+| Campo | Obrigatório | Descrição |
+|-------|-------------|-----------|
+| `name` | sim | Nome na status bar / UI |
+| `rootDir` | sim | Pasta relativa à raiz do workspace |
+| `filePattern` | sim | Glob dos arquivos do contexto (ex.: `HR*.lspt`, `*.lsp`) |
+| `includeSubdirectories` | não | Incluir subpastas (`true` por default) |
+| `files` | não | Allowlist extra (caminhos relativos ao workspace) |
+| `system` | não | `HCM` / `ACESSO` / `ERP` (status; catálogo builtins ainda é SENIOR) |
+| `diagnostics.ignoreIds` | não | IDs ignorados só neste contexto |
 
-Pasta com `relatorio.json` + `Definicao/` ou `Secoes/` — o Ctrl+Espaço fica **só nessa pasta** (não mistura irmãos).
+Demo no repositório: [`exemplos/contexto-projeto/`](exemplos/contexto-projeto/).
+
+---
+
+### 4. Projeto de relatório (Gerador)
+
+Se a pasta tem `relatorio.json` + `Definicao/` ou `Secoes/`, o escopo de símbolos fica **só nessa pasta** (não mistura relatórios irmãos).
+
+**Passo a passo:**
+
+1. Command Palette → **LSP Workbench: Gerar Projeto de Relatório** (ou use `/gerar-relatorio` no Agent).
+2. Abra um `.lsp` dentro da pasta do relatório — completion isolado.
+3. Para incluir funções compartilhadas: **Importar Contexto de…** (grava em `contextoExtra` no `relatorio.json`).
+4. **Mostrar Escopo do Relatório** confirma root + extras.
+
+Exemplo de `relatorio.json`:
 
 ```json
 {
@@ -163,54 +198,95 @@ Pasta com `relatorio.json` + `Definicao/` ou `Secoes/` — o Ctrl+Espaço fica *
 }
 ```
 
-| Comando (Palette) | Função |
-|-------------------|--------|
-| **Gerar Projeto de Relatório** | Scaffold da árvore |
-| **Importar Contexto de…** | Pasta/arquivo → `contextoExtra` |
-| **Exportar Contexto para…** | Escopo aberto → outro relatório ou `lsp.contexts` |
-| **Mostrar Escopo do Relatório** | Root + extras ativos |
-| **Copiar Regra** / **Visualizar Todas as Regras** | Clipboard / juntar `.lsp` |
-
 Docs: [`docs/gerador-relatorios/`](docs/gerador-relatorios/).
 
-### Catálogo local de tabelas
+---
 
-A extensão **não** embute dicionário Senior. Gere o seu `catalog.json` a partir do banco (R996/R998):
+### 5. Catálogo local de tabelas / campos
 
-```powershell
-node scripts/catalog-from-r996-tsv.mjs --in r996.tsv --out docs/banco-senior-base/catalog.json
-```
+Sem catálogo, a extensão segue normal — só não sugere `E012FAM.` etc.
 
-Detalhes: [`docs/banco-senior-base/`](docs/banco-senior-base/) · setting `lsp.catalog.path`.
+**Passo a passo:**
 
-### Formatação / SQL / Language Server
+1. Gere um `catalog.json` a partir do dicionário Senior (R996/R998) — receitas em [`docs/banco-senior-base/`](docs/banco-senior-base/).
+2. Em `.vscode/settings.json`, aponte o path:
 
 ```json
 {
+  "lsp.catalog.path": "docs/banco-senior-base/catalog.example.json"
+}
+```
+
+3. Path absoluto também funciona: `"C:/dados/catalog.json"`.
+4. Se `lsp.catalog.path` estiver vazio, a extensão tenta defaults:
+   - `docs/banco-senior/.generated/catalog.json`
+   - `docs/banco-senior-base/.generated/catalog.json`
+5. Digite `E012FAM.` + Ctrl+Espaço para validar.
+
+O dicionário da empresa **não** vem no Marketplace.
+
+---
+
+### 6. Formatação e demais settings
+
+```json
+{
+  "[senior-lsp]": {
+    "editor.formatOnSave": true
+  },
   "lsp.format.enabled": true,
   "lsp.format.indentSize": 2,
+  "lsp.format.braceStyle": "sameLine",
   "lsp.format.embeddedSql.enabled": false,
+  "lsp.diagnostics.ignoreIds": [],
   "lsp.server.enabled": false
 }
 ```
 
+| Setting | Default | Uso |
+|---------|---------|-----|
+| `lsp.format.enabled` | `true` | Format Document |
+| `lsp.format.indentSize` | `2` | 2 ou 4 espaços |
+| `lsp.format.embeddedSql.enabled` | `false` | Formatar SQL em `ExecSql` / `.SQL` |
+| `lsp.diagnostics.ignoreIds` | `[]` | Ex.: `["SYN009"]` |
+| `lsp.server.enabled` | `false` | LS externo (avançado; exige build — ver docs de desenvolvedor) |
+
 ---
 
-## Docs
+## Agent Cursor
+
+| Command | Função |
+|---------|--------|
+| `/compilar-lsp` | Pré-compilação (IDs de regra) |
+| `/depurar-lsp` | Fluxo de execução / cursores |
+| `/formatar-lsp` | Layout |
+| `/refatorar-lsp` | Estrutura / braces |
+| `/gerar-relatorio` | Scaffold de relatório |
+| `/escopo-relatorio` | Escopo do relatório aberto |
+| `/copiar-regra-relatorio` | Juntar regras `.lsp` |
+| `/gerar-lista-lsp` · `/gerar-cursor-lsp` · `/gerar-http-lsp` | Geração guiada |
+
+Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-depurar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
+
+---
+
+## Documentação
 
 | Recurso | Onde |
 |---------|------|
 | Guia da extensão (Marketplace) | [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md) |
-| Exemplos de print / demos | [`packages/lsp-workbench/media/`](packages/lsp-workbench/media/) |
-| Exemplos de projeto | [`exemplos/`](exemplos/) |
-| Linguagem | [`docs/lsp/`](docs/lsp/) |
+| **Documentação para desenvolvedores** | [`docs/product/DEVELOPER.md`](docs/product/DEVELOPER.md) |
+| Setup local / F5 | [`docs/product/LOCAL-TEST.md`](docs/product/LOCAL-TEST.md) |
+| Linguagem LSP | [`docs/lsp/`](docs/lsp/) |
 | Gerador de Relatórios | [`docs/gerador-relatorios/`](docs/gerador-relatorios/) |
+| Catálogo base | [`docs/banco-senior-base/`](docs/banco-senior-base/) |
 | Produto (PDR/ADR) | [`docs/product/`](docs/product/) |
-| Regras estáticas | [`docs/product/regras-estaticas-lsp.md`](docs/product/regras-estaticas-lsp.md) |
+
+Este monorepo também contém analyzer, language server e agent. Detalhes de pacotes, build e publicação: **[Documentação para desenvolvedores](docs/product/DEVELOPER.md)**.
 
 ---
 
 ## Licença e créditos
 
-- Licença: [MIT](LICENSE) — cópia/modificação/redistribuição exigem manter o aviso de copyright e o texto da licença.
-- Atribuições a terceiros (incl. referência ao [vscode-language-lsp](https://github.com/llutti/vscode-language-lsp) de Luciano Cargnelutti): [`CREDITS.md`](CREDITS.md).
+- Licença: [MIT](LICENSE)
+- Atribuições: [`CREDITS.md`](CREDITS.md) (incl. referência ao [vscode-language-lsp](https://github.com/llutti/vscode-language-lsp))

@@ -54,7 +54,7 @@ Ou: `npx @vscode/vsce publish` se o token estiver em `VSCE_PAT`.
 
 - [ ] `icon.png` e `LICENSE` dentro de `packages/lsp-workbench`
 - [ ] `README.md` voltado ao usuário final (não PDR/dev interno)
-- [ ] Prints em `media/` (se houver) são capturas reais — ver `media/README.md`
+- [ ] Prints em `media/` são capturas reais; no README da extensão, URLs **absolutas** (monorepo) — ver `media/README.md`
 - [ ] Sem dados de cliente no artefato (`vsce ls` / inspecionar VSIX)
 - [ ] Smoke: abrir `.lsp`, diagnostics, completion sem catálogo local
 - [ ] Changelog alinhado à versão publicada

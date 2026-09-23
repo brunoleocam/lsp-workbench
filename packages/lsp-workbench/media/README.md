@@ -5,6 +5,18 @@ Capturas usadas em:
 - [`../README.md`](../README.md) (VS Marketplace)
 - [`../../../README.md`](../../../README.md) (GitHub)
 
+## Marketplace (obrigatório)
+
+O VS Marketplace reescreve paths relativos a partir da **raiz do repositório GitHub**, não da pasta da extensão. Em monorepo, `media/foo.png` vira `…/raw/HEAD/media/foo.png` → **404**.
+
+No README da extensão, use URL absoluta:
+
+```text
+https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/<arquivo>
+```
+
+O README da raiz do monorepo pode continuar com path relativo `packages/lsp-workbench/media/…` (GitHub resolve a partir da raiz).
+
 ## Arquivos publicados no README
 
 | Arquivo | Uso |

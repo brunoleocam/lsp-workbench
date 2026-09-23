@@ -1,12 +1,13 @@
 # Documentação de produto — LSP Workbench
 
-Índice técnico para mantenedores. Usuário final: [README.md](../../README.md).
+Índice técnico para mantenedores.  
+Usuário final: [README.md](../../README.md) · **[Documentação para desenvolvedores](DEVELOPER.md)**.
 
 | Pasta / arquivo | Conteúdo |
 |-----------------|----------|
 | [../../LICENSE](../../LICENSE) | MIT (créditos obrigatórios ao redistribuir) |
 | [../../CREDITS.md](../../CREDITS.md) | Atribuições (ex.: vscode-language-lsp / llutti) |
-| [DEVELOPER.md](DEVELOPER.md) | Build, F5, packages, manutenção |
+| [DEVELOPER.md](DEVELOPER.md) | Build, F5, packages, publicação VSIX |
 | [CHANGELOG-plataforma.md](CHANGELOG-plataforma.md) | Status e histórico de implementação |
 | [LOCAL-TEST.md](LOCAL-TEST.md) | Setup local (npm / F5 / Agent) |
 | [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) | Clean Architecture + mapa de packages |

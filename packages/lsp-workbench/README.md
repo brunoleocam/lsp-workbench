@@ -4,7 +4,7 @@ Extensão para **VS Code** e **Cursor** com suporte à **Linguagem Senior de Pro
 
 Abra um arquivo `.lsp` ou `.lspt` e a extensão ativa automaticamente a linguagem **Linguagem Senior** (`senior-lsp`).
 
-![Syntax highlighting](media/01-syntax-highlighting.png)
+![Syntax highlighting](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/01-syntax-highlighting.png)
 
 ---
 
@@ -59,7 +59,7 @@ ext install brunoleocam.lsp-workbench
 
 A gramática TextMate + *semantic tokens* colorizam palavras-chave (`Se`, `Enquanto`, `Definir`), funções builtins, variáveis e membros.
 
-![Syntax highlighting](media/01-syntax-highlighting.png)
+![Syntax highlighting](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/01-syntax-highlighting.png)
 
 Não há configuração obrigatória: basta o arquivo estar como **Linguagem Senior**.
 
@@ -74,7 +74,7 @@ Sugestões ao digitar ou com **Ctrl+Espaço**:
 - Após `.` em Cursor/Lista: membros e campos (`AdicionarCampo`, etc.)
 - Com catálogo local: tabelas e `Tabela.Campo`
 
-![Autocompletar](media/02-autocomplete.png)
+![Autocompletar](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/02-autocomplete.png)
 
 Dica: em `[senior-lsp]` a extensão já desliga sugestões genéricas de “palavras do arquivo” para priorizar o completion LSP.
 
@@ -82,7 +82,7 @@ Dica: em `[senior-lsp]` a extensão já desliga sugestões genéricas de “pala
 
 Após digitar `.` em uma variável `Lista` ou `Cursor`, o suggest lista membros válidos:
 
-![Membros de Lista](media/05-membros-lista.png)
+![Membros de Lista](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/05-membros-lista.png)
 
 ---
 
@@ -90,7 +90,7 @@ Após digitar `.` em uma variável `Lista` ou `Cursor`, o suggest lista membros 
 
 Passe o mouse sobre uma função (nativa ou do projeto) para ver resumo e detalhes.
 
-![Hover](media/03-hover.png)
+![Hover](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/03-hover.png)
 
 ---
 
@@ -98,7 +98,7 @@ Passe o mouse sobre uma função (nativa ou do projeto) para ver resumo e detalh
 
 Ao abrir `(` em uma chamada de função, o editor mostra a assinatura e destaca o parâmetro atual (*signature help*).
 
-![Ajuda de parâmetros](media/04-signature-help.png)
+![Ajuda de parâmetros](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/04-signature-help.png)
 
 ---
 
@@ -106,11 +106,11 @@ Ao abrir `(` em uma chamada de função, o editor mostra a assinatura e destaca 
 
 Enquanto você edita, a extensão analisa o código e marca problemas (ex.: parâmetros incorretos, padrões inválidos da linguagem, regras `RUL*` / `SYN*` / `ANL*` / `GER*`).
 
-![Diagnósticos](media/07-diagnostics.png)
+![Diagnósticos](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/07-diagnostics.png)
 
 Fluxo típico: erro → alerta → Quick Fix → código corrigido:
 
-![Validação e quick fix](media/08-validation.gif)
+![Validação e quick fix](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/08-validation.gif)
 
 - Painel **Problems** (Ctrl+Shift+M) lista todos os alertas.
 - **Quick Fix** (Ctrl+.) aplica correções quando disponíveis.
@@ -138,7 +138,7 @@ Digite o prefixo do snippet e confirme com Tab/Enter.
 
 - **Outline** na barra lateral: funções e símbolos do arquivo
 - **Go to Definition** (F12) em funções do projeto
-- Escopo cross-file: ver seção [Contextos e escopo](#contextos-e-escopo-de-símbolos)
+- Escopo cross-file: [Configurar multiarquivo](#3-configurar-multiarquivo-contextos)
 
 ---
 
@@ -146,31 +146,19 @@ Digite o prefixo do snippet e confirme com Tab/Enter.
 
 Sem catálogo local, a extensão funciona normalmente — só não sugere tabelas/campos do dicionário Senior.
 
-Com catálogo JSON na máquina:
+![Autocomplete de catálogo](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/06-catalog-autocomplete.png)
 
-1. Gere ou aponte o arquivo (ver [docs do repositório](https://github.com/brunoleocam/lsp-workbench/tree/main/docs/banco-senior-base)).
-2. Configure `lsp.catalog.path` **ou** deixe o default:
-   - `docs/banco-senior/.generated/catalog.json`
-   - ou `docs/banco-senior-base/.generated/catalog.json`
-3. Use completion de tabelas e `Tabela.Campo` (útil também em projetos de relatório).
+Passo a passo (gerar JSON + `lsp.catalog.path`): [Catálogo de tabelas](#5-catálogo-de-tabelas).
 
-![Autocomplete de catálogo](media/06-catalog-autocomplete.png)
-
-O dicionário da sua empresa **não** vem no pacote do Marketplace (privacidade / tamanho). Cada ambiente gera o catálogo localmente.
+O dicionário da sua empresa **não** vem no pacote do Marketplace.
 
 ---
 
 ### Contextos e escopo de símbolos
 
-Útil quando o workspace tem vários conjuntos de regras LSP.
+Ver passo a passo em [Configurar multiarquivo](#3-configurar-multiarquivo-contextos).
 
-| Setting / comando | Uso |
-|-------------------|-----|
-| `lsp.symbols.scope` | `project` (workspace), `file` (só arquivo atual) ou `mixed` |
-| `lsp.contexts` | Contextos nomeados (pasta, padrão de arquivos, sistema HCM/ACESSO/ERP) |
-| **LSP Workbench: Criar/Editar/Apagar Contexto** | Assistente via Command Palette |
-| **Alternar Escopo de Símbolos** | Troca rápida do escopo |
-| Status bar | Mostra escopo / sistema atual |
+Comandos úteis (Ctrl+Shift+P): **Criar/Editar/Apagar Contexto**, **Alternar Escopo de Símbolos**. A status bar mostra o escopo atual.
 
 ---
 
@@ -183,7 +171,7 @@ Comandos (Command Palette → “LSP Workbench”):
 - **Importar / Exportar Contexto**
 - **Mostrar Escopo do Relatório**
 
-Há diagnósticos específicos (`GER*`) para pré-seleção e seções.
+Há diagnósticos específicos (`GER*`) para pré-seleção e seções. Passo a passo: [Projeto de relatório](#4-projeto-de-relatório-gerador).
 
 ---
 
@@ -193,9 +181,154 @@ Code Actions / refactors: envolver seleção em `Se`/`Enquanto`/`Para`/bloco, co
 
 ---
 
-## Configuração (settings)
+## Configuração (passo a passo)
 
-Abra **Settings** e busque `LSP Workbench`, ou edite o `settings.json`:
+As settings começam com `lsp.*`.
+
+| Onde editar | Caminho | Quando |
+|-------------|---------|--------|
+| **Workspace** (recomendado) | `.vscode/settings.json` na raiz do projeto | Contextos, catálogo, `files.associations` |
+| **Usuário** | Settings → busque `LSP Workbench` | Preferências pessoais |
+
+1. Crie `.vscode/settings.json` se ainda não existir.
+2. Cole as chaves necessárias (seções abaixo).
+3. Salve o arquivo. Só o Language Server exige **Reload Window**.
+
+---
+
+### 1. Arquivo `.lsp` / `.lspt` (sem config)
+
+1. Instale a extensão.
+2. Abra um `.lsp` ou `.lspt`.
+3. Status bar → **Linguagem Senior**.
+4. Pronto: highlight, completion e diagnostics já ativos.
+
+---
+
+### 2. Associar `.txt` de regra Senior
+
+Regras exportadas do Senior muitas vezes são `.txt`. A extensão **não** associa `.txt` sozinha.
+
+1. Abra **`.vscode/settings.json`** do workspace (não o settings global, se a associação for do projeto).
+2. Adicione `files.associations` com o glob dos seus arquivos e o valor `senior-lsp`.
+3. Salve e reabra o arquivo (ou mude o language mode manualmente uma vez).
+
+```json
+{
+  "files.associations": {
+    "**/HR/HR*.txt": "senior-lsp",
+    "**/TR/TR*.txt": "senior-lsp"
+  }
+}
+```
+
+| Peça | Exemplo | Significado |
+|------|---------|-------------|
+| Padrão | `**/HR/HR*.txt` | Arquivos sob `HR/` que começam com `HR` e terminam em `.txt` |
+| Language id | `senior-lsp` | Ativa a extensão LSP Workbench |
+
+Conferência: status bar = **Linguagem Senior** + cores/completion.
+
+---
+
+### 3. Configurar multiarquivo (contextos)
+
+Use quando o workspace tem vários módulos e o Ctrl+Espaço mistura símbolos demais.
+
+1. Escolha o escopo (`lsp.symbols.scope`):
+   - `project` — workspace inteiro (default)
+   - `file` — só o arquivo aberto
+   - `mixed` — arquivo + entradas de `lsp.contexts`
+2. Defina um ou mais itens em `lsp.contexts`.
+3. Salve `.vscode/settings.json`.
+4. Abra um arquivo do contexto e teste Ctrl+Espaço / F12.
+5. Opcional: **LSP Workbench: Criar Contexto** na Command Palette.
+
+```json
+{
+  "lsp.symbols.scope": "project",
+  "lsp.contexts": [
+    {
+      "name": "HR",
+      "rootDir": "HR",
+      "filePattern": "HR*.lspt",
+      "includeSubdirectories": false,
+      "system": "HCM"
+    },
+    {
+      "name": "TR",
+      "rootDir": "TR",
+      "filePattern": "TR*.txt",
+      "includeSubdirectories": true,
+      "files": ["shared/helpers.lsp"]
+    }
+  ]
+}
+```
+
+| Campo | Obrigatório | Descrição |
+|-------|-------------|-----------|
+| `name` | sim | Nome exibido |
+| `rootDir` | sim | Pasta relativa ao workspace |
+| `filePattern` | sim | Glob (ex.: `*.lsp`, `HR*.txt`) |
+| `includeSubdirectories` | não | Default `true` |
+| `files` | não | Arquivos extras (allowlist) |
+| `system` | não | `HCM` / `ACESSO` / `ERP` (status bar) |
+| `diagnostics.ignoreIds` | não | IDs ignorados só neste contexto |
+
+---
+
+### 4. Projeto de relatório (Gerador)
+
+1. **LSP Workbench: Gerar Projeto de Relatório** (scaffold com `relatorio.json`).
+2. Edite `.lsp` dentro da pasta — o escopo fica isolado nessa pasta.
+3. **Importar Contexto de…** para pastas compartilhadas (`contextoExtra`).
+4. **Mostrar Escopo do Relatório** para conferir.
+
+```json
+{
+  "codigo": "RDCG183",
+  "descricao": "Cargas — exemplo",
+  "detalhePrincipal": "Detalhe_1",
+  "contextoExtra": ["../FUNCOES"]
+}
+```
+
+---
+
+### 5. Catálogo de tabelas
+
+1. Gere ou copie um `catalog.json` ([receitas](https://github.com/brunoleocam/lsp-workbench/tree/main/docs/banco-senior-base)).
+2. Configure o path no workspace:
+
+```json
+{
+  "lsp.catalog.path": "docs/banco-senior-base/catalog.example.json"
+}
+```
+
+3. Sem path, a extensão tenta `docs/banco-senior/.generated/catalog.json` e `docs/banco-senior-base/.generated/catalog.json`.
+4. Teste: digite `E012FAM.` → Ctrl+Espaço.
+
+---
+
+### 6. Formatação e tabela de settings
+
+```json
+{
+  "[senior-lsp]": {
+    "editor.formatOnSave": true
+  },
+  "lsp.format.enabled": true,
+  "lsp.format.indentSize": 2,
+  "lsp.format.braceStyle": "sameLine",
+  "lsp.format.embeddedSql.enabled": false,
+  "lsp.format.embeddedSql.dialect": "sql",
+  "lsp.diagnostics.ignoreIds": [],
+  "lsp.fallback.defaultSystem": "",
+  "lsp.server.enabled": false
+}
+```
 
 | Setting | Default | Descrição |
 |---------|---------|-----------|
@@ -204,30 +337,16 @@ Abra **Settings** e busque `LSP Workbench`, ou edite o `settings.json`:
 | `lsp.format.braceStyle` | `sameLine` | `{` na mesma linha ou na seguinte |
 | `lsp.format.embeddedSql.enabled` | `false` | Formatar SQL embutido |
 | `lsp.format.embeddedSql.dialect` | `sql` | `sql` / `oracle` / `sqlserver` |
-| `lsp.diagnostics.ignoreIds` | `[]` | IDs de diagnóstico a ignorar |
-| `lsp.symbols.scope` | `project` | Escopo de símbolos / completion |
+| `lsp.diagnostics.ignoreIds` | `[]` | IDs a ignorar |
+| `lsp.symbols.scope` | `project` | Escopo de símbolos |
 | `lsp.contexts` | `[]` | Contextos nomeados |
-| `lsp.fallback.defaultSystem` | `""` | Sistema na status bar (HCM / ACESSO / ERP) |
-| `lsp.catalog.path` | `""` | Path do catálogo JSON de tabelas |
-| `lsp.server.enabled` | `false` | Language Server externo (experimental; ver abaixo) |
+| `lsp.fallback.defaultSystem` | `""` | Sistema na status bar |
+| `lsp.catalog.path` | `""` | Path do catálogo JSON |
+| `lsp.server.enabled` | `false` | Language Server externo (experimental) |
 
-Exemplo mínimo:
+### Language Server (opcional)
 
-```json
-{
-  "[senior-lsp]": {
-    "editor.formatOnSave": true
-  },
-  "lsp.format.indentSize": 2,
-  "lsp.catalog.path": "C:/caminho/para/catalog.json"
-}
-```
-
-### Language Server (opcional / avançado)
-
-Por padrão (`lsp.server.enabled` = `false`) os diagnósticos rodam **in-process** (estável).
-
-Se você compilar o analyzer/server a partir do [repositório](https://github.com/brunoleocam/lsp-workbench) e ligar `lsp.server.enabled`, os diagnósticos do analyzer aparecem com source **LSP Analyzer**. Format e completion rich continuam na extensão. Após alterar a setting: **Developer: Reload Window**.
+Default: diagnósticos **in-process** (`lsp.server.enabled` = `false`). Para o LS externo é preciso build do monorepo — ver [Documentação para desenvolvedores](https://github.com/brunoleocam/lsp-workbench/blob/main/docs/product/DEVELOPER.md). Depois de ligar a setting: **Reload Window**.
 
 ---
 
@@ -256,9 +375,11 @@ Se você compilar o analyzer/server a partir do [repositório](https://github.co
 
 | Sintoma | O que verificar |
 |---------|-----------------|
-| Sem cores / sem completion | Linguagem do editor = **Linguagem Senior** (não Plain Text) |
-| Sem sugestão de tabelas | Catálogo local ausente ou `lsp.catalog.path` incorreto |
-| Formatação não roda | `lsp.format.enabled` = true; Format Document no comando |
+| Sem cores / sem completion | Linguagem = **Linguagem Senior** (não Plain Text) |
+| `.txt` sem highlight | `files.associations` em `.vscode/settings.json` → `senior-lsp` |
+| Sem sugestão de tabelas | Catálogo ausente ou `lsp.catalog.path` incorreto |
+| Completion mistura outros módulos | Configure `lsp.contexts` / escopo (passo 3) |
+| Formatação não roda | `lsp.format.enabled` = true |
 | Muitos avisos indesejados | `lsp.diagnostics.ignoreIds` ou ignore por contexto |
 
 Issues: [github.com/brunoleocam/lsp-workbench/issues](https://github.com/brunoleocam/lsp-workbench/issues)
@@ -269,4 +390,5 @@ Issues: [github.com/brunoleocam/lsp-workbench/issues](https://github.com/brunole
 
 MIT — ver [LICENSE](LICENSE). Créditos de terceiros: [CREDITS.md](CREDITS.md).
 
-Código-fonte e documentação de produto (para mantenedores): [github.com/brunoleocam/lsp-workbench](https://github.com/brunoleocam/lsp-workbench).
+Código-fonte: [github.com/brunoleocam/lsp-workbench](https://github.com/brunoleocam/lsp-workbench).  
+**Documentação para desenvolvedores:** [DEVELOPER.md](https://github.com/brunoleocam/lsp-workbench/blob/main/docs/product/DEVELOPER.md).
