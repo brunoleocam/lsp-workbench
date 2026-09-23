@@ -1,0 +1,24 @@
+{
+  "name": "lsp-workbench",
+  "owner": {
+    "name": "Bruno Campos",
+    "email": "brunoleocam@outlook.com.br"
+  },
+  "metadata": {
+    "description": "LSP Workbench — Agent Cursor para a Linguagem Senior de Programação",
+    "version": "1.2.0",
+    "pluginRoot": "packages"
+  },
+  "plugins": [
+    {
+      "name": "lsp-workbench-agent",
+      "source": "lsp-workbench-agent",
+      "description": "Validar, formatar, refatorar e gerar trechos LSP (lista, cursor, HTTP, relatório).",
+      "version": "1.2.0",
+      "logo": "packages/lsp-workbench-agent/assets/logo.svg",
+      "keywords": ["lsp", "senior", "linguagem-senior", "workbench"],
+      "category": "languages",
+      "tags": ["lsp", "validation", "formatting", "generators"]
+    }
+  ]
+}
