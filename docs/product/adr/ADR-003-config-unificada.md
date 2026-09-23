@@ -22,7 +22,7 @@ Mesmas chaves para extensão (settings.json) e Agent (`lsp.config.json` na raiz 
 | `lsp.symbols.scope` | `project` | `project` \| `file` \| `mixed` |
 | `lsp.contexts` | [] | `files` = união com `filePattern` |
 | `lsp.fallback.defaultSystem` | `""` | Status bar SingleFile; catálogo por sistema ainda só SENIOR (+ stubs) |
-| `lsp.semantic.embeddedSqlHighlight.enabled` | false | **Reserva** — highlight SQL dedicado |
+| `lsp.semantic.embeddedSqlHighlight.enabled` | true | Highlight SQL em strings via TextMate (keywords/funções/binds) |
 | `lsp.server.enabled` | false | Language Server opt-in (PDR-005) |
 
 Agent `@lsp-formatar` lê `lsp.config.json` se presente; senão usa defaults.

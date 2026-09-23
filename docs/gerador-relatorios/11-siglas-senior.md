@@ -6,7 +6,7 @@
 
 Convenção típica do nome de arquivo: `CCCCNNN.GER`, onde:
 
-| Parte | Exemplo (`RDCG183`) | Significado |
+| Parte | Exemplo (`RDCGXXX`) | Significado |
 |-------|---------------------|-------------|
 | Prefixo (4 letras) | `RDCG` | Módulo + assunto (ex.: `RD` Distribuição + `CG` Cargas) |
 | Número | `183` | Código único dentro da categoria |
@@ -370,6 +370,6 @@ A **categoria** informada ao criar o modelo no gerador costuma ser esse código 
 
 ## Relação com o estudo de caso
 
-O export [09-estudo-caso-rdcg183.md](09-estudo-caso-rdcg183.md) usa categoria `RDCG` → Mercado › Distribuição › Cargas.
+O export [09-estudo-caso-rdcgxxx.md](09-estudo-caso-rdcgxxx.md) usa categoria `RDCG` → Mercado › Distribuição › Cargas.
 
 Voltar: [01-visao-geral.md](01-visao-geral.md) · [README](README.md)

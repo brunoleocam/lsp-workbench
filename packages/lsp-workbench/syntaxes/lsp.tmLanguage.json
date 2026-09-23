@@ -8,13 +8,49 @@
       "include": "#strings"
     },
     {
+      "include": "#definitions"
+    },
+    {
+      "include": "#param-decls"
+    },
+    {
+      "include": "#webservice-access"
+    },
+    {
+      "include": "#cursor-access"
+    },
+    {
+      "include": "#list-access"
+    },
+    {
+      "include": "#operators"
+    },
+    {
+      "include": "#keywords-flow"
+    },
+    {
       "include": "#keywords"
+    },
+    {
+      "include": "#types-lista"
+    },
+    {
+      "include": "#types-cursor"
     },
     {
       "include": "#types"
     },
     {
+      "include": "#param-modifiers"
+    },
+    {
+      "include": "#system-vars"
+    },
+    {
       "include": "#functions"
+    },
+    {
+      "include": "#function-calls"
     },
     {
       "include": "#numbers"
@@ -43,20 +79,383 @@
         {
           "name": "constant.character.escape.lsp",
           "match": "\\\\."
+        },
+        {
+          "name": "keyword.operator.continuation.lsp",
+          "match": "\\\\$"
+        },
+        {
+          "include": "#sql-in-string"
+        }
+      ]
+    },
+    "sql-in-string": {
+      "patterns": [
+        {
+          "name": "keyword.other.sql.lsp",
+          "match": "\\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|EXISTS|BETWEEN|LIKE|NULL|JOIN|INNER|LEFT|RIGHT|OUTER|FULL|CROSS|UNION|ORDER|GROUP|HAVING|DISTINCT|INTO|VALUES|CREATE|DROP|ALTER|TABLE|VIEW|INDEX|DUAL|MERGE|WHEN|THEN|ELSE|CASE|WITH|OVER|PARTITION|ROWNUM|FETCH|OFFSET|LIMIT|RETURNING|DESC|UNIQUE|PRIMARY|FOREIGN|REFERENCES|CONSTRAINT|DEFAULT|CAST)\\b",
+          "ignoreCase": true
+        },
+        {
+          "name": "keyword.other.sql.lsp",
+          "match": "\\b(AND|OR|NOT|IN|IS|ON|AS|BY|ALL|SET|KEY|TOP|ASC|END)\\b"
+        },
+        {
+          "name": "support.function.sql.lsp",
+          "match": "\\b(TO_DATE|STRTODATE|TO_CHAR|TO_NUMBER|NVL|NVL2|COALESCE|COUNT|SUM|AVG|MAX|MIN|DECODE|SYSDATE|NEXTVAL|CURRVAL|UPPER|LOWER|TRIM|SUBSTR|LENGTH|ROUND|TRUNC|ABS|GREATEST|LEAST)\\b",
+          "ignoreCase": true
+        },
+        {
+          "name": "variable.other.bind.sql.lsp",
+          "match": ":[A-Za-z_][A-Za-z0-9_]*"
+        }
+      ]
+    },
+    "definitions": {
+      "patterns": [
+        {
+          "name": "meta.definition.webservice.lsp",
+          "match": "\\b(Definir)\\s+((?:[A-Za-z_]\\w*\\.)+[A-Za-z_]\\w*)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.lsp"
+            },
+            "2": {
+              "name": "entity.name.type.webservice.lsp"
+            },
+            "3": {
+              "name": "variable.other.webservice.lsp"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.function.lsp",
+          "match": "\\b(Definir)\\s+(Funcao)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.lsp"
+            },
+            "2": {
+              "name": "storage.type.lsp"
+            },
+            "3": {
+              "name": "entity.name.function.lsp"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.lista.lsp",
+          "match": "\\b(Definir)\\s+(Lista)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.lsp"
+            },
+            "2": {
+              "name": "storage.type.lista.lsp"
+            },
+            "3": {
+              "name": "variable.other.lista.lsp"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.cursor.lsp",
+          "match": "\\b(Definir)\\s+(Cursor)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.lsp"
+            },
+            "2": {
+              "name": "storage.type.cursor.lsp"
+            },
+            "3": {
+              "name": "variable.other.cursor.lsp"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.variable.lsp",
+          "match": "\\b(Definir)\\s+(Alfa|Numero|Data|Tabela)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.lsp"
+            },
+            "2": {
+              "name": "storage.type.lsp"
+            },
+            "3": {
+              "name": "variable.other.lsp"
+            }
+          }
+        },
+        {
+          "name": "meta.definition.function.impl.lsp",
+          "match": "^\\s*(Funcao)\\s+(\\w+)\\s*(?=\\()",
+          "captures": {
+            "1": {
+              "name": "storage.type.lsp"
+            },
+            "2": {
+              "name": "entity.name.function.lsp"
+            }
+          }
+        }
+      ]
+    },
+    "param-decls": {
+      "patterns": [
+        {
+          "match": "\\b(Alfa|Numero|Data|Tabela|Lista|Cursor)\\s+(End)\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "storage.type.lsp"
+            },
+            "2": {
+              "name": "storage.modifier.lsp"
+            },
+            "3": {
+              "name": "variable.parameter.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b(Alfa|Numero|Data|Tabela|Lista|Cursor)\\s+(\\w+)(?=\\s*[,\\)])",
+          "captures": {
+            "1": {
+              "name": "storage.type.lsp"
+            },
+            "2": {
+              "name": "variable.parameter.lsp"
+            }
+          }
+        }
+      ]
+    },
+    "webservice-access": {
+      "patterns": [
+        {
+          "match": "\\b((?:(?:ws)\\w+|[A-Z][A-Za-z0-9_]*))\\.(\\w+)\\.(\\w+)\\.(\\w+)\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.webservice.lsp"
+            },
+            "2": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "3": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "4": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "5": {
+              "name": "variable.other.webservice.field.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:(?:ws)\\w+|[A-Z][A-Za-z0-9_]*))\\.(\\w+)\\.(\\w+)\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.webservice.lsp"
+            },
+            "2": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "3": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "4": {
+              "name": "variable.other.webservice.field.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:(?:ws)\\w+|[A-Z][A-Za-z0-9_]*))\\.(\\w+)\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.webservice.lsp"
+            },
+            "2": {
+              "name": "variable.other.webservice.table.lsp"
+            },
+            "3": {
+              "name": "variable.other.webservice.field.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:(?:ws)\\w+|[A-Z][A-Za-z0-9_]*))\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.webservice.lsp"
+            },
+            "2": {
+              "name": "variable.other.webservice.field.lsp"
+            }
+          }
+        },
+        {
+          "name": "variable.other.webservice.lsp",
+          "match": "\\bws\\w+\\b"
+        }
+      ]
+    },
+    "cursor-access": {
+      "patterns": [
+        {
+          "match": "\\b((?:Cur_)\\w+)\\.(AbrirCursor|FecharCursor|Proximo|UsaAbrangencia)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.cursor.lsp"
+            },
+            "2": {
+              "name": "entity.name.function.member.cursor.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:Cur_)\\w+)\\.(SQL|Achou|NaoAchou)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.cursor.lsp"
+            },
+            "2": {
+              "name": "variable.other.property.cursor.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:Cur_)\\w+)\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.cursor.lsp"
+            },
+            "2": {
+              "name": "variable.other.property.cursor.lsp"
+            }
+          }
+        },
+        {
+          "name": "variable.other.cursor.lsp",
+          "match": "\\bCur_\\w+\\b"
+        }
+      ]
+    },
+    "list-access": {
+      "patterns": [
+        {
+          "match": "\\b((?:vl|a)\\w+)\\.(DefinirCampos|EfetivarCampos|AdicionarCampo|Adicionar|Inserir|Editar|Gravar|Cancelar|Excluir|Primeiro|Ultimo|Anterior|Proximo|SetarChave|VaiParaChave|Chave|Quantidade|Posicionar|Ordenar|Limpar)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.lista.lsp"
+            },
+            "2": {
+              "name": "entity.name.function.member.lista.lsp"
+            }
+          }
+        },
+        {
+          "match": "\\b((?:vl|a)\\w+)\\.(\\w+)\\b",
+          "captures": {
+            "1": {
+              "name": "variable.other.lista.lsp"
+            },
+            "2": {
+              "name": "variable.other.property.lista.lsp"
+            }
+          }
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.logical.lsp",
+          "match": "\\b(e|ou)\\b",
+          "ignoreCase": true
+        },
+        {
+          "name": "keyword.operator.increment.lsp",
+          "match": "\\+\\+|--"
+        },
+        {
+          "name": "keyword.operator.comparison.lsp",
+          "match": "<>|<=|>=|<|>|="
+        },
+        {
+          "name": "keyword.operator.arithmetic.division.lsp",
+          "match": "/"
+        },
+        {
+          "name": "keyword.operator.continuation.lsp",
+          "match": "\\\\"
+        },
+        {
+          "name": "keyword.operator.arithmetic.lsp",
+          "match": "\\+|\\-|\\*"
+        }
+      ]
+    },
+    "keywords-flow": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bSenao\\b"
+        },
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bEnquanto\\b"
+        },
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bContinue\\b"
+        },
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bPara\\b"
+        },
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bPare\\b"
+        },
+        {
+          "name": "keyword.control.flow.lsp",
+          "match": "(?i)\\bSe\\b"
         }
       ]
     },
     "keywords": {
       "name": "keyword.control.lsp",
-      "match": "\\b(Se|Senao|Enquanto|Para|Funcao|Definir|Cancel|Pare|Continue|Mensagem|Retorna|Inicio|Fim|FimSe|FimEnquanto)\\b"
+      "match": "(?i)\\b(Definir|Cancel|Mensagem|Retorna|Inicio|Fim|FimSe|FimEnquanto)\\b"
+    },
+    "types-lista": {
+      "name": "storage.type.lista.lsp",
+      "match": "\\bLista\\b"
+    },
+    "types-cursor": {
+      "name": "storage.type.cursor.lsp",
+      "match": "\\bCursor\\b"
     },
     "types": {
       "name": "storage.type.lsp",
-      "match": "\\b(Alfa|Numero|Data|Lista|Cursor|Tabela)\\b"
+      "match": "\\b(Alfa|Numero|Data|Tabela|Funcao)\\b"
+    },
+    "param-modifiers": {
+      "name": "storage.modifier.lsp",
+      "match": "\\bEnd\\b"
+    },
+    "system-vars": {
+      "name": "constant.language.lsp",
+      "match": "(?<!\\.)\\b(AnoSis|CodEmp|CodFil|CodUsu|DatSis|DBNomeUsuario|DBTipo|DesRodape|DiaSis|Empresa|ExtSis|Filial|GerTabAlf|GerTabNum|HorSis|MesSis|NomUsu|NumPag|QtdDupPag)\\b"
     },
     "functions": {
-      "name": "support.function.lsp",
+      "name": "entity.name.function.lsp",
       "match": "\\b(AbrirCursor|AdicionaDadosGrade|AlfaParaData|AlfaParaDecimal|AlfaParaInt|AlteraControle|AlteraValorFormula|AnoBissexto|ArqExiste|Arredonda|ArredondaABNT|ArredondarValor|ArredondaValorTipoAcerto|AtivaLimpezaParamEnt|AtualizaBarraProgresso|Base64Decode|Base64Encode|CalculaAlfa|Cancel|CancelarRelatorio|CaracterParaAlfa|CarregaImagemControle|CarregaImgControle|CarregaImgVetorialControle|CarregarTextoArq|CodData|CodigoEspNivel|Concatena|ConfiguraPontoGrafico|ConverteCodificacaoString|ConverteDataBanco|ConverteDataSqlSenior2|ConverteDataToDB|ConverteMascara|ConverteParaMaiusculo|ConverteParaMinusculo|ConverteTexto|ConverteUnidadeMedida|CopiarAlfa|CopiarStr|CriarArquivoTemporario|CriaView|Cursores|DataExtenso|DataHoje|DataHora|DataHoraUTC|DataInicialFinal|DateToDB|DecimalParaAlfa|DecodData|DeixaNumeros|DeletarAlfa|DeletarStr|DeleteFieldSQL|DesatLimpezaParamEnt|DesCamLista|Desencriptar|DesfazerTransacao|DesMontaData|DetPrimConector|Dividir|Encriptar|EstaNulo|ExcluirArquivoTemporario|ExecProg|ExecSQL|ExecSQLEx|Executar|Extenso|ExtensoMes|ExtensoMoeda|ExtensoSemana|FecharCursor|FinalizaBarraProgresso|FinalizarTransacao|Formatar|FormatarData|FormatarN|GeraHash|GerarNonce|GerarPwdDigest|GeraSenha|GeraToken|HoraParaMinuto|HttpAlteraCabecalhoRequisicao|HttpDelete|HttpDeleteBody|HttpDesabilitaErroResposta|HttpDownload|HttpGet|HttpLeCodigoResposta|HttpObjeto|HttpPost|HttpPut|HttpSetaTimeout|IniciaBarraProgresso|IniciarTransacao|InsClauSQLCampoDireto|InsClauSQLField|InsClauSQLFrom|InsClauSQLGroupBy|InsClauSQLOrderBy|InsClauSQLWhere|InserirAlfa|InserirStr|InsEspAlinhDireita|InsSQLWhereSimples|IntParaAlfa|IntParaStr|LerPosicaoAlfa|LimpaDadosGrade|LimpaDadosGrafico|LimpaEspacos|LimpaEspacosDireita|LimpaEspacosEsquerda|LimpaGerTabAlf|LimpaGerTabNum|LimparParamsEntrada|LinhasArquivo|ListaItem|ListaQuantidade|ListaRegraCarregarJson|ListaRegraCriarLista|ListaRegraObterValorAlfa|ListaRegraPrimeiro|ListaRegraProximo|ListaSecao|LSP|Mensagem|MontaAbrangencia|MontaData|MontarSQLHisCampo|MontarSQLHisCampoSeq|MontarSQLHistorico|MontarSQLHistoricoSeq|MultiplicaValor|ObtemIdiomaAtivo|ObterVersaoSistema|OcultaBarraProgressoRelatorio|OrdenacaoSelecionada|PegarTipoVar|PegarValorVarAlf|PegarValorVarNum|PosicaoAlfa|PosicaoStr|PreenchePagina|ProcuraEnter|ProximaPagina|Proximo|QuebraTexto|RemoveExpressoesProibidas|RestoDivisao|RetDiaSemana|RetDiaUtilAntPos|RetiraAcentuacao|RetiraCaracteresEspeciais|RetornaAscII|RetornaCampoAlfaTabela|RetornaCampoNumeroTabela|RetornarDiasUteisMes|RetornarDiasUteisPeriodo|RetornarQtdDiasAno|RetornaValorCFG|SaltarPagina|SelecaoTabelas|SelecionaImpressora|SetaNumeroTelaEntrada|SetarValorVarAlf|SetarValorVarNum|sleep|SQL_AbrirCursor|SQL_BOF|SQL_Criar|SQL_DefinirAlfa|SQL_DefinirBlob|SQL_DefinirComando|SQL_DefinirData|SQL_DefinirInteiro|SQL_Destruir|SQL_EOF|SQL_FecharCursor|SQL_Proximo|SQL_RetornarAlfa|SQL_RetornarBlob|SQL_RetornarBoleano|SQL_RetornarData|SQL_RetornarFlutuante|SQL_RetornarInteiro|SQL_RetornarSeNulo|SQL_UsarAbrangencia|SQL_UsarSQLSenior2|StrParaInt|SubstAlfa|SubstAlfaUmaVez|SubstituiFrom|TamanhoAlfa|TamanhoStr|TrocaString|TruncaDadosGrade|Truncar|UltimoDia|UltimoRegistro|ValorElementoJson|Vantagens|VerificaAbaAtiva|VrfAbrA|VrfAbrN)\\b"
+    },
+    "function-calls": {
+      "name": "entity.name.function.lsp",
+      "match": "\\b([A-Za-z_]\\w*)\\s*(?=\\()"
     },
     "numbers": {
       "name": "constant.numeric.lsp",

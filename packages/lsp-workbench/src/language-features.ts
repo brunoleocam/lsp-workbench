@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 import { SENIOR_LSP_LANGUAGE_ID } from "./language";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
 import { markdownForFunction, parseFileSymbols } from "./document-symbols";
-import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+import { LSP_FUNCTION_CATALOG, findSystemVar } from "./function-catalog";
 import { mergeEligible } from "./symbol-scope";
 
 function wordAt(
@@ -23,6 +23,14 @@ export function createHoverProvider(): vscode.HoverProvider {
     async provideHover(document, position) {
       const w = wordAt(document, position);
       if (!w) return undefined;
+
+      const sys = findSystemVar(w.name);
+      if (sys) {
+        const md = new vscode.MarkdownString(
+          `**${sys.name}** — variável de sistema (${sys.tipo})\n\n${sys.documentation}`
+        );
+        return new vscode.Hover(md, w.range);
+      }
 
       const idx = getWorkspaceSymbolIndex();
       const { local, peers } = await idx.getScopedEligible(document);

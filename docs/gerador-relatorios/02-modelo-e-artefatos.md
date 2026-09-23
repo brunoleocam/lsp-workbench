@@ -75,4 +75,6 @@ Muitos trechos `_Na Impressão` vêm **vazios** no export (controle sem regra). 
 
 Para documentar, revisar ou editar **lógica** de relatório no Workbench, o artefato natural é o **export multi-trecho `.lsp`**. Layout e metadados de modelo continuam no Senior (ou em futura integração, se houver API/formato aberto — hoje não documentado publicamente).
 
+O comando **Importar Relatório** (`lspWorkbench.importarRelatorio` / `/importar-relatorio`) faz o caminho inverso: parse do dump → árvore ADR-007 (`Definicao/` + `Secoes/`). Eventos `*_Na Impressão` ficam listados no README e não geram arquivo.
+
 Próximo: [03-secoes.md](03-secoes.md)

@@ -564,6 +564,78 @@ describe("analyzeLsp expanded", () => {
     assert.ok(hits.some((h) => h.id === "SYN010" && h.line === 1));
   });
 
+  it("SEM001 não alerta WebService Definir nem membros da cadeia", () => {
+    const src =
+      "Definir interno.com.senior.g5.co.mcm.ven.pedidos.gravarpedidos wsPedidos;\n" +
+      "wsPedidos.Pedido.Usuario.CmpUsu = 1;\n" +
+      "wsPedidos.Executar();\n";
+    const hits = analyzeLsp(src);
+    assert.equal(
+      hits.some(
+        (h) =>
+          h.id === "SEM001" &&
+          /interno|com|senior|Pedido|Usuario|CmpUsu|wsPedidos/i.test(h.message)
+      ),
+      false
+    );
+  });
+
+  it("SEM001 não alerta identificadores só em comentario", () => {
+    const src =
+      "Definir Numero vnX;\nvnX = 1;\n@ vaFantasma = 1; Numero @\n/* vaBloco = 2; */\n";
+    const hits = analyzeLsp(src);
+    assert.equal(
+      hits.some(
+        (h) =>
+          h.id === "SEM001" &&
+          /vaFantasma|vaBloco/i.test(h.message)
+      ),
+      false
+    );
+  });
+
+  it("SYN001 não alerta Enquanto/Se com { na linha seguinte", () => {
+    const src =
+      "Definir Cursor Cur_Tab1;\nEnquanto (Cur_Tab1.Achou)\n{\n  Cur_Tab1.Proximo();\n}\n";
+    const hits = analyzeLsp(src);
+    assert.equal(
+      hits.some((h) => h.id === "SYN001" && h.line === 1),
+      false
+    );
+    const se = analyzeLsp("Definir Numero vnX;\nSe (vnX > 0)\n{\n  vnX = 1;\n}\n");
+    assert.equal(se.some((h) => h.id === "SYN001" && h.line === 1), false);
+  });
+
+  it("SYN001 não alerta Se com stmt único na linha seguinte", () => {
+    const hits = analyzeLsp(
+      'Definir Alfa vaM;\nSe (1 = 1)\n  vaM = "ok";\n'
+    );
+    assert.equal(hits.some((h) => h.id === "SYN001" && h.line === 1), false);
+  });
+
+  it("SYN001 não alerta string multilinha com \\ (SQL cursor)", () => {
+    const src =
+      'Definir Cursor Cur_Tab1;\n' +
+      'Cur_Tab1.SQL "SELECT E120IPD.SeqIpd,E120IPD.CodPro,E120IPD.CodDer,       \\\n' +
+      '                        E120IPD.QtdPed,E120IPD.PreUni FROM E120IPD WHERE    \\\n' +
+      '                        E120IPD.CODEMP = :VNCODEMP              \\\n' +
+      '                    AND E120IPD.CODFIL = :VNCODFIL              \\\n' +
+      '                    AND E120IPD.NUMPED = :VNNUMPED ";\n';
+    const hits = analyzeLsp(src);
+    assert.equal(
+      hits.some((h) => h.id === "SYN001"),
+      false,
+      hits.filter((h) => h.id === "SYN001").map((h) => `L${h.line}`).join(",")
+    );
+    assert.equal(hits.some((h) => h.id === "SYN012"), false);
+  });
+
+  it("SYN012 alerta string aberta sem fechar nem \\", () => {
+    const hits = analyzeLsp('Definir Alfa vaX;\nvaX = "aberta\n');
+    assert.ok(hits.some((h) => h.id === "SYN012" && h.line === 1));
+    assert.equal(hits.some((h) => h.id === "SYN001" && h.line === 1), false);
+  });
+
   it("SYN010 alerta numero; solto (erro Senior)", () => {
     const hits = analyzeLsp("Definir Numero vnA;\nnumero;\n");
     assert.ok(hits.some((h) => h.id === "SYN010"));

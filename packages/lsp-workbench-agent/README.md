@@ -16,6 +16,7 @@ Complementa a extensão **LSP Workbench** (IDE / Marketplace). Escopo: sintaxe, 
 | `/gerar-cursor-lsp` | Cursor (+ SQL) | Snippets |
 | `/gerar-http-lsp` | HTTP + parse JSON/XML | Snippets |
 | `/gerar-relatorio` | Scaffold relatório (PDR-008) | Gerar Projeto de Relatório |
+| `/importar-relatorio` | Import dump multi-trecho → árvore ADR-007 | Importar Relatório |
 | `/escopo-relatorio` | Explicar escopo do relatório | Mostrar Escopo |
 | `/copiar-regra-relatorio` | Juntar `.lsp` do evento / todos | Copiar / Visualizar Regras |
 

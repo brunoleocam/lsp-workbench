@@ -23,3 +23,20 @@ As variáveis de sistema são utilizadas para obter informações do ambiente de
 | NomUsu         | Nome do usuário                                          |
 | NumPag         | Número da página                                         |
 | QtdDupPag      | Quantidade de duplicatas impressas por página - Utilizado no modelo FRCR002 |
+
+## GerTabAlf e GerTabNum
+
+São registros indexados em memória (`GerTabAlf[n]`, `GerTabNum[n]`). **Não** funcionam como dois arrays independentes com o mesmo índice: a estrutura é única — atribuir `GerTabAlf[2] = "Pedro"` e depois `GerTabAlf[2] = "Matheus"` sobrescreve o valor. Para trabalhar com conjuntos distintos, use **índices diferentes** (ex.: 1–100 para um conjunto, 101–200 para outro).
+
+Para zerar todo o registro:
+
+- [`LimpaGerTabAlf`](funcoes-avancadas-de-data-e-dias-uteis.md#limpagertabalf) — `LimpaGerTabAlf();`
+- [`LimpaGerTabNum`](funcoes-avancadas-de-data-e-dias-uteis.md#limpagertabnum) — `LimpaGerTabNum();`
+
+```lsp
+GerTabAlf[1] = "xxx";
+LimpaGerTabAlf();
+
+GerTabNum[1] = 1;
+LimpaGerTabNum();
+```

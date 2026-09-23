@@ -61,6 +61,7 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | SYN009 | Literal muito longo sem `\` | Quebrar ~col 80 com `\` |
 | SYN010 | Identificador/tipo solto | Remover ou `Definir Tipo …` |
 | SYN011 | `@` multi-linha (fechamento noutra linha) | Converter para `/* … */` |
+| SYN012 | String `"` aberta sem fechar / sem `\` | Fechar `"` ou continuar com `\` |
 
 ## Checklist RUL
 

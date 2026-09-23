@@ -18,7 +18,7 @@ Depois: **Developer: Reload Window**. Conferir `@lsp-compilar`, `/compilar-lsp`,
 
 Padrão **`lsp-<ação>`**: `linguagem` | `gerar` | `compilar` | `depurar` | `revisar` | `formatar` | `refatorar` | `logs` | `banco` | `contexto`
 
-Commands: `/compilar-lsp`, `/depurar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
+Commands: `/compilar-lsp`, `/depurar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`, `/importar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
 
 | Rápido | Completo (estático) | Fluxo (dinâmico) |
 |--------|---------------------|------------------|

@@ -166,7 +166,8 @@ Comandos úteis (Ctrl+Shift+P): **Criar/Editar/Apagar Contexto**, **Alternar Esc
 
 Comandos (Command Palette → “LSP Workbench”):
 
-- **Gerar Projeto de Relatório** — scaffold
+- **Gerar Projeto de Relatório** — scaffold vazio (`relatorio.json` + pastas)
+- **Importar Relatório** — dump “Visualizar Todas as Regras” → árvore ADR-007
 - **Copiar Regra do Relatório** / **Visualizar Todas as Regras**
 - **Importar / Exportar Contexto**
 - **Mostrar Escopo do Relatório**
@@ -280,20 +281,31 @@ Use quando o workspace tem vários módulos e o Ctrl+Espaço mistura símbolos d
 
 ### 4. Projeto de relatório (Gerador)
 
+**Criar do zero**
+
 1. **LSP Workbench: Gerar Projeto de Relatório** (scaffold com `relatorio.json`).
 2. Edite `.lsp` dentro da pasta — o escopo fica isolado nessa pasta.
 3. **Importar Contexto de…** para pastas compartilhadas (`contextoExtra`).
 4. **Mostrar Escopo do Relatório** para conferir.
 
+**Importar de um dump Senior**
+
+1. No Gerador, use **Visualizar Todas as Regras** e salve o `.lsp` multi-trecho (padrão `Código: N - Descrição: …`).
+2. Abra esse arquivo **ou** Command Palette → **LSP Workbench: Importar Relatório** e escolha o arquivo.
+3. Informe sigla (ex. `RDCG183`), descrição e pasta destino.
+4. A extensão cria `relatorio.json`, `Definicao/`, `Secoes/<Nome>/` e abre o `README.md`.
+5. Eventos `*_Na Impressão` ficam listados no README (não geram arquivo).
+
 ```json
 {
-  "codigo": "RDCG183",
+  "codigo": "RDCGXXX",
   "descricao": "Cargas — exemplo",
   "detalhePrincipal": "Detalhe_1",
   "contextoExtra": ["../FUNCOES"]
 }
 ```
 
+Docs: [docs/gerador-relatorios](https://github.com/brunoleocam/lsp-workbench/tree/main/docs/gerador-relatorios).
 ---
 
 ### 5. Catálogo de tabelas

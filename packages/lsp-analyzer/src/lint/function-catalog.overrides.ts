@@ -106,7 +106,42 @@ export const LSP_FUNCTION_CATALOG_OVERRIDES: LspFunctionEntry[] = [
     insertText: "SQL_Criar(${1:vaCur});",
     detail: "SQL_Criar(Alfa handle)",
     documentation:
-      "Handle deve ser `Definir Alfa`. Ordem: Criar → Usar* → DefinirComando → Abrir → Fechar → Destruir.",
+      "Handle deve ser `Definir Alfa`. Ordem: Criar → Usar* → DefinirComando → Abrir → Fechar → Destruir. Para o pipeline completo, use o seed **Cursor completo** (Ctrl+Espaço).",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_DefinirComando",
+    insertText: "SQL_DefinirComando(${1:vaCur}, ${2:vaSQL});",
+    detail: "SQL_DefinirComando(handle, Alfa SQL)",
+    documentation: "Define o comando SQL do handle. Depois: AbrirCursor → loop EOF → Fechar → Destruir.",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_AbrirCursor",
+    insertText: "SQL_AbrirCursor(${1:vaCur});",
+    detail: "SQL_AbrirCursor(handle)",
+    documentation: "Abre o cursor do handle criado com SQL_Criar.",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_Proximo",
+    insertText: "SQL_Proximo(${1:vaCur});",
+    detail: "SQL_Proximo(handle)",
+    documentation: "Avança para o próximo registro. Usar dentro do loop `SQL_EOF(...) = 0`.",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_FecharCursor",
+    insertText: "SQL_FecharCursor(${1:vaCur});",
+    detail: "SQL_FecharCursor(handle)",
+    documentation: "Fecha o cursor. Depois: SQL_Destruir.",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_Destruir",
+    insertText: "SQL_Destruir(${1:vaCur});",
+    detail: "SQL_Destruir(handle)",
+    documentation: "Libera o handle. Sempre após FecharCursor.",
     isSnippet: true,
   },
   {
@@ -150,6 +185,29 @@ export const LSP_FUNCTION_CATALOG_OVERRIDES: LspFunctionEntry[] = [
     insertText: 'SQL_RetornarInteiro(${1:vaCur}, "${2:CAMPO}", ${3:vnDestino});',
     detail: "SQL_RetornarInteiro(handle, campo, Numero End)",
     documentation: "Destino local `vn*` (não `p*`).",
+    isSnippet: true,
+  },
+  {
+    label: "SQL_RetornarData",
+    insertText: 'SQL_RetornarData(${1:vaCur}, "${2:CAMPO}", ${3:vdDestino});',
+    detail: "SQL_RetornarData(handle, campo, Data End)",
+    documentation: "Destino local `vd*` (não parâmetro).",
+    isSnippet: true,
+  },
+  {
+    label: "LimpaGerTabAlf",
+    insertText: "LimpaGerTabAlf();",
+    detail: "LimpaGerTabAlf() — zera GerTabAlf",
+    documentation:
+      "Limpa o conteúdo do Registro GerTabAlf.\n\n```lsp\nGerTabAlf[1] = \"xxx\";\nLimpaGerTabAlf();\n```",
+    isSnippet: true,
+  },
+  {
+    label: "LimpaGerTabNum",
+    insertText: "LimpaGerTabNum();",
+    detail: "LimpaGerTabNum() — zera GerTabNum",
+    documentation:
+      "Limpa o conteúdo do Registro GerTabNum.\n\n```lsp\nGerTabNum[1] = 1;\nLimpaGerTabNum();\n```",
     isSnippet: true,
   },
   {

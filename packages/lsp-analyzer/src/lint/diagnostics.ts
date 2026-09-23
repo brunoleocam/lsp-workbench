@@ -24,6 +24,9 @@ import { findCustomCalls, localEligibleNames } from "./symbol-scope";
 import { collectGerDiagnostics } from "./ger-diagnostics";
 import type { ReportContext } from "./report-project";
 import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+import { SYSTEM_VAR_NAMES } from "./system-vars";
+import { maskCommentsAndStrings } from "./comment-mask";
+import { matchDefinirWebService } from "./webservice";
 
 const BUILTIN_FUNC_NAMES = new Set(
   LSP_FUNCTION_CATALOG.map((e) => e.label.toLowerCase())
@@ -78,16 +81,94 @@ export type AnalyzeLspOptions = {
 };
 
 function stripStringsAndComments(line: string): string {
-  let s = line.replace(/@[^@]*@/g, " ");
-  s = s.replace(/\/\*.*?\*\//g, " ");
+  // Mantém legibilidade do probe; offsets usam maskCommentsAndStrings quando necessário.
+  let s = maskCommentsAndStrings(line);
   s = s.replace(/"(?:\\.|[^"\\])*"/g, '""');
   return s;
+}
+
+/** Próxima linha de código significativa após `from` (pula vazias / só comentário). */
+function nextSignificantProbe(lines: string[], from: number): string | null {
+  let inBlock = false;
+  for (let j = from + 1; j < lines.length; j++) {
+    let raw = lines[j];
+    if (inBlock) {
+      if (raw.includes("*/")) {
+        inBlock = false;
+        raw = raw.slice(raw.indexOf("*/") + 2);
+      } else {
+        continue;
+      }
+    }
+    if (raw.includes("/*") && !raw.includes("*/")) {
+      inBlock = true;
+      raw = raw.slice(0, raw.indexOf("/*"));
+    }
+    const trimmed = raw.trim();
+    if (!trimmed || trimmed.startsWith("@")) continue;
+    const probe = stripStringsAndComments(trimmed).replace(/\s+/g, " ").trim();
+    if (!probe) continue;
+    return probe;
+  }
+  return null;
+}
+
+/**
+ * Se a linha termina dentro de uma string aberta.
+ * `startInString` = continuação da linha anterior (após `\`).
+ * `\` no fim (só espaços depois) = continuação LSP — mantém string aberta.
+ */
+function lineEndsInsideString(line: string, startInString: boolean): boolean {
+  let inStr = startInString;
+  let i = 0;
+  while (i < line.length) {
+    const ch = line[i];
+    if (!inStr) {
+      if (ch === "@") {
+        i++;
+        while (i < line.length && line[i] !== "@") i++;
+        if (i < line.length) i++;
+        continue;
+      }
+      if (ch === "/" && line[i + 1] === "*") {
+        i += 2;
+        while (
+          i < line.length - 1 &&
+          !(line[i] === "*" && line[i + 1] === "/")
+        ) {
+          i++;
+        }
+        i = Math.min(i + 2, line.length);
+        continue;
+      }
+    }
+    if (ch === '"') {
+      inStr = !inStr;
+      i++;
+      continue;
+    }
+    if (inStr && ch === "\\") {
+      // Continuação de linha LSP: \ no fim (espaços opcionais depois)
+      if (/^\\\s*$/.test(line.slice(i))) {
+        return true;
+      }
+      i += 2;
+      continue;
+    }
+    i++;
+  }
+  return inStr;
+}
+
+function lineHasTrailingContinuation(line: string): boolean {
+  return /\\\s*$/.test(line.trimEnd());
 }
 
 /** Remove pares `@…@` e strings; `@` restante = comentário de linha sem fechar. */
 function stripAtPairsAndStrings(line: string): string {
   let s = line.replace(/"(?:\\.|[^"\\])*"/g, '""');
   let prev = "";
+
   while (s !== prev) {
     prev = s;
     s = s.replace(/@[^@\n]*@/g, " ");
@@ -240,7 +321,9 @@ export function analyzeLsp(
   const opts = resolveAnalyzeOpts(ignoreIdsOrOpts);
   const ignore = new Set((opts.ignoreIds ?? []).map((x) => x.toUpperCase()));
   const hits: DiagnosticHit[] = [];
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const normalized = source.replace(/\r\n/g, "\n");
+  const lines = normalized.split("\n");
+  const maskedLines = maskCommentsAndStrings(normalized).split("\n");
 
   let braceDepth = 0;
   let loopDepth = 0;
@@ -266,14 +349,16 @@ export function analyzeLsp(
   const SQL_KW = /\b(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|MERGE|WITH)\b/i;
 
   // SYN007 / SYN008 / SYN011 pré-pass (alerta na linha do problema, não só no topo)
-  // Ignora @ … @ para não contar `*/` dentro de comentário de linha do smoke/docs.
-  const full = source.replace(/\r\n/g, "\n");
+  // Ignora @ … @ (e @ até EOL) para não contar `*/` dentro de comentário de linha.
+  const full = normalized;
   {
     const synLines = full.split("\n");
     let cDepth = 0;
     let openCommentLine = -1;
     for (let i = 0; i < synLines.length; i++) {
-      const raw = synLines[i].replace(/@[^@]*@/g, " ");
+      const raw = synLines[i]
+        .replace(/@[^@]*@/g, " ")
+        .replace(/@[^\n]*$/g, " ");
       const opens = (raw.match(/\/\*/g) || []).length;
       const closes = (raw.match(/\*\//g) || []).length;
       if (opens > 0 && cDepth === 0) openCommentLine = i;
@@ -317,6 +402,63 @@ export function analyzeLsp(
     }
   }
 
+  // SYN012 — string `"` aberta sem fechar; use `\` para continuar na linha seguinte
+  {
+    const synLines = full.split("\n");
+    let inStr = false;
+    let openLine = -1;
+    for (let i = 0; i < synLines.length; i++) {
+      const raw = synLines[i];
+      const trimmed = raw.trim();
+      if (!trimmed) {
+        if (inStr) {
+          push(
+            hits,
+            "SYN012",
+            'String aberta sem fechar `"`; use `\\` no fim da linha para continuar ou feche com `"`.',
+            openLine >= 0 ? openLine : i,
+            "error"
+          );
+          inStr = false;
+          openLine = -1;
+        }
+        continue;
+      }
+      const wasIn = inStr;
+      const endsIn = lineEndsInsideString(raw, wasIn);
+      const cont = lineHasTrailingContinuation(raw);
+      if (!wasIn && !endsIn) continue;
+      if (endsIn) {
+        if (cont) {
+          if (!wasIn) openLine = i;
+          inStr = true;
+        } else {
+          push(
+            hits,
+            "SYN012",
+            'String aberta sem fechar `"`; use `\\` no fim da linha para continuar ou feche com `"`.',
+            wasIn && openLine >= 0 ? openLine : i,
+            "error"
+          );
+          inStr = false;
+          openLine = -1;
+        }
+      } else {
+        inStr = false;
+        openLine = -1;
+      }
+    }
+    if (inStr) {
+      push(
+        hits,
+        "SYN012",
+        'String aberta sem fechar `"`; use `\\` no fim da linha para continuar ou feche com `"`.',
+        openLine >= 0 ? openLine : synLines.length - 1,
+        "error"
+      );
+    }
+  }
+
   {
     const synLines = full.split("\n");
     let braces = 0;
@@ -352,6 +494,8 @@ export function analyzeLsp(
   const alfaLiterals = new Map<string, string>();
   /** Continuação de string com `\` no fim da linha. */
   let pendingAlfaLit: { name: string; buf: string } | null = null;
+  /** String multilinha aberta (após `\`) — suprime SYN001 nas linhas de continuação. */
+  let inContinuedString = false;
   /** SQL_UsarAbrangencia(h, 0) desde o último SQL_Criar(h). */
   const sqlAbrangencia0 = new Set<string>();
   /** SQL_UsarSQLSenior2(h, 0) desde o último SQL_Criar(h). */
@@ -389,10 +533,22 @@ export function analyzeLsp(
 
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("@")) {
-      continue;
+      if (!trimmed && inContinuedString) {
+        inContinuedString = false;
+      }
+      if (!trimmed || (trimmed.startsWith("@") && !inContinuedString)) {
+        continue;
+      }
     }
 
     const code = stripStringsAndComments(trimmed);
+    const wasInString = inContinuedString;
+    const endsInStr = lineEndsInsideString(line, wasInString);
+    // String aberta (com ou sem `\`) — SYN012; não exigir `;` (SYN001)
+    const stringContinued =
+      wasInString || lineHasTrailingContinuation(trimmed) || endsInStr;
+    inContinuedString =
+      endsInStr && lineHasTrailingContinuation(trimmed);
 
     // track braces / loops (aproximado)
     const opens = (code.match(/\{/g) || []).length;
@@ -408,6 +564,12 @@ export function analyzeLsp(
     braceDepth = Math.max(0, braceDepth - closes);
 
     // Definir tracking
+    const defWs = matchDefinirWebService(trimmed);
+    if (defWs) {
+      defined.add(defWs.name.toLowerCase());
+      definedTypes.set(defWs.name.toLowerCase(), "webservice");
+      // path do WS não entra em SEM001 (tratado abaixo ao pular a linha)
+    }
     const def = trimmed.match(/^Definir\s+(Alfa|Numero|Data|Lista|Cursor)\s+(\w+)/i);
     if (def) {
       const tipo = def[1].toLowerCase();
@@ -536,14 +698,25 @@ export function analyzeLsp(
     }
 
     // SYN001 — usa `code` (sem @coment@ / strings) para não flagar `…; @ lsp-ignore … @`
+    // Cabeçalhos Se/Enquanto/Para/Senao não levam `;` — o corpo fica na linha seguinte
+    // (`{` ou stmt único). Ex.: `Enquanto (Cur.Achou)\n{` é válido.
+    // String multilinha com `\` no fim também não leva `;` até fechar o `"`.
     {
       const probe = code.replace(/\s+/g, " ").trim();
-      if (isSyn010OrphanStatement(probe)) {
+      if (stringContinued) {
+        // Cur_X.SQL "… \ / continuação — SYN012 cuida de aspas; não exigir `;`
+      } else if (isSyn010OrphanStatement(probe)) {
         // SYN010 cuida — não sugerir só acrescentar `;`
+      } else if (/^(Se|Senao|Enquanto|Para)\b/i.test(probe)) {
+        // cabeçalho de bloco — ok sem `;` / `{` na mesma linha
+      } else if (
+        /^Funcao\b/i.test(probe) &&
+        nextSignificantProbe(lines, i)?.startsWith("{")
+      ) {
+        // `Funcao Nome(...)\n{` — `{` na linha seguinte
       } else {
         const looksLikeStmt =
           /^Definir\s+\w+\s+\w+/i.test(probe) ||
-          /^(Se|Senao|Enquanto|Para)\b/i.test(probe) ||
           /^(Mensagem|Cancel|Funcao)\b/i.test(probe) ||
           /^(va|vn|vd|vl)\w+\s*=/i.test(probe) ||
           /^(va|vn|vd|vl)\w+\s*\(/i.test(probe) ||
@@ -556,7 +729,7 @@ export function analyzeLsp(
             !probe.endsWith("{") &&
             !probe.endsWith("}") &&
             !probe.endsWith("\\") &&
-            !/^Senao\b/i.test(probe)
+            !lineHasTrailingContinuation(trimmed)
           ) {
             push(hits, "SYN001", "Instrução provavelmente sem terminador `;`.", i, "error");
           }
@@ -565,13 +738,13 @@ export function analyzeLsp(
     }
 
     // SYN002
-    if (/\bSe\s+[^(]/i.test(trimmed) || /\bEnquanto\s+[^(]/i.test(trimmed) || /\bPara\s+[^(]/i.test(trimmed)) {
+    if (/\bSe\s+[^(]/i.test(code) || /\bEnquanto\s+[^(]/i.test(code) || /\bPara\s+[^(]/i.test(code)) {
       push(hits, "SYN002", "Condição de Se/Enquanto/Para deve estar entre parênteses.", i, "error");
     }
 
     // SYN003
-    if (/\bSe\s*\([^)]*\b(e|ou)\b[^)]*\)/i.test(trimmed) || /\bEnquanto\s*\([^)]*\b(e|ou)\b[^)]*\)/i.test(trimmed)) {
-      const m = trimmed.match(/\b(Se|Enquanto)\s*\((.+)\)\s*\{?/i);
+    if (/\bSe\s*\([^)]*\b(e|ou)\b[^)]*\)/i.test(code) || /\bEnquanto\s*\([^)]*\b(e|ou)\b[^)]*\)/i.test(code)) {
+      const m = code.match(/\b(Se|Enquanto)\s*\((.+)\)\s*\{?/i);
       if (m) {
         const inner = m[2];
         if (/\b(e|ou)\b/i.test(inner) && !/\([^)]+\)\s+(e|ou)\s+\(/i.test(inner)) {
@@ -919,11 +1092,12 @@ export function analyzeLsp(
       }
     }
 
-    // SEM003 — registra AbrirCursor / FecharCursor por nome (posições na linha raw)
+    // SEM003 — registra AbrirCursor / FecharCursor (ignora comentarios)
     {
+      const scan = maskedLines[i] ?? "";
       const openRe = /\b(\w+)\.AbrirCursor\b/gi;
       let om: RegExpExecArray | null;
-      while ((om = openRe.exec(raw)) !== null) {
+      while ((om = openRe.exec(scan)) !== null) {
         const name = om[1].toLowerCase();
         if (!cursorOpens.has(name)) cursorOpens.set(name, []);
         cursorOpens.get(name)!.push({
@@ -934,7 +1108,7 @@ export function analyzeLsp(
       }
       const closeRe = /\b(\w+)\.FecharCursor\s*\(/gi;
       let cm: RegExpExecArray | null;
-      while ((cm = closeRe.exec(raw)) !== null) {
+      while ((cm = closeRe.exec(scan)) !== null) {
         const name = cm[1].toLowerCase();
         cursorCloses.set(name, (cursorCloses.get(name) ?? 0) + 1);
       }
@@ -965,24 +1139,25 @@ export function analyzeLsp(
       }
     }
     // SEM001 — qualquer identificador usado (prefixo va*/vn*/… é só boa prática).
-    // Exclui: membro .Campo, chamada Func(, strings, keywords, builtins, tabelas E012*.
-    for (const m of raw.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\b/g)) {
-      const display = m[1];
-      const key = display.toLowerCase();
-      if (usedPrefixed.has(key)) continue;
-      const idx = m.index!;
-      const before = raw.slice(0, idx);
-      const quoteCount = (before.match(/"/g) || []).length;
-      if (quoteCount % 2 === 1) continue;
-      if (idx > 0 && raw[idx - 1] === ".") continue;
-      const after = raw.slice(idx + display.length);
-      if (/^\s*\(/.test(after)) continue;
-      usedPrefixed.set(key, {
-        line: i,
-        start: idx,
-        end: idx + display.length,
-        display,
-      });
+    // Exclui: membro .Campo, chamada Func(, strings, comentarios, keywords, builtins, tabelas E012*.
+    // Linha Definir <caminho.ws> <instancia> — só a instância conta (já em `defined`).
+    if (!matchDefinirWebService(trimmed)) {
+      const scan = maskedLines[i] ?? "";
+      for (const m of scan.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\b/g)) {
+        const display = m[1];
+        const key = display.toLowerCase();
+        if (usedPrefixed.has(key)) continue;
+        const idx = m.index!;
+        if (idx > 0 && scan[idx - 1] === ".") continue;
+        const after = scan.slice(idx + display.length);
+        if (/^\s*\(/.test(after)) continue;
+        usedPrefixed.set(key, {
+          line: i,
+          start: idx,
+          end: idx + display.length,
+          display,
+        });
+      }
     }
 
     // FUN005 movido para o bloco FUN* abaixo (qualquer Arredonda*)
@@ -1341,6 +1516,7 @@ export function analyzeLsp(
       if (BUILTIN_OR_KW.test(name)) continue;
       if (RESERVED_WORDS.has(name)) continue;
       if (BUILTIN_FUNC_NAMES.has(name)) continue;
+      if (SYSTEM_VAR_NAMES.has(name)) continue;
       if (TYPE_WORDS.has(name)) continue;
       if (isSeniorTableId(name)) continue;
       push(

@@ -1,0 +1,249 @@
+{
+  "name": "LSP Workbench (Dark)",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#1e1e1e",
+    "editor.foreground": "#d4d4d4",
+    "editor.inactiveSelectionBackground": "#3a3d41",
+    "editor.selectionHighlightBackground": "#add6ff26",
+    "editorIndentGuide.background1": "#404040",
+    "activityBarBadge.background": "#007acc",
+    "sideBarTitle.foreground": "#bbbbbb"
+  },
+  "semanticHighlighting": true,
+  "semanticTokenColors": {
+    "function": "#c678dd",
+    "variable": "#4EC9B0",
+    "method": "#dcdcaa",
+    "property": "#9cdcfe",
+    "keyword": "#ffffff",
+    "type": "#569cd6",
+    "macro": "#c586c0"
+  },
+  "tokenColors": [
+    {
+      "scope": "comment",
+      "settings": {
+        "fontStyle": "italic",
+        "foreground": "#608b4e"
+      }
+    },
+    {
+      "scope": ["comment.line.lsp", "comment.block.lsp"],
+      "settings": {
+        "fontStyle": "italic",
+        "foreground": "#608b4e"
+      }
+    },
+    {
+      "scope": "constant.numeric.lsp",
+      "settings": {
+        "foreground": "#b5cea8"
+      }
+    },
+    {
+      "scope": "string.quoted.double.lsp",
+      "settings": {
+        "foreground": "#4fa6ef"
+      }
+    },
+    {
+      "scope": "storage.type.lsp",
+      "settings": {
+        "foreground": "#569cd6"
+      }
+    },
+    {
+      "name": "Modificador End (param de saída)",
+      "scope": "storage.modifier.lsp",
+      "settings": {
+        "foreground": "#ce9178"
+      }
+    },
+    {
+      "name": "Variáveis Declaradas",
+      "scope": ["variable.other.lsp", "variable.parameter.lsp"],
+      "settings": {
+        "foreground": "#4EC9B0"
+      }
+    },
+    {
+      "name": "Variáveis de sistema",
+      "scope": "constant.language.lsp",
+      "settings": {
+        "foreground": "#f44747"
+      }
+    },
+    {
+      "name": "Funções LSP",
+      "scope": "entity.name.function.lsp",
+      "settings": {
+        "foreground": "#c678dd"
+      }
+    },
+    {
+      "name": "Palavras-chave LSP",
+      "scope": "keyword.control.lsp",
+      "settings": {
+        "fontStyle": "bold",
+        "foreground": "#ffffff"
+      }
+    },
+    {
+      "name": "Controle de fluxo (Se/Enquanto/Para)",
+      "scope": "keyword.control.flow.lsp",
+      "settings": {
+        "fontStyle": "bold",
+        "foreground": "#c586c0"
+      }
+    },
+    {
+      "name": "Operadores lógicos e/ou",
+      "scope": "keyword.operator.logical.lsp",
+      "settings": {
+        "fontStyle": "bold",
+        "foreground": "#d7ba7d"
+      }
+    },
+    {
+      "name": "Operadores ++ --",
+      "scope": "keyword.operator.increment.lsp",
+      "settings": {
+        "foreground": "#d7ba7d"
+      }
+    },
+    {
+      "name": "Operadores comparação",
+      "scope": "keyword.operator.comparison.lsp",
+      "settings": {
+        "foreground": "#d4d4d4"
+      }
+    },
+    {
+      "name": "Operadores aritméticos",
+      "scope": "keyword.operator.arithmetic.lsp",
+      "settings": {
+        "foreground": "#d4d4d4"
+      }
+    },
+    {
+      "name": "Operador divisão /",
+      "scope": "keyword.operator.arithmetic.division.lsp",
+      "settings": {
+        "foreground": "#569cd6"
+      }
+    },
+    {
+      "name": "Continuação de linha \\",
+      "scope": ["keyword.operator.continuation.lsp", "constant.character.escape.lsp"],
+      "settings": {
+        "foreground": "#f44747"
+      }
+    },
+    {
+      "name": "Tipo Lista",
+      "scope": "storage.type.lista.lsp",
+      "settings": {
+        "foreground": "#b5cea8"
+      }
+    },
+    {
+      "name": "Variável Lista",
+      "scope": "variable.other.lista.lsp",
+      "settings": {
+        "foreground": "#9cdcfe"
+      }
+    },
+    {
+      "name": "Campo de Lista",
+      "scope": "variable.other.property.lista.lsp",
+      "settings": {
+        "foreground": "#ce9178"
+      }
+    },
+    {
+      "name": "Método de Lista",
+      "scope": "entity.name.function.member.lista.lsp",
+      "settings": {
+        "foreground": "#dcdcaa"
+      }
+    },
+    {
+      "name": "Tipo Cursor",
+      "scope": "storage.type.cursor.lsp",
+      "settings": {
+        "foreground": "#4EC9B0"
+      }
+    },
+    {
+      "name": "Variável Cursor",
+      "scope": "variable.other.cursor.lsp",
+      "settings": {
+        "foreground": "#56b6c2"
+      }
+    },
+    {
+      "name": "Campo de Cursor",
+      "scope": "variable.other.property.cursor.lsp",
+      "settings": {
+        "foreground": "#e5c07b"
+      }
+    },
+    {
+      "name": "Método de Cursor",
+      "scope": "entity.name.function.member.cursor.lsp",
+      "settings": {
+        "foreground": "#c678dd"
+      }
+    },
+    {
+      "name": "WebService — caminho (tipo)",
+      "scope": "entity.name.type.webservice.lsp",
+      "settings": {
+        "foreground": "#d7ba7d"
+      }
+    },
+    {
+      "name": "WebService — instância",
+      "scope": "variable.other.webservice.lsp",
+      "settings": {
+        "foreground": "#e06c75"
+      }
+    },
+    {
+      "name": "WebService — tabela/estrutura",
+      "scope": "variable.other.webservice.table.lsp",
+      "settings": {
+        "foreground": "#c678dd"
+      }
+    },
+    {
+      "name": "WebService — campo",
+      "scope": "variable.other.webservice.field.lsp",
+      "settings": {
+        "foreground": "#98c379"
+      }
+    },
+    {
+      "name": "SQL embutido — keywords",
+      "scope": "keyword.other.sql.lsp",
+      "settings": {
+        "foreground": "#4EC9B0"
+      }
+    },
+    {
+      "name": "SQL embutido — funções",
+      "scope": "support.function.sql.lsp",
+      "settings": {
+        "foreground": "#dcdcaa"
+      }
+    },
+    {
+      "name": "SQL embutido — binds :nome",
+      "scope": "variable.other.bind.sql.lsp",
+      "settings": {
+        "foreground": "#d7ba7d"
+      }
+    }
+  ]
+}

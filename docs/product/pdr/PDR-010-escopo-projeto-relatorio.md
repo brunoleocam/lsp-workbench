@@ -8,7 +8,7 @@
 
 ## Problema
 
-Em pastas tipo `Relatórios/RDCG183`, `RDCG184`, … o modo `lsp.symbols.scope = project` indexa o workspace inteiro: Ctrl+Espaço sugere funções/variáveis de outros relatórios. Criar um `lsp.contexts` por sigla não escala. Prefixo Senior (`RDCG`, `RFEX`, …) **não** é critério seguro.
+Em pastas tipo `Relatórios/RDCGXXX`, `RDCGXXY`, … o modo `lsp.symbols.scope = project` indexa o workspace inteiro: Ctrl+Espaço sugere funções/variáveis de outros relatórios. Criar um `lsp.contexts` por sigla não escala. Prefixo Senior (`RDCG`, `RFEX`, …) **não** é critério seguro.
 
 ## Decisão
 
@@ -24,7 +24,7 @@ Em pastas tipo `Relatórios/RDCG183`, `RDCG184`, … o modo `lsp.symbols.scope =
 
 ```json
 {
-  "codigo": "RDCG183",
+  "codigo": "RDCGXXX",
   "descricao": "...",
   "detalhePrincipal": "Detalhe_1",
   "contextoExtra": ["../FUNCOES", "../../_shared/helpers.lsp"]
@@ -36,7 +36,7 @@ Em pastas tipo `Relatórios/RDCG183`, `RDCG184`, … o modo `lsp.symbols.scope =
 | ID | Critério |
 |----|----------|
 | SCO-01 | Arquivo sob `relatorio.json` válido → peers só daquela pasta |
-| SCO-02 | Irmãos (`RDCG184`) não entram no Ctrl+Espaço |
+| SCO-02 | Irmãos (`RDCGXXY`) não entram no Ctrl+Espaço |
 | SCO-03 | `contextoExtra` amplia peers |
 | SCO-04 | `scope: file` ignora overlay |
 | SCO-05 | Fora de relatório → PDR-003 inalterado |

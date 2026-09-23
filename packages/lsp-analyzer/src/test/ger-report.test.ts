@@ -25,29 +25,29 @@ describe("report-project paths", () => {
 
   it("findReportRoot exige layout Definicao|Secoes", () => {
     const files = new Set([
-      "C:/ws/RDCG183/relatorio.json",
-      "C:/ws/RDCG183/Definicao",
-      "C:/ws/RDCG183/Definicao/Pre-Selecao.lsp",
+      "C:/ws/RDCGXXX/relatorio.json",
+      "C:/ws/RDCGXXX/Definicao",
+      "C:/ws/RDCGXXX/Definicao/Pre-Selecao.lsp",
       "C:/ws/orphan/relatorio.json",
     ]);
     const exists = (p: string) => files.has(p.replace(/\\/g, "/"));
     assert.equal(
-      findReportRoot("C:/ws/RDCG183/Definicao/Pre-Selecao.lsp", exists),
-      "C:/ws/RDCG183"
+      findReportRoot("C:/ws/RDCGXXX/Definicao/Pre-Selecao.lsp", exists),
+      "C:/ws/RDCGXXX"
     );
     assert.equal(findReportRoot("C:/ws/orphan/x.lsp", exists), undefined);
-    assert.ok(isReportProjectLayout("C:/ws/RDCG183", exists));
+    assert.ok(isReportProjectLayout("C:/ws/RDCGXXX", exists));
     assert.ok(!isReportProjectLayout("C:/ws/orphan", exists));
   });
 
   it("parseRelatorioMeta lê contextoExtra", () => {
     const meta = parseRelatorioMeta(
       JSON.stringify({
-        codigo: "RDCG183",
+        codigo: "RDCGXXX",
         contextoExtra: ["../FUNCOES", "  ", 1, "../shared.lsp"],
       })
     );
-    assert.equal(meta.codigo, "RDCG183");
+    assert.equal(meta.codigo, "RDCGXXX");
     assert.deepEqual(meta.contextoExtra, ["../FUNCOES", "../shared.lsp"]);
   });
 });

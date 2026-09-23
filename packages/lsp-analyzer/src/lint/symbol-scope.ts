@@ -8,6 +8,7 @@ import {
   parseFileSymbols,
 } from "./document-symbols";
 import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+import { maskCommentsAndStrings } from "./comment-mask";
 
 export type ScopedFunction = CustomFunctionSymbol & {
   uri: string;
@@ -61,25 +62,15 @@ export function indexSource(source: string, uri: string, fileName: string): {
   return { symbols, eligible: eligibleFromSymbols(symbols, uri, fileName) };
 }
 
-/** Chamadas `nome(` que não são builtin/keyword. */
+/** Chamadas `nome(` que não são builtin/keyword (ignora comentarios/strings). */
 export function findCustomCalls(
   source: string
 ): { name: string; line: number; startCol: number; endCol: number }[] {
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const lines = maskCommentsAndStrings(source.replace(/\r\n/g, "\n")).split("\n");
   const out: { name: string; line: number; startCol: number; endCol: number }[] = [];
-  let blockComment = false;
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    if (blockComment) {
-      if (line.includes("*/")) blockComment = false;
-      continue;
-    }
-    if (/\/\*/.test(line) && !/\*\//.test(line)) {
-      blockComment = true;
-      continue;
-    }
-    line = line.replace(/@[^@]*@/g, " ").replace(/\/\*.*?\*\//g, " ");
+    const line = lines[i];
     if (/^\s*Definir\s+Funcao\b/i.test(line)) continue;
     if (/^\s*Funcao\b/i.test(line)) continue;
 
@@ -87,7 +78,6 @@ export function findCustomCalls(
       const name = m[1];
       const low = name.toLowerCase();
       if (CALL_SKIP.has(low) || builtinNames.has(low)) continue;
-      // membro .Metodo(
       const idx = m.index ?? 0;
       if (idx > 0 && line[idx - 1] === ".") continue;
       out.push({

@@ -58,4 +58,4 @@ Este capítulo só organiza **quando usar cada família**.
 
 Funções específicas **não dispensam** as regras de ouro do Workbench (`lsp-nucleo`): parâmetros só `Numero` em `Funcao` definidas pelo usuário, concatenação só Alfa+Alfa, `Cancel(1)` para abortar fluxo de regra genérica, etc.
 
-Próximo: [09-estudo-caso-rdcg183.md](09-estudo-caso-rdcg183.md)
+Próximo: [09-estudo-caso-rdcgxxx.md](09-estudo-caso-rdcgxxx.md)

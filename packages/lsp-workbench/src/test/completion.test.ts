@@ -10,7 +10,8 @@ import {
   compareCompletionSortText,
   completionSortText,
 } from "../completion-rank";
-import { functionsMatchingPrefix } from "../function-catalog";
+import { functionsMatchingPrefix, systemVarsMatchingPrefix } from "../function-catalog";
+import { completionOriginLabel } from "../completion-labels";
 
 describe("completion", () => {
   it("does not offer bare Retorna as a command label", () => {
@@ -51,6 +52,14 @@ describe("completion", () => {
     );
   });
 
+  it("prefixo vazio lista snippets/comandos estruturais", () => {
+    const all = getStructuralSeedsMatching("").map((s) => s.label);
+    assert.ok(all.includes("Definir"));
+    assert.ok(all.includes("Se"));
+    assert.ok(all.includes("Cursor simples"));
+    assert.ok(all.includes("Cursor completo"));
+  });
+
   it("prefix D/De/Def sugere Definir (comando estrutural)", () => {
     for (const p of ["D", "De", "Def", "Defi", "Defin"]) {
       const cmds = getStructuralSeedsMatching(p).map((s) => s.label);
@@ -85,8 +94,21 @@ describe("completion", () => {
       assert.ok(labels.includes(name), `faltou ${name}`);
     }
   });
-});
 
+  it("prefix Cod → vars de sistema; vazio lista todas", () => {
+    const empty = systemVarsMatchingPrefix("").map((v) => v.name);
+    assert.ok(empty.includes("CodEmp"));
+    assert.ok(empty.length >= 15);
+    const cod = systemVarsMatchingPrefix("Cod").map((v) => v.name);
+    assert.deepEqual(cod, ["CodEmp", "CodFil", "CodUsu"]);
+  });
+
+  it("rótulos de origem do suggest", () => {
+    assert.equal(completionOriginLabel("sistema"), "Sistema");
+    assert.equal(completionOriginLabel("senior"), "Senior");
+    assert.equal(completionOriginLabel("snippet"), "Snippet");
+  });
+});
 describe("completion-rank", () => {
   it("ordem: match exato → variável → função → comando", () => {
     const exact = completionSortText("command", "Se", "Se");

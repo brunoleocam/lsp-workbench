@@ -9,7 +9,7 @@
     "codigo": {
       "type": "string",
       "pattern": "^[A-Za-z0-9_]+$",
-      "description": "Sigla do relatório (ex. RDCG183)."
+      "description": "Sigla do relatório (ex. RDCGXXX)."
     },
     "descricao": { "type": "string" },
     "categoria": { "type": "string", "description": "Categoria no menu Senior." },

@@ -7,7 +7,7 @@ Mantenedores do monorepo público.
 
 | Package | Papel | Versão (ref.) |
 |---------|-------|----------------|
-| `packages/lsp-workbench` | Extensão VS Code/Cursor | 0.2.1 |
+| `packages/lsp-workbench` | Extensão VS Code/Cursor | 0.2.3 |
 | `packages/lsp-workbench-agent` | Agent Cursor (rules/skills/commands) | — |
 | `packages/lsp-analyzer` | Lexer/parser/AST + `analyzeLsp` | 0.3.0 |
 | `packages/lsp-language-server` | Language Server + Worker (opt-in) | 0.2.0 |

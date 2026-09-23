@@ -4,7 +4,7 @@
 |-------|-------|
 | Status | Aceito — P0–P4 MVP |
 | Data | 2026-09-21 |
-| Commands | `/gerar-relatorio`, `lspWorkbench.gerarRelatorio`, copiar regra / export multi-trecho |
+| Commands | `/gerar-relatorio`, `/importar-relatorio`, `lspWorkbench.gerarRelatorio`, `lspWorkbench.importarRelatorio`, copiar regra / export multi-trecho |
 | Relacionados | [ADR-007](../adr/ADR-007-formato-projeto-relatorio.md), [docs/gerador-relatorios](../../gerador-relatorios/), PDR-002, PDR-007 |
 
 ## Problema
@@ -13,9 +13,9 @@ Regras de relatório no Senior vivem em dezenas de eventos (Pré-Seleção, Deta
 
 ## Decisão
 
-1. **Projeto multi-arquivo** por relatório (`RDCG183/`) com `relatorio.json`, `Definicao/` e `Secoes/<Nome>/`.
+1. **Projeto multi-arquivo** por relatório (`RDCGXXX/`) com `relatorio.json`, `Definicao/` e `Secoes/<Nome>/`.
 2. JSON **só semântico** (Tabela Base, Classificação, `E*`). Layout visual fora do MVP.
-3. Scaffold via **`/gerar-relatorio`** (Agent) e **`lspWorkbench.gerarRelatorio`** (extensão).
+3. Scaffold via **`/gerar-relatorio`** / **`lspWorkbench.gerarRelatorio`** (lista de seções) e import via **`/importar-relatorio`** / **`lspWorkbench.importarRelatorio`** (dump multi-trecho).
 4. Diagnostics **GER*** + completion `Tabela.Campo` via catálogo local (PDR-007).
 5. Cópia manual para o Senior (clipboard / export multi-trecho); sem round-trip `.GER`.
 
@@ -35,6 +35,7 @@ Validação: `report-scaffold.test.ts` (árvore em temp) + smokes GER* no MANIFE
 | REL-04 | Completion de colunas da `tabelaBase` quando catálogo existe | MVP |
 | REL-05 | Copiar regra atual / export multi-trecho | MVP |
 | REL-06 | Sem editor visual / descompilador `.GER` | Explicitamente fora |
+| REL-07 | Importar dump “Visualizar Todas as Regras” → árvore ADR-007 | MVP |
 
 ## IDs GER*
 

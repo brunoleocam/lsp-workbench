@@ -1,4 +1,4 @@
-@ smoke-syn — SYN001..SYN011 (+ RUL008 via SYN006) — todos com QF (Ctrl+. / Ctrl+Espaço) @
+@ smoke-syn — SYN001..SYN012 (+ RUL008 via SYN006) — todos com QF (Ctrl+. / Ctrl+Espaço) @
 @ SYN001: falta ponto-e-virgula — QF → acrescentar ; @
 Definir Numero vnA
 Definir Numero vnB;
@@ -27,6 +27,8 @@ vaLonga = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 Se ((vnB = 1)) {
   vnB = 5;
 }}
+@ SYN012: string aberta sem fechar nem \ — sem QF @
+vaAberta = "sem fechar aspas
 @ SYN011: @ multi-linha (invalido) — QF → bloco slash-star @
 @ banner aberto
   texto do banner
