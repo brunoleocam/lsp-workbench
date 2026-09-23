@@ -2,40 +2,44 @@
 
 Plugin Cursor (Agent) do **LSP Workbench**: rules, skills e commands para a [Linguagem Senior de Programação](https://documentacao.senior.com.br/tecnologia).
 
-Complementa a extensão **LSP Workbench** (IDE / Marketplace). Escopo: sintaxe, padrões e geradores da linguagem — não inclui dicionários Oracle nem regras de cliente.
+Complementa a extensão **LSP Workbench** (IDE / Marketplace). Escopo: sintaxe, padrões e geradores — sem dicionário Oracle embutido (use catálogo local / `@lsp-banco`).
 
 ## Commands
 
 | Command | Função | Paridade IDE |
 |---------|--------|--------------|
-| `/compilar-lsp` | Pré-compilação: SYN/RUL/FUN/SEM/SQL/ANL (+ DEM/GER) | Problems + QF |
+| `/compilar-lsp` | Pré-compilação com IDs (+ DEM/GER) | Problems + QF |
 | `/formatar-lsp` | Layout canônico | Format Document |
-| `/refatorar-lsp` | Estrutura, braces, relatório de lógica | Refactors / QF |
-| `/gerar-lista-lsp` | Lista dinâmica a partir dos campos | Snippets / completion |
-| `/gerar-cursor-lsp` | Cursor simples/completo (+ SQL) | Snippets |
-| `/gerar-http-lsp` | Chamada HTTP + parse JSON/XML | Snippets |
-| `/gerar-relatorio` | Scaffold projeto de relatório (PDR-008) | **Gerar Projeto de Relatório** |
+| `/refatorar-lsp` | Estrutura + relatório de lógica | Refactors / QF |
+| `/gerar-lista-lsp` | Lista dinâmica | Snippets |
+| `/gerar-cursor-lsp` | Cursor (+ SQL) | Snippets |
+| `/gerar-http-lsp` | HTTP + parse JSON/XML | Snippets |
+| `/gerar-relatorio` | Scaffold relatório (PDR-008) | Gerar Projeto de Relatório |
+| `/escopo-relatorio` | Explicar escopo do relatório | Mostrar Escopo |
+| `/copiar-regra-relatorio` | Juntar `.lsp` do evento / todos | Copiar / Visualizar Regras |
 
 ## Skills (`lsp-<ação>`)
 
-`@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-revisar` · `@lsp-logs`
+`@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
 
 | Skill | Quando |
 |-------|--------|
-| `@lsp-compilar` | Relatório com IDs (ex-`@lsp-validar`) |
-| `@lsp-revisar` | Checklist curto pré-compilação |
-| `@lsp-gerar` | Gerar `.lsp` do zero (depois `/compilar-lsp`) |
+| `@lsp-revisar` | Checklist ~30s |
+| `@lsp-compilar` | Relatório completo + analyzer |
+| `@lsp-gerar` | Gerar/alterar `.lsp` (incl. catálogo PDR-009) |
+| `@lsp-banco` | Tabelas/colunas via catálogo local |
+| `@lsp-contexto` | `lsp.contexts` / escopo de relatório |
 
 ## Escopo
 
 | Sim | Não |
 |-----|-----|
-| Sintaxe e padrões LSP | Dicionários / regras de cliente |
-| Cursores, SQL/HTTP na linguagem | Dump Oracle privado |
-| Projeto de relatório (scaffold + GER*) | Layout visual / `.GER` |
+| Sintaxe e padrões LSP | Dump Oracle privado embutido |
+| Cursores, SQL/HTTP | Assumir overlay de cliente sem pasta |
+| Relatório (scaffold + GER*) | Layout visual / `.GER` |
 
 ## Licença
 
 MIT — [LICENSE](LICENSE).
 
-Docs: [docs/product](../../docs/product/) · publicar: [PUBLISH.md](PUBLISH.md).
+Docs: [docs/product](../../docs/product/) · [PUBLISH.md](PUBLISH.md) · [CONTRIBUTING.md](CONTRIBUTING.md).

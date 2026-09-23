@@ -1,28 +1,33 @@
-Pré-compilar / validar o código LSP em foco (arquivo, seleção ou pasta/contexto) com a skill **@lsp-compilar**.
+---
+name: compilar-lsp
+description: Pré-compilação LSP com IDs (analyzer + checklists), alinhada à extensão.
+---
+
+Pré-compilar / validar o código LSP em foco com **@lsp-compilar**.
 
 ## Objetivo
 
-Mesmos diagnósticos da IDE: **analyzer (ANL*)** + checklists **SYN/RUL/FUN/SEM/SQL** (+ **DEM**/**GER** quando aplicável).
+Mesmos diagnósticos da IDE: **ANL*** + **SYN/RUL/FUN/SEM/SQL** (+ **DEM**/**GER** quando aplicável).
+
+| Rápido (~30s) | Completo |
+|---------------|----------|
+| `@lsp-revisar` | **`/compilar-lsp`** (este) |
 
 ## Passos
 
-1. Identificar escopo (seleção > arquivo > pasta / projeto de relatório se pedido).
-2. Compilar o analyzer se preciso e rodar:
-   `node scripts/analyze-lsp.mjs <arquivo-ou-pasta>`
+1. Escopo: seleção > arquivo > pasta. Se existir `relatorio.json` acima, tratar como **projeto de relatório** (GER*).
+2. Na raiz do monorepo:
+   ```powershell
+   node scripts/analyze-lsp.mjs <arquivo-ou-pasta-do-relatorio>
+   ```
    Reportar todos os `[ANL…]`.
-3. Seguir checklists de **@lsp-compilar**.
-4. Consultar rules `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites`, `lsp-listas`, `lsp-banco-http` quando necessário.
-5. Entregar o relatório no formato da skill.
-6. Se o usuário pedir correção, aplicar e reexecutar analyzer + checklist.
+3. Seguir **@lsp-compilar** (incl. DEM se catálogo; GER se relatório).
+4. Rules: `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites`, `lsp-listas`, `lsp-banco-http`.
+5. Entregar relatório no formato da skill.
+6. Se pedir correção: aplicar e reexecutar.
 
 ## Foco mínimo
 
-- Condições compostas parentizadas
-- Parâmetros só `Numero`; retorno por parâmetro
-- Conversões com variável intermediária
-- `Cancel(1)` em vez de `Retorna`
-- Concatenação só Alfa; nunca em argumentos
-- Blocos `{ }` (não `Inicio`/`Fim`)
-- `ExecSQLEx`: 0 = sucesso
-- Diagnostics ANL* iguais aos da extensão
-- Em relatório: GER*; com catálogo: DEM001
+- Condições parentizadas; params `Numero`; retorno por parâmetro
+- `Cancel(1)`; `{ }`; concat só Alfa; `ExecSQLEx` 0=ok
+- Relatório: GER*; catálogo: DEM001 + `@lsp-banco`

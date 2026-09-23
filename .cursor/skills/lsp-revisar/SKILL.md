@@ -1,16 +1,22 @@
 ---
 name: lsp-revisar
-description: Checklist rápido pré-compilação LSP. Use após implementar ou antes de compilar; para relatório completo use lsp-compilar.
+description: Checklist rápido (~30s) pré-compilação LSP. Use após implementar; para relatório com IDs e analyzer use @lsp-compilar.
 ---
 
 # lsp-revisar
 
-Checklist curto antes de compilar ou após implementação. Para relatório com IDs e semântica profunda: **`@lsp-compilar`**. Para gerar do zero: **`@lsp-gerar`**.
+Checklist **curto** depois de implementar. Não substitui o relatório completo.
+
+| Quando | Skill / command |
+|--------|-----------------|
+| Checklist rápido (~30s) | **`@lsp-revisar`** (este) |
+| Relatório com IDs + `analyze-lsp.mjs` | **`@lsp-compilar`** / **`/compilar-lsp`** |
+| Gerar do zero | **`@lsp-gerar`** |
 
 ## Checklist
 
-- [ ] **Condições compostas:** `Se`/`Enquanto` com `e`/`ou` → cada condição entre parênteses
-- [ ] **Parâmetros:** só `Numero`
+- [ ] **Condições compostas:** `Se`/`Enquanto` com `e`/`ou` → cada parte entre `()`
+- [ ] **Parâmetros:** só `Numero` tipado na assinatura
 - [ ] **Retorno:** por parâmetro (`TamanhoAlfa(va, vn);`)
 - [ ] **Nulos:** `EstaNulo(va, vn);` depois `Se (vn = 0)`
 - [ ] **FormatarData:** via `DataHora` + Numero
@@ -18,10 +24,12 @@ Checklist curto antes de compilar ou após implementação. Para relatório com 
 - [ ] **Concatenação:** só Alfa + Alfa; nada dentro de argumentos
 - [ ] **Blocos:** `{ }` (sem `Inicio`/`Fim;`)
 - [ ] **Interrupção:** `Cancel(1);` nunca `Retorna`
-- [ ] **CopiarAlfa:** cópia se precisar preservar original
+- [ ] **CopiarAlfa:** se precisar preservar original
 - [ ] **SQL longo:** `\` ~coluna 80
 - [ ] **Terminador:** `;` em todo comando
-- [ ] **Cursor/arquivo:** Abrir/Fechar pareados nos caminhos de erro
+- [ ] **Cursor/arquivo:** Abrir/Fechar pareados
 - [ ] **ExecSQLEx:** `0` = sucesso
+- [ ] **Relatório:** se em projeto `relatorio.json`, lembrar GER* → preferir `/compilar-lsp`
+- [ ] **Tabelas:** se citou E*/R*/USU_*, usar `@lsp-banco` (não inventar)
 
-Se o trecho usa tabelas de um ERP concreto, validar nomes contra o dicionário do cliente no workspace (se houver) — não inventar.
+Saída: lista de itens OK / falha. Se houver >3 falhas críticas, sugerir **`/compilar-lsp`**.

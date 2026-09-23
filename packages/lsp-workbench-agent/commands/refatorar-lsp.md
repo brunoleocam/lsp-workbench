@@ -1,17 +1,21 @@
-Refatorar o trecho ou arquivo LSP com a skill **@lsp-refatorar**, mantendo as rules do plugin (`lsp-nucleo` e correlatas).
+---
+name: refatorar-lsp
+description: Refatora LSP (braces, concat, estrutura) com relatório de riscos.
+---
+
+Refatorar o trecho ou arquivo LSP com **@lsp-refatorar**.
 
 ## Objetivo
 
-Analisar o código, melhorar organização (funções, blocos, literais), gerar comentários úteis e entregar **relatório final** com riscos de lógica.
+Organização (funções, blocos, literais), comentários úteis e **relatório** com riscos de lógica.
 
 ## Passos
 
 1. Entender a responsabilidade do trecho/arquivo.
-2. Mecânicos primeiro (PDR-006):
+2. Mecânicos (PDR-006):
    - `node scripts/refactor-lsp.mjs <arquivo> --kind braces --write`
    - `node scripts/refactor-lsp.mjs <arquivo> --kind concat --write`
-3. Demais transformações de **@lsp-refatorar** (extrair funções, envolver `Se`/`Enquanto`/`Para`).
-4. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; sem concat em argumentos; `Cancel(1)` sem `Retorna`.
-5. Comentários `@ ... @` só onde esclarecem intenção.
-6. Layout: `node scripts/format-lsp.mjs <arquivo> --write`.
-7. Entregar o relatório obrigatório da skill; recomendar `/compilar-lsp` ao final.
+3. Demais transformações de **@lsp-refatorar**.
+4. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; `Cancel(1)`.
+5. Layout: `node scripts/format-lsp.mjs <arquivo> --write`.
+6. Relatório da skill; ao final **`/compilar-lsp`**.

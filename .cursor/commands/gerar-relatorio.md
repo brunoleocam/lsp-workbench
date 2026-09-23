@@ -1,38 +1,23 @@
-Gerar um **projeto de relatório** multi-arquivo (PDR-008) no workspace.
+---
+name: gerar-relatorio
+description: Scaffold de projeto de relatório multi-arquivo (PDR-008 / ADR-007).
+---
+
+Gerar um **projeto de relatório** multi-arquivo no workspace.
 
 ## Entrada (pedir se faltar)
 
-1. **Sigla** do relatório (ex.: `RDCG183`) — só letras, números e `_`
+1. **Sigla** (ex.: `RDCG183`) — letras, números e `_`
 2. **Descrição** / nome amigável
-3. **Categoria** (opcional, ex.: `CG`, `PS`)
+3. **Categoria** (opcional, ex.: `CG`)
 4. Pasta destino (default: raiz do workspace)
 
 ## Saída
 
-Criar a árvore (ADR-007):
+Árvore ADR-007: `relatorio.json`, `Definicao/`, `Secoes/Detalhe_1/`, `README.md`.
 
-```text
-<SIGLA>/
-  relatorio.json
-  Definicao/
-    Entrada.json
-    Funcoes-Globais.lsp
-    Inicializacao.lsp
-    Pre-Selecao.lsp
-    Selecao.lsp
-    Finalizacao.lsp
-    Imprimir-Pagina.lsp
-  Secoes/Detalhe_1/
-    secao.json
-    antes-imprimir.lsp
-    depois-imprimir.lsp
-  README.md
-```
+Preferir o comando da extensão **LSP Workbench: Gerar Projeto de Relatório** se disponível.
 
-Preferir o comando da extensão **LSP Workbench: Gerar Projeto de Relatório** (`lspWorkbench.gerarRelatorio`) se o usuário estiver no VS Code/Cursor com a extensão.
+Schemas: `docs/gerador-relatorios/schema/`. **Não** gerar layout visual nem `.GER`.
 
-Se criar arquivos manualmente, seguir schemas em `docs/gerador-relatorios/schema/` e o modelo mental em `docs/gerador-relatorios/`.
-
-**Não** gerar layout visual nem `.GER`. Preencher `tabelaBase` em `secao.json` quando o usuário informar a tabela (skill `@lsp-banco` / catálogo local).
-
-Resumo curto: path criado + próximos passos (preencher Entrada / Tabela Base / colar no Senior).
+Próximos passos: **`@lsp-contexto`**, editar Pré-Seleção, **`/compilar-lsp`** na pasta do relatório.

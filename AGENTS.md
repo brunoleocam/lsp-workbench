@@ -20,7 +20,8 @@ Monorepo **LSP Workbench**: extensão IDE + Agent Cursor + analyzer / language s
 | [lsp-refatorar](.cursor/skills/lsp-refatorar/SKILL.md) | Refactor + relatório de lógica |
 | [lsp-revisar](.cursor/skills/lsp-revisar/SKILL.md) | Checklist pré-compilação |
 | [lsp-logs](.cursor/skills/lsp-logs/SKILL.md) | Logs `vaMosLog` |
-| [lsp-banco](.cursor/skills/lsp-banco/SKILL.md) | Tabelas/campos Senior (`docs/banco-senior`, se presente) |
+| [lsp-banco](.cursor/skills/lsp-banco/SKILL.md) | Tabelas/campos Senior (catálogo local) |
+| [lsp-contexto](.cursor/skills/lsp-contexto/SKILL.md) | Escopo `lsp.contexts` / relatório |
 | [lsp-mcps](.cursor/skills/lsp-mcps/SKILL.md) | Ponte MCP do workspace |
 
 ## Docs

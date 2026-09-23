@@ -5,7 +5,7 @@ description: Fluxo obrigatório para gerar ou alterar .lsp/.lspt alinhado às ru
 
 # lsp-gerar
 
-Garante que código novo ou alterado siga as rules (`lsp-nucleo`, `lsp-limites`, `lsp-sintaxe`) e a skill **`lsp-linguagem`**, e só então passe na validação.
+Garante que código novo ou alterado siga as rules (`lsp-nucleo`, `lsp-limites`, `lsp-sintaxe`) e a skill **`lsp-linguagem`**, e só então passe na pré-compilação.
 
 ## Quando acionar
 
@@ -23,12 +23,18 @@ Garante que código novo ou alterado siga as rules (`lsp-nucleo`, `lsp-limites`,
 | Padrões SQL/cursor/HTTP | `@lsp-linguagem` → `reference-padroes.md` + rule `lsp-banco-http.mdc` |
 | Strings / datas / funções | rules `lsp-funcoes-strings-datas.mdc`, `lsp-listas.mdc` |
 | Exemplos / snippets | `@lsp-linguagem` → `examples.md`, `snippets.md`, pasta `exemplos/` |
+| Projeto de relatório | `/gerar-relatorio` + `docs/gerador-relatorios/` |
 
-**Regras de ouro:** Alfa+Alfa; parâmetros só `Numero`; retorno por parâmetro; `Cancel(1)`; blocos `{ }`. Ver `lsp-nucleo.mdc`.
+**Regras de ouro:** Alfa+Alfa; parâmetros só `Numero`; retorno por parâmetro; `Cancel(1);` blocos `{ }`. Ver `lsp-nucleo.mdc`.
 
-### 2. Schema de ERP
+### 2. Schema de ERP (catálogo local — PDR-009)
 
-Este plugin **não** inclui dicionário de tabelas. Se pedirem colunas/JOINs de um banco concreto, pedir documentação do cliente — **não inventar** schema.
+Este plugin **não** embute dicionário. Ordem:
+
+1. **`@lsp-banco`** — `docs/banco-senior-base/` (README + `catalog.example.json`) e, se existir, overlay `docs/banco-senior/`.
+2. Setting da extensão: `lsp.catalog.path` (completion `Tabela.Campo` / DEM001).
+3. Gerar catálogo: `node scripts/catalog-from-r996-tsv.mjs` (ver `docs/banco-senior-base/consultar-dicionario.sql`).
+4. Sem evidência local → **não inventar** colunas/JOINs; pedir doc do cliente ou TSV R996.
 
 ### 3. Gerar ou editar
 
@@ -36,8 +42,8 @@ Respeitar sintaxe e limitações. Preferir `{ }`, nomenclatura `va/vn/vd/vl/Cur_
 
 ### 4. Antes de encerrar
 
-1. **`@lsp-revisar`** (checklist rápido) e/ou
-2. **`@lsp-compilar`** (relatório completo)
+1. **`@lsp-revisar`** (checklist ~30s)
+2. Em mudança relevante: **`@lsp-compilar`** / **`/compilar-lsp`** (relatório + analyzer)
 3. Opcional: **`@lsp-formatar`** se o layout estiver irregular
 
 Corrigir violações críticas (`lsp-validacao-obrigatoria.mdc`).
@@ -49,3 +55,4 @@ Corrigir violações críticas (`lsp-validacao-obrigatoria.mdc`).
 - `FormatarData` sem `DataHora` / tipo errado
 - Concatenar dentro de argumento de função
 - `Retorna`; `Inicio`/`Fim;`; `ExecSQLEx` com sucesso/erro invertido
+- Inventar `E*`/`USU_*` sem catálogo/markdown local

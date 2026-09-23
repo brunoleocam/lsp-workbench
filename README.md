@@ -60,11 +60,13 @@ Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 | `/formatar-lsp` | Layout canônico |
 | `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
 | `/gerar-relatorio` | Scaffold de projeto de relatório (PDR-008) |
+| `/escopo-relatorio` | Escopo do relatório aberto |
+| `/copiar-regra-relatorio` | Juntar regras `.lsp` do relatório |
 | `/gerar-lista-lsp` | Lista dinâmica |
 | `/gerar-cursor-lsp` | Cursor (+ SQL) |
 | `/gerar-http-lsp` | HTTP + parse JSON/XML |
 
-Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-revisar` · `@lsp-logs`
+Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
 
 ## Configurar (dev)
 
