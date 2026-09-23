@@ -10,3 +10,6 @@ export * from "./sql-native-heuristics";
 export * from "./sql-senior2-functions";
 export * from "./report-project";
 export { collectGerDiagnostics } from "./ger-diagnostics";
+export * from "./comment-mask";
+export * from "./webservice";
+export * from "./system-vars";

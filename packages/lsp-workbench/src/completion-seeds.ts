@@ -10,6 +10,8 @@ export type LspCompletionSeed = {
   detail: string;
   documentation?: string;
   isSnippet?: boolean;
+  /** Prefixo extra para filtro (ex.: "cursor" → "Cursor simples"). */
+  filterAliases?: string[];
 };
 
 function entryToSeed(e: LspFunctionEntry): LspCompletionSeed {
@@ -91,6 +93,28 @@ export function getStructuralSeeds(): LspCompletionSeed[] {
       isSnippet: true,
     },
     {
+      label: "Cursor simples",
+      insertText:
+        'Definir Cursor Cur_${1:Nome};\nCur_${1:Nome}.SQL = "${2:SELECT 1 FROM DUAL}";\nCur_${1:Nome}.AbrirCursor();\nEnquanto (Cur_${1:Nome}.Achou) {\n  ${0}\n  Cur_${1:Nome}.Proximo();\n}\nCur_${1:Nome}.FecharCursor();',
+      kind: "keyword",
+      detail: "Cursor (Definir Cursor + membros)",
+      documentation:
+        "API `Definir Cursor` com `.SQL`, `.AbrirCursor`, loop `.Achou` / `.Proximo` e `.FecharCursor`.",
+      isSnippet: true,
+      filterAliases: ["cursor", "definir cursor", "cursor simples"],
+    },
+    {
+      label: "Cursor completo",
+      insertText:
+        "SQL_Criar(${1:vaCur});\nSQL_UsarAbrangencia(${1:vaCur}, 0);\nSQL_UsarSQLSenior2(${1:vaCur}, 0);\nSQL_DefinirComando(${1:vaCur}, ${2:vaSQL});\nSQL_AbrirCursor(${1:vaCur});\nEnquanto (SQL_EOF(${1:vaCur}) = 0) {\n  ${0}\n  SQL_Proximo(${1:vaCur});\n}\nSQL_FecharCursor(${1:vaCur});\nSQL_Destruir(${1:vaCur});",
+      kind: "keyword",
+      detail: "Cursor SQL (SQL_* / handle Alfa)",
+      documentation:
+        "Pipeline completo: Criar → Usar* → DefinirComando → Abrir → loop EOF → Fechar → Destruir. Handle = `Definir Alfa`.",
+      isSnippet: true,
+      filterAliases: ["cursor completo", "sql_criar", "sql"],
+    },
+    {
       label: "Alfa",
       insertText: "Alfa",
       kind: "type",
@@ -149,13 +173,20 @@ export function getLspCompletionSeedsMatching(prefix: string): LspCompletionSeed
     .sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
 }
 
-/** Comandos / tipos estruturais no prefixo (Definir, Se, Alfa, …) — sem funções do catálogo. */
+/** Comandos / tipos estruturais no prefixo (Definir, Se, Alfa, Cursor simples, …).
+ * Prefixo vazio → todos (Ctrl+Espaço em linha em branco). */
 export function getStructuralSeedsMatching(prefix: string): LspCompletionSeed[] {
   const p = prefix.trim().toLowerCase();
-  if (!p) return [];
-  return getStructuralSeeds()
-    .filter((s) => s.label.toLowerCase().startsWith(p))
-    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
+  const all = getStructuralSeeds().sort((a, b) =>
+    a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" })
+  );
+  if (!p) return all;
+  return all.filter((s) => {
+    if (s.label.toLowerCase().startsWith(p)) return true;
+    return (s.filterAliases ?? []).some(
+      (a) => a.toLowerCase().startsWith(p) || a.toLowerCase().includes(p)
+    );
+  });
 }
 
 export function completionLabels(): string[] {

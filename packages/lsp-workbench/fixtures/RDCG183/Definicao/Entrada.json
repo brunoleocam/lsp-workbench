@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../docs/gerador-relatorios/schema/entrada.schema.json",
+  "parametros": [
+    {
+      "nome": "ETitulo",
+      "descricao": "Título do Relatório",
+      "tipo": "Alfa",
+      "tamanho": 25,
+      "abrangencia": false
+    },
+    {
+      "nome": "EMosUsu",
+      "descricao": "Mostrar o Usuário",
+      "tipo": "Alfa",
+      "tamanho": 1,
+      "edicao": "U",
+      "abrangencia": false,
+      "valores": [
+        {
+          "valor": "S",
+          "descricao": "Sim",
+          "padrao": true
+        },
+        {
+          "valor": "N",
+          "descricao": "Não"
+        }
+      ]
+    },
+    {
+      "nome": "ELisEnt",
+      "descricao": "Listar a Tela de Entrada",
+      "tipo": "Alfa",
+      "tamanho": 1,
+      "edicao": "U",
+      "abrangencia": false,
+      "valores": [
+        {
+          "valor": "S",
+          "descricao": "Sim",
+          "padrao": true
+        },
+        {
+          "valor": "N",
+          "descricao": "Não"
+        }
+      ]
+    }
+  ]
+}

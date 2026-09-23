@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Adicional_Titulo",
+  "tipo": "Adicional",
+  "imprimir": true
+}

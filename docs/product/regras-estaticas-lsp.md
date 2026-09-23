@@ -10,7 +10,7 @@ Status extensão: `ok` = implementado | `pendente`
 
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
-| SYN001 | Instrução termina com `;` | linha de stmt sem `;`/`{`/`}`/`\` | sim (acrescentar `;`) | ok | sintaxe, padroes |
+| SYN001 | Instrução termina com `;` | linha de stmt sem `;`/`{`/`}`/`\` (exceto cabeçalhos `Se`/`Enquanto`/`Para`/`Senao`; exceto string multilinha com `\` — ver SYN012) | sim (acrescentar `;`) | ok | sintaxe, padroes |
 | SYN002 | `Se`/`Enquanto`/`Para` com condição entre `()` | `\bSe\s+[^(]` etc. | sim (envolver `(…)`) | ok | sintaxe, condicionais |
 | SYN003 | Em `e`/`ou`, cada parte entre `()` | `Se`/`Enquanto` com `e`/`ou` mal parentizado | sim (parentizar partes) | ok | condicionais |
 | SYN004 | Blocos `{ }` (não `Inicio`/`Fim;`/`FimSe`/`FimEnquanto`) | palavras-chave legado | sim (par Inicio…Fim; → `{`…`}` de uma vez) | ok | sintaxe, padroes |
@@ -21,6 +21,7 @@ Status extensão: `ok` = implementado | `pendente`
 | SYN009 | String longa / SQL: preferir `\` ~col 80 | literal > ~100 sem `\` | sim (quebrar com `\`) | ok | padroes, sql |
 | SYN010 | Identificador/tipo solto (não compila) | linha = só `Nome` ou `Nome;` sem atribuição/chamada/comando | sim (remover; ou `Definir Tipo …` se for tipo) | ok | Senior: "falta valor, expressão ou comando" |
 | SYN011 | `@` só na mesma linha | abertura `@` sem fechar + fechamento `@` em outra linha | sim (converter para `/* … */`) | ok | comentarios, padroes |
+| SYN012 | String `"` fechada ou continuada com `\` | `"` aberta sem fechar e sem `\` no fim (continua na linha de baixo) | nao | ok | strings, inicio-rapido |
 
 ## RUL — Regras de ouro / limites
 
@@ -64,7 +65,7 @@ Status extensão: `ok` = implementado | `pendente`
 
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
-| SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório, `E*` da Entrada via `knownGlobals` | qualquer id (não keyword/builtin/função/tabela/`vn*`) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008 |
+| SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0; instâncias `Definir caminho.ws Nome`; membros após `.`). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório, `E*` da Entrada via `knownGlobals` | qualquer id (não keyword/builtin/função/tabela/`vn*`/WS) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008, web-service |
 | SEM002 | `Abrir`/`Fechar` pareados (arquivo) | alerta na linha do `Abrir` órfão | sim (Fechar / Completar) | ok | arquivos |
 | SEM003 | Cursor: `.AbrirCursor` ↔ `.FecharCursor` | alerta na linha do AbrirCursor órfão | sim (FecharCursor / Completar) | ok | cursores / lsp.md |
 | SEM004 | Lista: campo usado sem `AdicionarCampo` | `vl.Campo` ∉ set de AdicionarCampo | sim (inserir AdicionarCampo) | ok | listas |

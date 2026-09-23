@@ -180,18 +180,25 @@ Demo no repositório: [`exemplos/contexto-projeto/`](exemplos/contexto-projeto/)
 
 Se a pasta tem `relatorio.json` + `Definicao/` ou `Secoes/`, o escopo de símbolos fica **só nessa pasta** (não mistura relatórios irmãos).
 
-**Passo a passo:**
+**Criar do zero**
 
-1. Command Palette → **LSP Workbench: Gerar Projeto de Relatório** (ou use `/gerar-relatorio` no Agent).
+1. Command Palette → **LSP Workbench: Gerar Projeto de Relatório** (ou `/gerar-relatorio` no Agent).
 2. Abra um `.lsp` dentro da pasta do relatório — completion isolado.
 3. Para incluir funções compartilhadas: **Importar Contexto de…** (grava em `contextoExtra` no `relatorio.json`).
 4. **Mostrar Escopo do Relatório** confirma root + extras.
+
+**Importar dump “Visualizar Todas as Regras”**
+
+1. Exporte no Senior o `.lsp` multi-trecho (linhas `Código: N - Descrição: …`).
+2. Command Palette → **LSP Workbench: Importar Relatório** (ou `/importar-relatorio`), com o arquivo aberto ou escolhendo o path.
+3. Informe sigla, descrição e pasta pai → gera a árvore ADR-007 (`Definicao/` + `Secoes/`).
+4. `*_Na Impressão` entram só no README do projeto (não viram `.lsp`).
 
 Exemplo de `relatorio.json`:
 
 ```json
 {
-  "codigo": "RDCG183",
+  "codigo": "RDCGXXX",
   "descricao": "Cargas — exemplo",
   "detalhePrincipal": "Detalhe_1",
   "contextoExtra": ["../FUNCOES"]
@@ -199,7 +206,6 @@ Exemplo de `relatorio.json`:
 ```
 
 Docs: [`docs/gerador-relatorios/`](docs/gerador-relatorios/).
-
 ---
 
 ### 5. Catálogo local de tabelas / campos
@@ -262,6 +268,7 @@ O dicionário da empresa **não** vem no Marketplace.
 | `/formatar-lsp` | Layout |
 | `/refatorar-lsp` | Estrutura / braces |
 | `/gerar-relatorio` | Scaffold de relatório |
+| `/importar-relatorio` | Dump multi-trecho → projeto ADR-007 |
 | `/escopo-relatorio` | Escopo do relatório aberto |
 | `/copiar-regra-relatorio` | Juntar regras `.lsp` |
 | `/gerar-lista-lsp` · `/gerar-cursor-lsp` · `/gerar-http-lsp` | Geração guiada |

@@ -1,0 +1,8 @@
+{
+  "$schema": "../../docs/gerador-relatorios/schema/relatorio.schema.json",
+  "codigo": "RDCG183",
+  "descricao": "Grade de Carregamento - Entrada",
+  "tipoRelatorio": "Padrao",
+  "detalhePrincipal": "Detalhe_Transportadora",
+  "orientacao": "Retrato"
+}

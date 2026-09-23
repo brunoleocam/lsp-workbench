@@ -17,7 +17,7 @@ Base de conhecimento para o **LSP Workbench**: como o Gerador de Relatórios mon
 | 6 | [06-entrada.md](06-entrada.md) | Variáveis `E*` e tela de entrada |
 | 7 | [07-sql-e-joins.md](07-sql-e-joins.md) | Tabela Base, joins, `InsClauSQL*` |
 | 8 | [08-funcoes-especificas.md](08-funcoes-especificas.md) | Famílias de APIs + ponte ao catálogo LSP |
-| 9 | [09-estudo-caso-rdcg183.md](09-estudo-caso-rdcg183.md) | Mapa de eventos de um export real |
+| 9 | [09-estudo-caso-rdcgxxx.md](09-estudo-caso-rdcgxxx.md) | Mapa de eventos de um export real |
 | 10 | [10-implicacoes-workbench.md](10-implicacoes-workbench.md) | Implicações → [PDR-008](../product/pdr/PDR-008-projeto-relatorio.md) / [ADR-007](../product/adr/ADR-007-formato-projeto-relatorio.md) |
 | 11 | [11-siglas-senior.md](11-siglas-senior.md) | Árvore de siglas (categoria = módulo + assunto) |
 | — | [schema/](schema/) | JSON Schema do projeto multi-arquivo |
@@ -51,5 +51,16 @@ flowchart TD
 | `docs/gerador-relatorios/` | Modelo mental do gerador |
 | `docs/lsp/` | Sintaxe LSP + catálogo de funções (incl. gerador) |
 | `docs/product/` | PDR/ADR do Workbench |
+
+### Comandos no Workbench
+
+| Comando | Função |
+|---------|--------|
+| **Gerar Projeto de Relatório** / `/gerar-relatorio` | Scaffold ADR-007 vazio |
+| **Importar Relatório** / `/importar-relatorio` | Dump “Visualizar Todas as Regras” → `Definicao/` + `Secoes/` |
+| **Visualizar Todas as Regras** | Export multi-trecho a partir do projeto |
+| **Copiar Regra do Relatório** | Concatena `.lsp` do projeto |
+
+Detalhe do parse/import: [02-modelo-e-artefatos.md](02-modelo-e-artefatos.md) · produto: [PDR-008](../product/pdr/PDR-008-projeto-relatorio.md).
 
 Documentação oficial (entrada): [Gerador de Relatórios](https://documentacao.senior.com.br/tecnologia/5.10.3/geradores/relatorios/definit.htm) · [Funções específicas](https://documentacao.senior.com.br/tecnologia/5.10.3/lsp/funcoes/gerador-de-relatorios.htm)

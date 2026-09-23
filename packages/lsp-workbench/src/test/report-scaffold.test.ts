@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { describe, it } from "node:test";
-import { buildMultiTrechoExport, scaffoldRelatorioProject } from "../domain/report-scaffold";
+import { buildMultiTrechoExport, parseMultiTrechoImport, scaffoldFromMultiTrecho, scaffoldRelatorioProject, secaoTipoFromNome } from "../domain/report-scaffold";
 import { loadReportAnalyzeOpts } from "../domain/report-project-loader";
 import { analyzeLsp } from "../diagnostics";
 
@@ -30,6 +30,95 @@ describe("report scaffold", () => {
     assert.equal(opts!.reportContext.eventKind, "pre-selecao");
     assert.ok(opts!.knownGlobals.includes("ETitulo"));
 
+    fs.rmSync(parent, { recursive: true, force: true });
+  });
+
+  it("cria multiplas secoes informadas", () => {
+    const parent = fs.mkdtempSync(path.join(os.tmpdir(), "lsp-rel-"));
+    const root = scaffoldRelatorioProject({
+      parentDir: parent,
+      codigo: "TST003",
+      descricao: "Multi",
+      secoes: ["Detalhe_Transportadora", "Subtitulo_CodTra", "Total_Geral"],
+    });
+    assert.ok(fs.existsSync(path.join(root, "Secoes", "Detalhe_Transportadora", "secao.json")));
+    assert.ok(fs.existsSync(path.join(root, "Secoes", "Subtitulo_CodTra", "antes-imprimir.lsp")));
+    assert.ok(fs.existsSync(path.join(root, "Secoes", "Total_Geral", "depois-imprimir.lsp")));
+    const meta = JSON.parse(fs.readFileSync(path.join(root, "relatorio.json"), "utf8"));
+    assert.equal(meta.detalhePrincipal, "Detalhe_Transportadora");
+    const sub = JSON.parse(
+      fs.readFileSync(path.join(root, "Secoes", "Subtitulo_CodTra", "secao.json"), "utf8")
+    );
+    assert.equal(sub.tipo, "Subtitulo");
+    assert.equal(secaoTipoFromNome("Total_Geral"), "Total_Geral");
+    fs.rmSync(parent, { recursive: true, force: true });
+  });
+
+  it("importa dump multi-trecho", () => {
+    const parent = fs.mkdtempSync(path.join(os.tmpdir(), "lsp-rel-"));
+    const dump = [
+      "--------------------------------------------------------------------------------",
+      "Código: 1 - Descrição: ModeloGerador_Funções Globais",
+      "--------------------------------------------------------------------------------",
+      "",
+      "@ funcoes @",
+      "",
+      "--------------------------------------------------------------------------------",
+      "Código: 2 - Descrição: ModeloGerador_Inicialização",
+      "--------------------------------------------------------------------------------",
+      "",
+      "@ init @",
+      "",
+      "--------------------------------------------------------------------------------",
+      "Código: 3 - Descrição: Detalhe_Transportadora_Antes Imprimir",
+      "--------------------------------------------------------------------------------",
+      "",
+      "vaX = \"antes\";",
+      "",
+      "--------------------------------------------------------------------------------",
+      "Código: 4 - Descrição: Detalhe_Transportadora_Depois Imprimir",
+      "--------------------------------------------------------------------------------",
+      "",
+      "vaY = \"depois\";",
+      "",
+      "--------------------------------------------------------------------------------",
+      "Código: 5 - Descrição: Detalhe_Transportadora_Na Impressão",
+      "--------------------------------------------------------------------------------",
+      "",
+      "@ ignorar @",
+      "",
+    ].join("\n");
+
+    const parsed = parseMultiTrechoImport(dump);
+    assert.equal(parsed.chunks.length, 4);
+    assert.equal(parsed.ignoredNaImpressao.length, 1);
+
+    const root = scaffoldFromMultiTrecho({
+      parentDir: parent,
+      codigo: "RDCGXXX",
+      descricao: "Importado",
+      text: dump,
+    });
+    assert.ok(fs.existsSync(path.join(root, "Definicao", "Funcoes-Globais.lsp")));
+    assert.match(
+      fs.readFileSync(path.join(root, "Definicao", "Funcoes-Globais.lsp"), "utf8"),
+      /funcoes/
+    );
+    assert.match(
+      fs.readFileSync(
+        path.join(root, "Secoes", "Detalhe_Transportadora", "antes-imprimir.lsp"),
+        "utf8"
+      ),
+      /vaX/
+    );
+    assert.match(
+      fs.readFileSync(
+        path.join(root, "Secoes", "Detalhe_Transportadora", "depois-imprimir.lsp"),
+        "utf8"
+      ),
+      /vaY/
+    );
+    assert.match(fs.readFileSync(path.join(root, "README.md"), "utf8"), /Na Impress/);
     fs.rmSync(parent, { recursive: true, force: true });
   });
 

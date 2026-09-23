@@ -85,6 +85,72 @@ describe("ACC-TOK semantic tokens", () => {
     const data = encodeSemanticTokens(tokens);
     assert.ok(data.length >= 5);
   });
+
+  it("ACC-TOK-04 emits End as keyword and types", () => {
+    const src = `Definir Funcao foo(Numero vnA, Numero End vnR);\n`;
+    const tokens = buildSemanticTokens(src);
+    assert.ok(tokens.some((t) => t.type === "keyword" && t.length === 3));
+    assert.ok(tokens.some((t) => t.type === "type"));
+  });
+
+  it("ACC-TOK-04b emits Se/Senao e se/senao as macro (rosa)", () => {
+    const src = `Se (vnX = 1)\n{\n}\nSenao\n{\n}\nse (vnX = 0)\n{\n}\nsenao\n{\n}\n`;
+    const tokens = buildSemanticTokens(src);
+    assert.ok(
+      tokens.some((t) => t.type === "macro" && t.line === 0 && t.length === 2)
+    );
+    assert.ok(
+      tokens.some((t) => t.type === "macro" && t.line === 3 && t.length === 5)
+    );
+    assert.ok(
+      tokens.some((t) => t.type === "macro" && t.line === 6 && t.length === 2)
+    );
+    assert.ok(
+      tokens.some((t) => t.type === "macro" && t.line === 9 && t.length === 5)
+    );
+  });
+
+  it("ACC-TOK-05 highlights user function call sites", () => {
+    const src = `Definir Funcao foo(Numero vnA);\nDefinir Numero vnX;\nfoo(vnX);\nFuncao foo(Numero vnA); {\n}\n`;
+    const tokens = buildSemanticTokens(src);
+    const callLine = 2;
+    assert.ok(
+      tokens.some(
+        (t) => t.type === "function" && t.line === callLine && t.length === 3
+      )
+    );
+  });
+
+  it("ACC-TOK-06 ignores tokens inside @ and block comments", () => {
+    const src =
+      "Definir Numero vnX;\n@ Numero End Funcao Se @\n/* Numero End AbrirCursor */\nvnX = 1;\n";
+    const tokens = buildSemanticTokens(src);
+    assert.equal(
+      tokens.some((t) => t.line === 1 || t.line === 2),
+      false
+    );
+  });
+
+  it("ACC-TOK-07 highlights Cur_Tab1.QtdPed as variable+property", () => {
+    const src = `Definir Cursor Cur_Tab1;\nCur_Tab1.QtdPed = 1;\nCur_Tab1.AbrirCursor();\n`;
+    const tokens = buildSemanticTokens(src);
+    const fieldLine = tokens.filter((t) => t.line === 1);
+    assert.ok(fieldLine.some((t) => t.type === "variable" && t.length === 8));
+    assert.ok(fieldLine.some((t) => t.type === "property" && t.length === 6));
+    const methodLine = tokens.filter((t) => t.line === 2);
+    assert.ok(methodLine.some((t) => t.type === "method" && t.length === 11));
+  });
+
+  it("ACC-TOK-08 highlights porta na regra (PedidoAssitencia.Retorno.NumPed)", () => {
+    const src = `PedidoAssitencia.Retorno.CriarLinha();\nPedidoAssitencia.Retorno.NumPed = 0;\n`;
+    const tokens = buildSemanticTokens(src);
+    const line0 = tokens.filter((t) => t.line === 0);
+    assert.ok(line0.some((t) => t.type === "variable" && t.length === 16));
+    assert.ok(line0.some((t) => t.type === "type"));
+    assert.ok(line0.some((t) => t.type === "property" || t.type === "method"));
+    const line1 = tokens.filter((t) => t.line === 1);
+    assert.ok(line1.some((t) => t.type === "property" && t.length === 6));
+  });
 });
 
 describe("ACC-OUT outline", () => {
@@ -147,11 +213,86 @@ describe("ACC-SNP snippets file", () => {
     const p = path.join(__dirname, "../../snippets/lsp.json");
     const snip = JSON.parse(fs.readFileSync(p, "utf8")) as Record<
       string,
-      { prefix: string }
+      { prefix: string | string[] }
     >;
-    const prefixes = Object.values(snip).map((s) => s.prefix);
+    const prefixes = Object.values(snip).flatMap((s) =>
+      Array.isArray(s.prefix) ? s.prefix : [s.prefix]
+    );
     assert.ok(prefixes.includes("se"));
     assert.ok(prefixes.includes("SQL_Criar"));
     assert.ok(prefixes.includes("lista"));
+  });
+});
+
+describe("ACC-GRM TextMate grammar", () => {
+  it("ACC-GRM-SQL embeds sql-in-string patterns", () => {
+    const p = path.join(__dirname, "../../syntaxes/lsp.tmLanguage.json");
+    const g = JSON.parse(fs.readFileSync(p, "utf8")) as {
+      repository: {
+        strings: { patterns: { include?: string }[] };
+        "sql-in-string": {
+          patterns: { name?: string; match?: string }[];
+        };
+      };
+    };
+    assert.ok(
+      g.repository.strings.patterns.some((x) => x.include === "#sql-in-string")
+    );
+    const sql = g.repository["sql-in-string"].patterns;
+    assert.ok(sql.some((x) => x.name === "keyword.other.sql.lsp"));
+    assert.ok(sql.some((x) => x.name === "support.function.sql.lsp"));
+    assert.ok(sql.some((x) => x.name === "variable.other.bind.sql.lsp"));
+    assert.ok(sql.some((x) => x.match?.includes("SELECT")));
+    assert.ok(sql.some((x) => x.match?.includes(":[A-Za-z_]")));
+  });
+
+  it("ACC-GRM-flow has Se/Enquanto and operators e/ou", () => {
+    const p = path.join(__dirname, "../../syntaxes/lsp.tmLanguage.json");
+    const g = JSON.parse(fs.readFileSync(p, "utf8")) as {
+      repository: Record<
+        string,
+        {
+          match?: string;
+          patterns?: { match?: string; name?: string; ignoreCase?: boolean }[];
+        }
+      >;
+    };
+    const flowPatterns = g.repository["keywords-flow"].patterns ?? [];
+    assert.ok(flowPatterns.some((x) => /\(\?i\)/.test(x.match ?? "") && /Senao/.test(x.match ?? "")));
+    assert.ok(flowPatterns.some((x) => x.match?.includes("Enquanto")));
+    assert.ok(flowPatterns.some((x) => /\\bSe\\b/.test(x.match ?? "")));
+    // Senao deve aparecer antes de Se na lista de patterns
+    const iSenao = flowPatterns.findIndex((x) => x.match?.includes("Senao"));
+    const iSe = flowPatterns.findIndex((x) => /\\bSe\\b/.test(x.match ?? ""));
+    assert.ok(iSenao >= 0 && iSe >= 0 && iSenao < iSe);
+    const ops = g.repository.operators.patterns ?? [];
+    assert.ok(ops.some((x) => x.match?.includes("e|ou")));
+    assert.ok(ops.some((x) => x.match?.includes("\\+\\+")));
+    assert.ok(g.repository["types-lista"]?.match?.includes("Lista"));
+    assert.ok(g.repository["list-access"]);
+    assert.ok(g.repository["types-cursor"]?.match?.includes("Cursor"));
+    assert.ok(g.repository["cursor-access"]);
+  });
+
+  it("ACC-GRM-sysvar does not match after dot (WS/Lista/Cursor field)", () => {
+    const p = path.join(__dirname, "../../syntaxes/lsp.tmLanguage.json");
+    const g = JSON.parse(fs.readFileSync(p, "utf8")) as {
+      repository: Record<string, { match?: string }>;
+    };
+    const m = g.repository["system-vars"]?.match ?? "";
+    assert.match(m, /\(\?<!\\\.\)/);
+    assert.match(m, /CodEmp/);
+  });
+
+  it("ACC-GRM-ws matches porta PascalCase e instância ws*", () => {
+    const p = path.join(__dirname, "../../syntaxes/lsp.tmLanguage.json");
+    const g = JSON.parse(fs.readFileSync(p, "utf8")) as {
+      repository: Record<string, { patterns?: { match?: string }[] }>;
+    };
+    const patterns = g.repository["webservice-access"]?.patterns ?? [];
+    assert.ok(
+      patterns.some((x) => x.match?.includes("[A-Z][A-Za-z0-9_]*"))
+    );
+    assert.ok(patterns.some((x) => x.match?.includes("(?:ws)")));
   });
 });

@@ -263,8 +263,8 @@ describe("PDR-003 FUN009 + import", () => {
 
 describe("PDR-010 report scope overlay", () => {
   const candidates = [
-    "C:/ws/Relatorios/RDCG183/Definicao/Pre-Selecao.lsp",
-    "C:/ws/Relatorios/RDCG183/Definicao/Funcoes-Globais.lsp",
+    "C:/ws/Relatorios/RDCGXXX/Definicao/Pre-Selecao.lsp",
+    "C:/ws/Relatorios/RDCGXXX/Definicao/Funcoes-Globais.lsp",
     "C:/ws/Relatorios/RDCG184/Definicao/Pre-Selecao.lsp",
     "C:/ws/Relatorios/FUNCOES/comum.lsp",
   ];
@@ -276,14 +276,14 @@ describe("PDR-010 report scope overlay", () => {
       candidateFilesAbs: candidates,
       settings: { scope: "project", contexts: [], fallbackSystem: "" },
       reportOverlay: {
-        rootAbs: "C:/ws/Relatorios/RDCG183",
-        name: "RDCG183",
-        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+        rootAbs: "C:/ws/Relatorios/RDCGXXX",
+        name: "RDCGXXX",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCGXXX"],
       },
     });
     assert.equal(r.mode, "scoped");
-    assert.equal(r.contextName, "Relatório · RDCG183");
-    assert.ok(r.peers.some((p) => p.includes("RDCG183/Definicao/Funcoes-Globais.lsp")));
+    assert.equal(r.contextName, "Relatório · RDCGXXX");
+    assert.ok(r.peers.some((p) => p.includes("RDCGXXX/Definicao/Funcoes-Globais.lsp")));
     assert.ok(!r.peers.some((p) => p.includes("RDCG184")));
   });
 
@@ -294,9 +294,9 @@ describe("PDR-010 report scope overlay", () => {
       candidateFilesAbs: candidates,
       settings: { scope: "project", contexts: [], fallbackSystem: "" },
       reportOverlay: {
-        rootAbs: "C:/ws/Relatorios/RDCG183",
-        name: "RDCG183",
-        includeRootsAbs: ["C:/ws/Relatorios/RDCG183", "C:/ws/Relatorios/FUNCOES"],
+        rootAbs: "C:/ws/Relatorios/RDCGXXX",
+        name: "RDCGXXX",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCGXXX", "C:/ws/Relatorios/FUNCOES"],
       },
     });
     assert.ok(r.peers.some((p) => p.includes("FUNCOES/comum.lsp")));
@@ -310,9 +310,9 @@ describe("PDR-010 report scope overlay", () => {
       candidateFilesAbs: candidates,
       settings: { scope: "file", contexts: [], fallbackSystem: "" },
       reportOverlay: {
-        rootAbs: "C:/ws/Relatorios/RDCG183",
-        name: "RDCG183",
-        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+        rootAbs: "C:/ws/Relatorios/RDCGXXX",
+        name: "RDCGXXX",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCGXXX"],
       },
     });
     assert.equal(r.mode, "singleFile");
@@ -337,12 +337,12 @@ describe("PDR-010 report scope overlay", () => {
         fallbackSystem: "",
       },
       reportOverlay: {
-        rootAbs: "C:/ws/Relatorios/RDCG183",
-        name: "RDCG183",
-        includeRootsAbs: ["C:/ws/Relatorios/RDCG183"],
+        rootAbs: "C:/ws/Relatorios/RDCGXXX",
+        name: "RDCGXXX",
+        includeRootsAbs: ["C:/ws/Relatorios/RDCGXXX"],
       },
     });
     assert.ok(!r.peers.some((p) => p.includes("RDCG184")));
-    assert.equal(r.contextName, "Relatório · RDCG183");
+    assert.equal(r.contextName, "Relatório · RDCGXXX");
   });
 });

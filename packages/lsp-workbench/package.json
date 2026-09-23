@@ -2,7 +2,7 @@
   "name": "lsp-workbench",
   "displayName": "LSP Workbench",
   "description": "Linguagem Senior de Programação (LSP): syntax highlighting, snippets, autocomplete, hover, formatação e validação para Senior Sistemas / Sapiens / HCM.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "brunoleocam",
   "icon": "icon.png",
   "license": "MIT",
@@ -55,9 +55,9 @@
     "onCommand:lspWorkbench.copiarRegraRelatorio",
     "onCommand:lspWorkbench.importarContextoDe",
     "onCommand:lspWorkbench.exportarContextoPara",
-    "onCommand:lspWorkbench.adicionarContextoRelatorio",
     "onCommand:lspWorkbench.mostrarEscopoRelatorio",
-    "onCommand:lspWorkbench.exportarRelatorioMultiTrecho"
+    "onCommand:lspWorkbench.exportarRelatorioMultiTrecho",
+    "onCommand:lspWorkbench.importarRelatorio"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -94,6 +94,31 @@
         "language": "senior-lsp",
         "scopeName": "source.senior-lsp",
         "path": "./syntaxes/lsp.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "senior-lsp",
+        "scopes": {
+          "macro": ["keyword.control.flow.lsp"]
+        }
+      }
+    ],
+    "themes": [
+      {
+        "label": "LSP Workbench (Clássico)",
+        "uiTheme": "vs",
+        "path": "./themes/lsp-workbench-classic-color-theme.json"
+      },
+      {
+        "label": "LSP Workbench (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/lsp-workbench-dark-color-theme.json"
+      },
+      {
+        "label": "LSP Workbench (Full Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/lsp-workbench-fulldark-color-theme.json"
       }
     ],
     "snippets": [
@@ -249,8 +274,8 @@
         },
         "lsp.semantic.embeddedSqlHighlight.enabled": {
           "type": "boolean",
-          "default": false,
-          "description": "Highlight dedicado para SQL embutido (reserva; feature futura)."
+          "default": true,
+          "description": "Highlight de SQL embutido em strings (keywords SELECT/FROM/…, funções TO_DATE/COUNT/…, binds :nome). Entregue via TextMate; o valor fica documentado para compatibilidade."
         },
         "lsp.server.enabled": {
           "type": "boolean",
@@ -320,12 +345,12 @@
         "title": "LSP Workbench: Exportar Contexto para…"
       },
       {
-        "command": "lspWorkbench.adicionarContextoRelatorio",
-        "title": "LSP Workbench: Importar Contexto de… (legado)"
-      },
-      {
         "command": "lspWorkbench.mostrarEscopoRelatorio",
         "title": "LSP Workbench: Mostrar Escopo do Relatório"
+      },
+      {
+        "command": "lspWorkbench.importarRelatorio",
+        "title": "LSP Workbench: Importar Relatório"
       }
     ]
   },

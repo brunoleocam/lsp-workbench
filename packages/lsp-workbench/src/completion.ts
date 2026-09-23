@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import { getStructuralSeedsMatching } from "./completion-seeds";
 import { completionSortText } from "./completion-rank";
-import { functionsMatchingPrefix } from "./function-catalog";
+import { completionDetailLine, completionOriginLabel } from "./completion-labels";
+import { functionsMatchingPrefix, systemVarsMatchingPrefix } from "./function-catalog";
 import { completeMembersAt } from "./application/complete-members";
 import { functionsMatchingPrefixForSystem } from "./domain/system-catalog";
+import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
 import {
   arredondarRewriteOptions,
   findCallSpan,
@@ -1089,7 +1091,12 @@ function functionCompletionItems(
   const items: vscode.CompletionItem[] = [];
   for (const e of fromCatalog) {
     const item = new vscode.CompletionItem(e.label, toKind(e.kind === "keyword" ? "keyword" : "function"));
-    item.detail = `LSP · ${e.detail}`;
+    item.label = {
+      label: e.label,
+      description: completionOriginLabel("senior"),
+      detail: e.isSnippet ? " snippet" : "",
+    };
+    item.detail = completionDetailLine("senior", e.detail);
     item.documentation = new vscode.MarkdownString(e.documentation ?? e.detail);
     item.filterText = e.label;
     item.range = wordRange;
@@ -1104,22 +1111,91 @@ function functionCompletionItems(
   return items;
 }
 
-/** Comandos / keywords / tipos (Definir, Se, Alfa, …) no prefixo digitado. */
-function commandCompletionItems(word: string, wordRange: vscode.Range): vscode.CompletionItem[] {
-  if (!word || word.length < 1) return [];
+function systemVarCompletionItems(
+  word: string,
+  wordRange: vscode.Range
+): vscode.CompletionItem[] {
+  // Prefixo vazio (Ctrl+Espaço em linha em branco): listar todas as vars de sistema.
   const items: vscode.CompletionItem[] = [];
-  for (const seed of getStructuralSeedsMatching(word)) {
-    const item = new vscode.CompletionItem(seed.label, toKind(seed.kind));
-    item.detail = `LSP · ${seed.detail}`;
+  for (const v of systemVarsMatchingPrefix(word || "")) {
+    const item = new vscode.CompletionItem(v.name, vscode.CompletionItemKind.Constant);
+    item.label = {
+      label: v.name,
+      description: completionOriginLabel("sistema"),
+      detail: ` ${v.tipo}`,
+    };
+    item.detail = completionDetailLine("sistema", v.tipo);
+    item.documentation = new vscode.MarkdownString(
+      `**${v.name}** — variável de sistema (${v.tipo})\n\n${v.documentation}`
+    );
+    item.filterText = v.name;
+    item.range = wordRange;
+    if (v.isSnippet && v.insertText) {
+      item.insertText = new vscode.SnippetString(v.insertText);
+    } else {
+      item.insertText = v.insertText ?? v.name;
+    }
+    item.sortText = completionSortText("variable", v.name, word || "");
+    items.push(item);
+  }
+  return items;
+}
+
+function reportGlobalCompletionItems(
+  word: string,
+  wordRange: vscode.Range,
+  filePath: string
+): vscode.CompletionItem[] {
+  const opts = loadReportAnalyzeOpts(filePath);
+  if (!opts?.knownGlobals?.length) return [];
+  const p = word.trim().toLowerCase();
+  const items: vscode.CompletionItem[] = [];
+  for (const name of opts.knownGlobals) {
+    if (p && !name.toLowerCase().startsWith(p)) continue;
+    const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Variable);
+    item.label = {
+      label: name,
+      description: completionOriginLabel("global"),
+      detail: " Entrada",
+    };
+    item.detail = completionDetailLine("global", "Entrada.json");
+    item.documentation = new vscode.MarkdownString(
+      `**${name}** — parâmetro de Entrada do relatório (global do modelo).`
+    );
+    item.filterText = name;
+    item.range = wordRange;
+    item.insertText = name;
+    item.sortText = completionSortText("variable", name, word || "");
+    items.push(item);
+  }
+  return items;
+}
+
+/** Comandos / keywords / tipos / snippets (Definir, Se, Cursor simples, …). */
+function commandCompletionItems(word: string, wordRange: vscode.Range): vscode.CompletionItem[] {
+  const items: vscode.CompletionItem[] = [];
+  for (const seed of getStructuralSeedsMatching(word || "")) {
+    const isSnippet = !!seed.isSnippet;
+    const origin = isSnippet ? "snippet" : "comando";
+    const item = new vscode.CompletionItem(
+      seed.label,
+      isSnippet ? vscode.CompletionItemKind.Snippet : toKind(seed.kind)
+    );
+    item.label = {
+      label: seed.label,
+      description: completionOriginLabel(origin),
+      detail: seed.kind === "type" ? " tipo" : isSnippet ? " esqueleto" : "",
+    };
+    item.detail = completionDetailLine(origin, seed.detail);
     item.documentation = new vscode.MarkdownString(seed.documentation ?? seed.detail);
-    item.filterText = seed.label;
+    item.filterText = [seed.label, ...(seed.filterAliases ?? [])].join(" ");
     item.range = wordRange;
     if (seed.isSnippet) {
       item.insertText = new vscode.SnippetString(seed.insertText);
     } else {
       item.insertText = seed.insertText;
     }
-    item.sortText = completionSortText("command", seed.label, word);
+    item.sortText = completionSortText("command", seed.label, word || "");
     items.push(item);
   }
   return items;
@@ -1135,20 +1211,45 @@ function customSymbolCompletions(
   const p = word.toLowerCase();
   const items: vscode.CompletionItem[] = [];
 
+  const paramNames = new Set<string>();
+  for (const fn of functions) {
+    for (const pr of fn.params) {
+      paramNames.add(pr.name.toLowerCase());
+    }
+  }
+
   const seenVar = new Set<string>();
   for (const v of variables) {
     if (p && !v.name.toLowerCase().startsWith(p)) continue;
     const key = v.name.toLowerCase();
     if (seenVar.has(key)) continue;
     seenVar.add(key);
+
+    let origin: "arquivo" | "projeto" | "funcao" | "parametro" = "arquivo";
+    let extra = v.tipo;
+    if (v.scope !== "file") {
+      if (paramNames.has(key)) {
+        origin = "parametro";
+        extra = `${v.tipo} · ${v.scope}`;
+      } else {
+        origin = "funcao";
+        extra = `${v.tipo} · ${v.scope}`;
+      }
+    } else if (v.fileName) {
+      origin = "projeto";
+      extra = `${v.tipo} · ${v.fileName}`;
+    } else {
+      origin = "arquivo";
+      extra = v.tipo;
+    }
+
     const item = new vscode.CompletionItem(v.name, vscode.CompletionItemKind.Variable);
-    const where =
-      v.scope === "file"
-        ? v.fileName
-          ? `projeto · ${v.fileName}`
-          : "local · arquivo"
-        : `param · ${v.scope}`;
-    item.detail = `LSP · ${v.tipo} · ${where}`;
+    item.label = {
+      label: v.name,
+      description: completionOriginLabel(origin),
+      detail: ` ${v.tipo}`,
+    };
+    item.detail = completionDetailLine(origin, extra);
     item.filterText = v.name;
     item.range = wordRange;
     item.insertText = v.name;
@@ -1158,11 +1259,17 @@ function customSymbolCompletions(
 
   for (const fn of functions) {
     if (p && !fn.name.toLowerCase().startsWith(p)) continue;
+    const remote = !!(fn.uri && fn.uri !== currentUri);
     const item = new vscode.CompletionItem(fn.name, vscode.CompletionItemKind.Function);
-    const remote = fn.uri && fn.uri !== currentUri;
-    item.detail = remote
-      ? `LSP · customizada · ${fn.fileName ?? "projeto"}`
-      : "LSP · customizada · local";
+    item.label = {
+      label: fn.name,
+      description: completionOriginLabel("custom"),
+      detail: remote ? ` ${fn.fileName ?? "projeto"}` : " local",
+    };
+    item.detail = completionDetailLine(
+      "custom",
+      remote ? fn.fileName ?? "projeto" : "local"
+    );
     item.documentation = new vscode.MarkdownString(markdownForFunction(fn));
     item.filterText = fn.name;
     item.range = wordRange;
@@ -1200,7 +1307,11 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
               ? vscode.CompletionItemKind.Method
               : vscode.CompletionItemKind.Property;
           const item = new vscode.CompletionItem(m.name, kind);
-          item.detail = m.detail;
+          item.label = {
+            label: m.name,
+            description: completionOriginLabel("membro"),
+          };
+          item.detail = completionDetailLine("membro", m.detail);
           item.documentation = new vscode.MarkdownString(m.documentation);
           item.sortText = m.name.toLowerCase();
           if (m.isSnippet) {
@@ -1225,6 +1336,12 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       }
       const fnItems = functionCompletionItems(word, wordRange, system);
       const cmdItems = commandCompletionItems(word, wordRange);
+      const sysVarItems = systemVarCompletionItems(word, wordRange);
+      const globalItems = reportGlobalCompletionItems(
+        word,
+        wordRange,
+        document.uri.fsPath
+      );
 
       let customItems: vscode.CompletionItem[] = [];
       try {
@@ -1390,7 +1507,11 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         word.length >= 1 && /^[A-Za-z_]/.test(word)
           ? localTableCompletions(word).map((t) => {
               const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
-              item.detail = t.detail;
+              item.label = {
+                label: t.label,
+                description: completionOriginLabel("catalogo"),
+              };
+              item.detail = completionDetailLine("catalogo", t.detail);
               if (t.documentation) {
                 item.documentation = t.documentation;
               }
@@ -1401,9 +1522,11 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
           : [];
 
       // Ordem via sortText: match exato → vars → funções → comandos → outros → QFs.
-      // Com alerta na linha (SYN010 em prefixo parcial etc.) NÃO esconder o catálogo.
+      // isIncomplete: true → ao digitar (ex. Cod) o provider é chamado de novo.
       const base = [
         ...customItems,
+        ...sysVarItems,
+        ...globalItems,
         ...fnItems,
         ...cmdItems,
         ...(defItem ? [defItem] : []),
@@ -1417,14 +1540,16 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         cmdItems.length ||
         defItem ||
         customItems.length ||
+        sysVarItems.length ||
+        globalItems.length ||
         catalogTableItems.length ||
         catalogColItems.length ||
         qfItems.length
       ) {
-        return new vscode.CompletionList(base, false);
+        return new vscode.CompletionList(base, true);
       }
 
-      return new vscode.CompletionList([], false);
+      return new vscode.CompletionList([], true);
     },
   };
 }

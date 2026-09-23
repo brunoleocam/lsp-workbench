@@ -34,7 +34,7 @@ O Agent **não** substitui a UI da extensão. Use este skill para orientar o usu
 
 ## Projeto de relatório
 
-- Escopo = pasta do `relatorio.json` (não mistura irmãos `RDCG183`/`RDCG184`).
+- Escopo = pasta do `relatorio.json` (não mistura irmãos `RDCGXXX`/`RDCGXXY`).
 - `contextoExtra`: pastas/arquivos compartilhados (ex. `../FUNCOES`).
 - Comandos Agent: `/gerar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
 - Comandos IDE: Importar/Exportar Contexto, Mostrar Escopo, Visualizar Todas as Regras.

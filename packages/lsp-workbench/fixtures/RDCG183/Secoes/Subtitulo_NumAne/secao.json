@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Subtitulo_NumAne",
+  "tipo": "Subtitulo",
+  "imprimir": true
+}

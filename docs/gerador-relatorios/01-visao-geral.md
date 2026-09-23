@@ -28,7 +28,7 @@ Na criação/abertura:
 | **Número** | Código único dentro da categoria |
 | **Descrição** | Texto descritivo do modelo |
 
-Convenção comum de nome de arquivo: `XXYYNNN.GER` (categoria + número), ex. `RDCG183.GER` (`RDCG` = Distribuição › Cargas). Árvore completa de siglas: [11-siglas-senior.md](11-siglas-senior.md).
+Convenção comum de nome de arquivo: `XXYYNNN.GER` (categoria + número), ex. `RDCGXXX.GER` (`RDCG` = Distribuição › Cargas). Árvore completa de siglas: [11-siglas-senior.md](11-siglas-senior.md).
 
 ## Passos mínimos para um relatório válido
 

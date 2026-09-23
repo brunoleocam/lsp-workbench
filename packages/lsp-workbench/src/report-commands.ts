@@ -1,6 +1,7 @@
 import * as path from "node:path";
+import * as os from "node:os";
 import * as vscode from "vscode";
-import { buildMultiTrechoExport, scaffoldRelatorioProject } from "./domain/report-scaffold";
+import { buildMultiTrechoExport, looksLikeMultiTrecho, scaffoldFromMultiTrecho, scaffoldRelatorioProject } from "./domain/report-scaffold";
 import { findReportRoot, normalizeFsPath } from "@lsp-workbench/analyzer";
 import * as fs from "node:fs";
 import {
@@ -73,7 +74,7 @@ export function registerReportCommands(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("lspWorkbench.gerarRelatorio", async () => {
       const codigo = await vscode.window.showInputBox({
         title: "Gerar relatório",
-        prompt: "Sigla do relatório (ex. RDCG183)",
+        prompt: "Sigla do relatório (ex. RDCGXXX)",
         validateInput: (v) =>
           /^[A-Za-z0-9_]+$/.test(v.trim()) ? undefined : "Use apenas letras, números e _",
       });
@@ -91,6 +92,17 @@ export function registerReportCommands(context: vscode.ExtensionContext): void {
         prompt: "Categoria (opcional)",
         placeHolder: "ex. CG, PS, RE",
       });
+
+      const secoesRaw = await vscode.window.showInputBox({
+        title: "Gerar relatório",
+        prompt: "Seções (vírgula). Vazio = Detalhe_1",
+        placeHolder: "ex. Detalhe_Transportadora, Subtitulo_CodTra, Total_Geral",
+      });
+      if (secoesRaw === undefined) return;
+      const secoes = secoesRaw
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
       let parentDir = workspaceParent();
       if (!parentDir) {
@@ -112,6 +124,7 @@ export function registerReportCommands(context: vscode.ExtensionContext): void {
           codigo: codigo.trim(),
           descricao: descricao.trim() || codigo.trim(),
           categoria: categoria?.trim(),
+          secoes: secoes.length ? secoes : undefined,
         });
         const readme = path.join(root, "README.md");
         const doc = await vscode.workspace.openTextDocument(readme);
@@ -155,6 +168,86 @@ export function registerReportCommands(context: vscode.ExtensionContext): void {
     })
   );
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand("lspWorkbench.importarRelatorio", async () => {
+      let text: string | undefined;
+      let defaultCodigo = "RDCGXXX";
+      const ed = vscode.window.activeTextEditor;
+      if (ed && looksLikeMultiTrecho(ed.document.getText())) {
+        text = ed.document.getText();
+        const base = path.basename(ed.document.uri.fsPath, path.extname(ed.document.uri.fsPath));
+        if (/^[A-Za-z0-9_]+$/.test(base)) defaultCodigo = base;
+      } else {
+        const uris = await vscode.window.showOpenDialog({
+          canSelectFolders: false,
+          canSelectFiles: true,
+          canSelectMany: false,
+          defaultUri: vscode.Uri.file(workspaceParent() ?? os.homedir()),
+          openLabel: "Importar relatório",
+          filters: { LSP: ["lsp", "lspt", "txt"] },
+        });
+        if (!uris?.[0]) return;
+        text = fs.readFileSync(uris[0].fsPath, "utf8");
+        const base = path.basename(uris[0].fsPath, path.extname(uris[0].fsPath));
+        if (/^[A-Za-z0-9_]+$/.test(base)) defaultCodigo = base;
+      }
+      if (!text || !looksLikeMultiTrecho(text)) {
+        void vscode.window.showErrorMessage(
+          'Arquivo inválido: esperado padrão "Código: N - Descrição: …" (Visualizar Todas as Regras).'
+        );
+        return;
+      }
+
+      const codigo = await vscode.window.showInputBox({
+        title: "Importar relatório",
+        prompt: "Sigla do relatório (pasta a criar)",
+        value: defaultCodigo,
+        validateInput: (v) =>
+          /^[A-Za-z0-9_]+$/.test(v.trim()) ? undefined : "Use apenas letras, números e _",
+      });
+      if (!codigo) return;
+
+      const descricao = await vscode.window.showInputBox({
+        title: "Importar relatório",
+        prompt: "Descrição / nome do relatório",
+        value: codigo.trim(),
+      });
+      if (descricao === undefined) return;
+
+      let parentDir = workspaceParent();
+      if (!parentDir) {
+        const uris = await vscode.window.showOpenDialog({
+          canSelectFolders: true,
+          canSelectFiles: false,
+          openLabel: "Criar relatório nesta pasta",
+        });
+        parentDir = uris?.[0]?.fsPath;
+      }
+      if (!parentDir) {
+        void vscode.window.showErrorMessage("Nenhuma pasta de destino.");
+        return;
+      }
+
+      try {
+        const root = scaffoldFromMultiTrecho({
+          parentDir,
+          codigo: codigo.trim(),
+          descricao: descricao.trim() || codigo.trim(),
+          text,
+        });
+        refreshSymbolIndex();
+        const readme = path.join(root, "README.md");
+        const doc = await vscode.workspace.openTextDocument(readme);
+        await vscode.window.showTextDocument(doc);
+        void vscode.window.showInformationMessage(`Relatório importado: ${root}`);
+      } catch (err) {
+        void vscode.window.showErrorMessage(
+          err instanceof Error ? err.message : String(err)
+        );
+      }
+    })
+  );
+
   /**
    * Importar Contexto de: pasta/arquivo → contextoExtra do relatório aberto.
    */
@@ -185,9 +278,7 @@ export function registerReportCommands(context: vscode.ExtensionContext): void {
   };
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("lspWorkbench.importarContextoDe", importarContextoDe),
-    // alias legado
-    vscode.commands.registerCommand("lspWorkbench.adicionarContextoRelatorio", importarContextoDe)
+    vscode.commands.registerCommand("lspWorkbench.importarContextoDe", importarContextoDe)
   );
 
   /**

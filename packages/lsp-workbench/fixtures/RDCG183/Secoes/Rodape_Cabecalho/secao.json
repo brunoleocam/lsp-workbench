@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Rodape_Cabecalho",
+  "tipo": "Rodape_Cabecalho",
+  "imprimir": true
+}

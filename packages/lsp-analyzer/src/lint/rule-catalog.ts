@@ -153,6 +153,7 @@ export const IMPLEMENTED_RULE_IDS = [
   "SYN009",
   "SYN010",
   "SYN011",
+  "SYN012",
   "RUL001",
   "RUL002",
   "RUL003",

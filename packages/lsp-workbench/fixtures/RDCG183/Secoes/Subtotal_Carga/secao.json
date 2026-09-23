@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Subtotal_Carga",
+  "tipo": "Subtotal",
+  "imprimir": true
+}

@@ -1,5 +1,30 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.3 — 2026-09-23
+
+### Adicionado
+
+- SYN012: string `"` aberta sem fechar (use `\` para continuar na linha seguinte)
+- SYN001: não alerta strings multilinha com `\` (ex. `Cur_Tab1.SQL "SELECT … \`)
+- Cursor simples / completo no Ctrl+Espaço; overrides SQL_* com handle `vaCur`
+- Variáveis de sistema no completion/hover + highlight Senior (temas embutidos)
+- Gerar relatório: múltiplas seções; comando **Importar Relatório** (dump multi-trecho → ADR-007); docs de usuário/raiz atualizadas
+- Ctrl+Espaço: rótulos **Sistema / Global / Arquivo / Projeto / Parâmetro / Senior / Snippet / Custom**; vars de sistema com prefixo vazio; lista `isIncomplete` para filtrar ao digitar (ex. `Cod`)
+- Highlight: `End` (modificador de parâmetro), `Definir Tipo Nome` com cores distintas, chamadas `Nome(`, semantic tokens em call-sites + `semanticTokenColors` nos temas
+- Highlight SQL embutido em strings: keywords (`SELECT`/`FROM`/…), funções (`TO_DATE`/`COUNT`/…), binds (`:vnId`)
+- Highlight: fluxo (`Se`/`Enquanto`/`Para`), operadores (`e`/`ou`/`++`/`<>`), tipo/var/campo/método de `Lista`
+- `Senao`/`Se`/`Enquanto`/`Para` via semantic token `macro` (rosa) — evita `Senao` ficar branco
+- Highlight Cursor: tipo `Cursor`, variável `Cur_*`, campo (`Cur_Tab1.QtdPed`) e métodos (`AbrirCursor`/`Proximo`/…)
+- Variáveis de sistema (`CodEmp`, …) só com highlight de sistema quando sozinhas — após `.` (ex. `wsPedidos.Pedido.CodEmp`) ficam como campo
+- WebService: `Definir caminho.pontuado wsNome` reconhecido (sem SEM001); highlight de caminho, instância, tabela e campo (`ws.Pedido.Usuario.CmpUsu`)
+- WebService na própria regra: `PedidoAssitencia.Retorno.NumPed` (PascalCase) com o mesmo highlight de instância `ws*`
+- Highlight: `/` (divisão) vs `\` (continuação de linha) com cores distintas
+
+### Removido
+
+- Comando legado `lspWorkbench.adicionarContextoRelatorio`
+- Exemplos `RDCG183` → `RDCGXXX`
+
 ## 0.2.2 — 2026-09-23
 
 ### Documentação

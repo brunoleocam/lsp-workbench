@@ -1,6 +1,6 @@
-# 09 — Estudo de caso: export multi-trecho (RDCG183)
+# 09 — Estudo de caso: export multi-trecho (RDCGXXX)
 
-Estudo **anonimizado** de um export real de regras (`RDCG183.lsp` / modelo `RDCG183.GER`).  
+Estudo **anonimizado** de um export real de regras (`RDCGXXX.lsp` / modelo `RDCGXXX.GER`).  
 Categoria `RDCG` = Mercado › Distribuição › Cargas ([11-siglas-senior.md](11-siglas-senior.md)).  
 Artefatos de cliente **não** fazem parte do repositório público; use cópias locais se for reproduzir a análise.
 

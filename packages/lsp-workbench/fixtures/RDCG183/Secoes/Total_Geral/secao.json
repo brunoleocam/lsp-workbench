@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Total_Geral",
+  "tipo": "Total_Geral",
+  "imprimir": true
+}

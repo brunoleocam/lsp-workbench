@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Detalhe_Transportadora",
+  "tipo": "Detalhe",
+  "imprimir": true,
+  "tabelaBase": "",
+  "classificacao": []
+}

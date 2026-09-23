@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../../docs/gerador-relatorios/schema/secao.schema.json",
+  "nome": "Cabecalho",
+  "tipo": "Cabecalho",
+  "imprimir": true
+}

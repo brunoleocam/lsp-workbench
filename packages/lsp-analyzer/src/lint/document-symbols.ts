@@ -3,6 +3,9 @@
  * Puro / testável — sem vscode.
  */
 
+import { maskCommentsAndStrings } from "./comment-mask";
+import { matchDefinirWebService } from "./webservice";
+
 export type LspDocParam = { name: string; description: string };
 export type LspDocInfo = {
   summary: string;
@@ -50,7 +53,7 @@ export type FileSymbols = {
 };
 
 function stripLineComment(line: string): string {
-  return line.replace(/@[^@]*@/g, " ");
+  return maskCommentsAndStrings(line);
 }
 
 /** Extrai bloco LSPDoc imediatamente acima de fromLine (só linhas em branco entre). */
@@ -256,6 +259,15 @@ export function parseFileSymbols(source: string): FileSymbols {
       variables.push({
         name: defVar[2],
         tipo: defVar[1],
+        line: i,
+        scope: currentFunc ?? "file",
+      });
+    }
+    const defWs = matchDefinirWebService(lineNoDoc);
+    if (defWs) {
+      variables.push({
+        name: defWs.name,
+        tipo: "WebService",
         line: i,
         scope: currentFunc ?? "file",
       });

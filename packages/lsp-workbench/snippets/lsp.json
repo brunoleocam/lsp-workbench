@@ -8,8 +8,8 @@
     ],
     "description": "Lista dinâmica LSP Workbench"
   },
-  "Cursor completo": {
-    "prefix": "cursor",
+  "Cursor simples": {
+    "prefix": ["cursor", "cursor simples"],
     "body": [
       "Definir Cursor Cur_${1:Nome};",
       "Cur_${1:Nome}.SQL = \"${2:SELECT 1 FROM DUAL}\";",
@@ -20,7 +20,24 @@
       "}",
       "Cur_${1:Nome}.FecharCursor();"
     ],
-    "description": "Cursor com loop"
+    "description": "Cursor simples (Definir Cursor + membros)"
+  },
+  "Cursor completo": {
+    "prefix": ["cursor completo", "SQL_Criar"],
+    "body": [
+      "SQL_Criar(${1:vaCur});",
+      "SQL_UsarAbrangencia(${1:vaCur}, 0);",
+      "SQL_UsarSQLSenior2(${1:vaCur}, 0);",
+      "SQL_DefinirComando(${1:vaCur}, ${2:vaSQL});",
+      "SQL_AbrirCursor(${1:vaCur});",
+      "Enquanto (SQL_EOF(${1:vaCur}) = 0) {",
+      "  ${0}",
+      "  SQL_Proximo(${1:vaCur});",
+      "}",
+      "SQL_FecharCursor(${1:vaCur});",
+      "SQL_Destruir(${1:vaCur});"
+    ],
+    "description": "Cursor completo (SQL_* / handle Alfa)"
   },
   "Se": {
     "prefix": "se",
@@ -78,21 +95,9 @@
     "description": "Decl+Impl função"
   },
   "SQL_Criar": {
-    "prefix": "SQL_Criar",
-    "body": [
-      "SQL_Criar(${1:vaCur});",
-      "SQL_UsarAbrangencia(${1:vaCur}, 0);",
-      "SQL_UsarSQLSenior2(${1:vaCur}, 0);",
-      "SQL_DefinirComando(${1:vaCur}, ${2:vaSQL});",
-      "SQL_AbrirCursor(${1:vaCur});",
-      "Enquanto (SQL_EOF(${1:vaCur}) = 0) {",
-      "  ${0}",
-      "  SQL_Proximo(${1:vaCur});",
-      "}",
-      "SQL_FecharCursor(${1:vaCur});",
-      "SQL_Destruir(${1:vaCur});"
-    ],
-    "description": "Cursor SQL completo"
+    "prefix": "SQL_Criar_linha",
+    "body": ["SQL_Criar(${1:vaCur});"],
+    "description": "SQL_Criar (somente a chamada)"
   },
   "SQL_DefinirComando": {
     "prefix": "SQL_DefinirComando",
