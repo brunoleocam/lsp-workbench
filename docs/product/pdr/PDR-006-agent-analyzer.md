@@ -10,7 +10,7 @@
 
 ## Problema
 
-O Agent valida LSP por checklist textual (`@lsp-validar`). A extensão já emite **ANL*** via analyzer. Isso gera divergência: o chat pode “passar” código que o Problems acusa.
+O Agent valida LSP por checklist textual (`@lsp-compilar`). A extensão já emite **ANL*** via analyzer. Isso gera divergência: o chat pode “passar” código que o Problems acusa.
 
 ## Decisão
 
@@ -22,7 +22,7 @@ Fronteira (ADR-002): Agent **não** vira IDE (sem tokens/outline/completion em t
 
 | Leva | Entrega | Aceite | Estado |
 |------|---------|--------|--------|
-| **P0** | CLI `scripts/analyze-lsp.mjs` + `@lsp-validar` / `/validar-lsp` | ANL* no relatório | **Feito** |
+| **P0** | CLI `scripts/analyze-lsp.mjs` + `@lsp-compilar` / `/compilar-lsp` | ANL* no relatório | **Feito** |
 | **P1** | `scripts/format-lsp.mjs` + `scripts/refactor-lsp.mjs` + skills/commands | Diff estável | **Feito** |
 | **P2** | `reference-membros.md` gerado de `domain/members.ts` | Sem inventar membros | **Feito** |
 | **P3** | EVAL-agent com fixtures/CLI | EVAL atualizado | **Feito** |

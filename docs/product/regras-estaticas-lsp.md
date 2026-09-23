@@ -1,7 +1,7 @@
 # Regras estáticas LSP (canônico)
 
 Fonte: interpretação de [`docs/lsp/`](../../lsp/).  
-Uso: extensão **LSP Workbench** (Problems ao digitar) + skill **`@lsp-validar`**.
+Uso: extensão **LSP Workbench** (Problems ao digitar) + skill **`@lsp-compilar`**.
 
 Legenda Quick Fix: `sim` | `parcial` | `nao`  
 Status extensão: `ok` = implementado | `pendente`

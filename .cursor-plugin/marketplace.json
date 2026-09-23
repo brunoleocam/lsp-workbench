@@ -13,7 +13,7 @@
     {
       "name": "lsp-workbench-agent",
       "source": "lsp-workbench-agent",
-      "description": "Validar, formatar, refatorar e gerar trechos LSP (lista, cursor, HTTP, relatório).",
+      "description": "Pré-compilar/validar, formatar, refatorar e gerar trechos LSP (lista, cursor, HTTP, relatório).",
       "version": "1.2.0",
       "logo": "packages/lsp-workbench-agent/assets/logo.svg",
       "keywords": ["lsp", "senior", "linguagem-senior", "workbench"],

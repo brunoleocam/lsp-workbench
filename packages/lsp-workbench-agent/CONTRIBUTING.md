@@ -18,7 +18,7 @@ Depois: **Developer: Reload Window**.
 
 Padrão **`lsp-<ação>`**: `linguagem` | `gerar` | `validar` | `formatar` | `refatorar` | `revisar` | `logs`
 
-Commands: `/validar-lsp`, `/refatorar-lsp`, `/formatar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`.
+Commands: `/compilar-lsp`, `/refatorar-lsp`, `/formatar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`.
 
 ## Publicar
 

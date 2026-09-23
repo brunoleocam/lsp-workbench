@@ -1,20 +1,20 @@
-ï»¿# ConfiguraÃ§Ã£o Cursor â€“ LSP Workbench (workspace)
+# Configuração Cursor – LSP Workbench (workspace)
 
-Harness local do monorepo (espelha o Agent pÃºblico).
+Harness local do monorepo (espelha o Agent público).
 
 ## Skills
 
-PadrÃ£o `lsp-<aÃ§Ã£o>`: `lsp-linguagem`, `lsp-gerar`, `lsp-validar`, `lsp-formatar`, `lsp-refatorar`, `lsp-revisar`, `lsp-logs`, `lsp-banco`, `lsp-mcps`.
+Padrão `lsp-<ação>`: `lsp-linguagem`, `lsp-gerar`, `lsp-compilar`, `lsp-formatar`, `lsp-refatorar`, `lsp-revisar`, `lsp-logs`, `lsp-banco`, `lsp-mcps`.
 
 ## Commands
 
-`/validar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`.
+`/compilar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`.
 
 ## Pacotes
 
 | Pacote | Path |
 |--------|------|
-| ExtensÃ£o | `packages/lsp-workbench` |
+| Extensão | `packages/lsp-workbench` |
 | Agent | `packages/lsp-workbench-agent` |
 | Analyzer | `packages/lsp-analyzer` |
 | Language Server | `packages/lsp-language-server` |

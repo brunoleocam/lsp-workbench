@@ -34,7 +34,7 @@ Asserts:
 
 ### E-AG-03 — Validar Retorna (analyzer)
 
-Prompt: `/validar-lsp` **ou** CLI:
+Prompt: `/compilar-lsp` **ou** CLI:
 
 ```powershell
 node scripts/analyze-lsp.mjs packages/lsp-workbench/fixtures/smoke-sem.lsp

@@ -2,7 +2,7 @@
   "name": "lsp-workbench-agent",
   "displayName": "LSP Workbench Agent",
   "version": "1.2.0",
-  "description": "Agent Cursor para a Linguagem Senior de Programação: validar, formatar, refatorar e gerar trechos (lista, cursor, HTTP). Parte do LSP Workbench.",
+  "description": "Agent Cursor para a Linguagem Senior de Programação: compilar/validar, formatar, refatorar e gerar trechos (lista, cursor, HTTP, relatório). Parte do LSP Workbench.",
   "author": {
     "name": "Bruno Campos",
     "email": "brunoleocam@gmail.com"

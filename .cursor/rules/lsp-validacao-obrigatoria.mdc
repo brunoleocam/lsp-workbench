@@ -1,34 +1,34 @@
-ï»¿---
-description: ValidaÃ§Ã£o obrigatÃ³ria apÃ³s gerar ou alterar cÃ³digo LSP.
+---
+description: Validação obrigatória após gerar ou alterar código LSP.
 globs: "**/*.lsp"
 alwaysApply: false
 ---
-# LSP â€“ ValidaÃ§Ã£o obrigatÃ³ria
+# LSP – Validação obrigatória
 
-**OBRIGATÃ“RIO:** Sempre que gerar ou alterar cÃ³digo LSP (arquivos `.lsp`), executar validaÃ§Ã£o antes de dar por encerrado.
+**OBRIGATÓRIO:** Sempre que gerar ou alterar código LSP (arquivos `.lsp`), executar validação antes de dar por encerrado.
 
-## Fluxo obrigatÃ³rio
+## Fluxo obrigatório
 
-1. **Antes** de gerar ou alterar `.lsp` em tarefas nÃ£o triviais: seguir a skill **`lsp-gerar`** (mapear tÃ³picos em `docs/lsp/`; se houver SQL/tabelas/campos do Senior, usar **`lsp-banco`**).
-2. **ApÃ³s** escrever ou editar qualquer trecho em `.lsp` â†’ executar validaÃ§Ã£o.
+1. **Antes** de gerar ou alterar `.lsp` em tarefas não triviais: seguir a skill **`lsp-gerar`** (mapear tópicos em `docs/lsp/`; se houver SQL/tabelas/campos do Senior, usar **`lsp-banco`**).
+2. **Após** escrever ou editar qualquer trecho em `.lsp` ? executar validação.
 3. **Usar** a skill `lsp-revisar` (ler o SKILL.md e aplicar o checklist).
-4. **Ou** usar a skill `lsp-validar` para validaÃ§Ã£o sistemÃ¡tica com relatÃ³rio.
-5. **Corrigir** todas as violaÃ§Ãµes encontradas antes de considerar concluÃ­do.
+4. **Ou** usar a skill `lsp-compilar` para validação sistemática com relatório.
+5. **Corrigir** todas as violações encontradas antes de considerar concluído.
 
-## Itens crÃ­ticos a validar
+## Itens críticos a validar
 
-- ParÃ¢metros de funÃ§Ã£o: apenas `Numero`; variÃ¡veis globais para outros tipos.
-- **Campos com ponto:** nÃ£o passar `Objeto.Campo` ou `Grid.Campo` em parÃ¢metros; usar variÃ¡vel intermediÃ¡ria (ex.: `vnVal = Grid.Campo;` depois `IntParaAlfa(vnVal, vaStr);`).
-- CondiÃ§Ãµes compostas: cada condiÃ§Ã£o entre parÃªnteses `((a > 0) e (b < 10))`.
-- ConversÃµes em grids: sempre variÃ¡vel intermediÃ¡ria.
-- ConcatenaÃ§Ã£o: apenas Alfa + Alfa; nunca em parÃ¢metros de funÃ§Ãµes.
-- Retorno: funÃ§Ãµes retornam por parÃ¢metro, nÃ£o por atribuiÃ§Ã£o.
-- InterrupÃ§Ã£o: `Cancel(1);` apÃ³s erro, nunca `Retorna`.
-- **ExecSQLEx:** `0 = sucesso`, `1 = erro`; usar `Se (vnRetorno = 0)` para sucesso (nÃ£o inverter).
+- Parâmetros de função: apenas `Numero`; variáveis globais para outros tipos.
+- **Campos com ponto:** não passar `Objeto.Campo` ou `Grid.Campo` em parâmetros; usar variável intermediária (ex.: `vnVal = Grid.Campo;` depois `IntParaAlfa(vnVal, vaStr);`).
+- Condições compostas: cada condição entre parênteses `((a > 0) e (b < 10))`.
+- Conversões em grids: sempre variável intermediária.
+- Concatenação: apenas Alfa + Alfa; nunca em parâmetros de funções.
+- Retorno: funções retornam por parâmetro, não por atribuição.
+- Interrupção: `Cancel(1);` após erro, nunca `Retorna`.
+- **ExecSQLEx:** `0 = sucesso`, `1 = erro`; usar `Se (vnRetorno = 0)` para sucesso (não inverter).
 
-## ReferÃªncias
+## Referências
 
 - Insights de desenvolvimento (WebService, arquivos, grid): `docs/lsp/insights-webservice-desenvolvimento.md`
 - Checklist completo: skill `lsp-revisar`
-- ValidaÃ§Ã£o sistemÃ¡tica: skill `lsp-validar`
-- LimitaÃ§Ãµes: `lsp-limites.mdc`, `lsp-nucleo.mdc`
+- Validação sistemática: skill `lsp-compilar`
+- Limitações: `lsp-limites.mdc`, `lsp-nucleo.mdc`

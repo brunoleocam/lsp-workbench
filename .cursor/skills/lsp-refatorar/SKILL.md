@@ -70,7 +70,7 @@ Demais transformações (extrair função, wrap Se/Enquanto) seguem o fluxo abai
 | 1 | … | … | … |
 
 ## Próximos passos recomendados
-- Rodar `/validar-lsp`
+- Rodar `/compilar-lsp`
 ```
 
 ## Anti-padrões na refatoração

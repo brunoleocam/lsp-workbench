@@ -27,7 +27,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
    - Snippets → [snippets.md](snippets.md)
    - Exemplos → [examples.md](examples.md) e pasta `exemplos/`
 3. Gerar ou editar respeitando as regras de ouro.
-4. Antes de encerrar: checklist abaixo; para validação completa use `@lsp-validar`.
+4. Antes de encerrar: checklist abaixo; para validação completa use `@lsp-compilar`.
 
 ## Regras de ouro (sempre)
 
@@ -68,7 +68,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 | Skill | Papel |
 |-------|-------|
 | `@lsp-gerar` | Fluxo completo antes/depois de gerar |
-| `@lsp-validar` | Validação sintática + semântica + IDs |
+| `@lsp-compilar` | Validação sintática + semântica + IDs |
 | `@lsp-formatar` | Só layout (indentação, espaços, SQL) |
 | `@lsp-refatorar` | Extrair funções, envolver blocos, relatórios |
 | `@lsp-revisar` | Checklist rápido pré-compilação |

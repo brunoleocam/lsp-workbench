@@ -1,31 +1,31 @@
-ï»¿---
-description: ValidaÃ§Ã£o obrigatÃ³ria apÃ³s gerar ou alterar cÃ³digo LSP.
+---
+description: Validação obrigatória após gerar ou alterar código LSP.
 globs: "**/*.{lsp,lspt}"
 alwaysApply: false
 ---
-# LSP â€“ ValidaÃ§Ã£o obrigatÃ³ria
+# LSP – Validação obrigatória
 
-**OBRIGATÃ“RIO:** Sempre que gerar ou alterar cÃ³digo LSP (`.lsp` / `.lspt`), validar antes de encerrar.
+**OBRIGATÓRIO:** Sempre que gerar ou alterar código LSP (`.lsp` / `.lspt`), validar antes de encerrar.
 
 ## Fluxo
 
-1. **Antes** (tarefas nÃ£o triviais): skill **`lsp-gerar`** ou **`lsp-linguagem`**.
-2. **ApÃ³s** escrever/editar â†’ validar.
-3. Usar **`lsp-revisar`** (checklist) e/ou **`lsp-validar`** (relatÃ³rio com IDs).
-4. Corrigir violaÃ§Ãµes crÃ­ticas antes de concluir.
+1. **Antes** (tarefas não triviais): skill **`lsp-gerar`** ou **`lsp-linguagem`**.
+2. **Após** escrever/editar ? validar.
+3. Usar **`lsp-revisar`** (checklist) e/ou **`lsp-compilar`** (relatório com IDs).
+4. Corrigir violações críticas antes de concluir.
 5. Opcional: **`lsp-formatar`** se o layout estiver irregular.
 
-## Itens crÃ­ticos
+## Itens críticos
 
-- ParÃ¢metros de funÃ§Ã£o: sÃ³ `Numero`.
-- Campos com ponto: variÃ¡vel intermediÃ¡ria antes de funÃ§Ãµes.
-- CondiÃ§Ãµes compostas: `((a > 0) e (b < 10))`.
-- ConcatenaÃ§Ã£o: sÃ³ Alfa + Alfa; nunca em argumentos de funÃ§Ã£o.
-- Retorno por parÃ¢metro; `Cancel(1);` (nÃ£o `Retorna`).
-- Blocos com `{ }` (nÃ£o `Inicio`/`Fim;`).
+- Parâmetros de função: só `Numero`.
+- Campos com ponto: variável intermediária antes de funções.
+- Condições compostas: `((a > 0) e (b < 10))`.
+- Concatenação: só Alfa + Alfa; nunca em argumentos de função.
+- Retorno por parâmetro; `Cancel(1);` (não `Retorna`).
+- Blocos com `{ }` (não `Inicio`/`Fim;`).
 - **ExecSQLEx:** `0 = sucesso`, `1 = erro`.
 
-## ReferÃªncias
+## Referências
 
-- Skills: `lsp-linguagem`, `lsp-gerar`, `lsp-revisar`, `lsp-validar`, `lsp-formatar`, `lsp-refatorar`
+- Skills: `lsp-linguagem`, `lsp-gerar`, `lsp-revisar`, `lsp-compilar`, `lsp-formatar`, `lsp-refatorar`
 - Rules: `lsp-nucleo.mdc`, `lsp-limites.mdc`, `lsp-sintaxe.mdc`

@@ -14,7 +14,7 @@ alwaysApply: false
 | Sintaxe / geração LSP | `docs/lsp/` + `lsp-gerar` / `lsp-linguagem` |
 | Regra de negócio / pode-não-pode | `docs/senior/` (se presente) |
 | Tabelas, chaves, enums, SQL Senior | `docs/banco-senior/` + `lsp-banco` (se presente) |
-| Validar `.lsp` | `lsp-revisar` / `lsp-validar` |
+| Validar `.lsp` | `lsp-revisar` / `lsp-compilar` |
 
 ## MCPs opcionais (se configurados)
 
@@ -30,7 +30,7 @@ alwaysApply: false
 
 ## Código LSP (`.lsp`)
 
-Após criar ou alterar `.lsp`: `lsp-revisar` e/ou `lsp-validar`; ver `lsp-validacao-obrigatoria.mdc`.
+Após criar ou alterar `.lsp`: `lsp-revisar` e/ou `lsp-compilar`; ver `lsp-validacao-obrigatoria.mdc`.
 
 ## Solicitações grandes
 

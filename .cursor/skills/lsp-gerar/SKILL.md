@@ -37,7 +37,7 @@ Respeitar sintaxe e limitações. Preferir `{ }`, nomenclatura `va/vn/vd/vl/Cur_
 ### 4. Antes de encerrar
 
 1. **`@lsp-revisar`** (checklist rápido) e/ou
-2. **`@lsp-validar`** (relatório completo)
+2. **`@lsp-compilar`** (relatório completo)
 3. Opcional: **`@lsp-formatar`** se o layout estiver irregular
 
 Corrigir violações críticas (`lsp-validacao-obrigatoria.mdc`).

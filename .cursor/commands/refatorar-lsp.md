@@ -14,4 +14,4 @@ Analisar o código, melhorar organização (funções, blocos, literais), gerar 
 4. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; sem concat em argumentos; `Cancel(1)` sem `Retorna`.
 5. Comentários `@ ... @` só onde esclarecem intenção.
 6. Layout: `node scripts/format-lsp.mjs <arquivo> --write`.
-7. Entregar o relatório obrigatório da skill; recomendar `/validar-lsp` ao final.
+7. Entregar o relatório obrigatório da skill; recomendar `/compilar-lsp` ao final.

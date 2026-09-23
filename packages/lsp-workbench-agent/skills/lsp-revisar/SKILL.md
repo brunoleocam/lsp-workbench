@@ -1,11 +1,11 @@
 ---
 name: lsp-revisar
-description: Checklist rápido pré-compilação LSP. Use após implementar ou antes de compilar; para relatório completo use lsp-validar.
+description: Checklist rápido pré-compilação LSP. Use após implementar ou antes de compilar; para relatório completo use lsp-compilar.
 ---
 
 # lsp-revisar
 
-Checklist curto antes de compilar ou após implementação. Para relatório com IDs e semântica profunda: **`@lsp-validar`**. Para gerar do zero: **`@lsp-gerar`**.
+Checklist curto antes de compilar ou após implementação. Para relatório com IDs e semântica profunda: **`@lsp-compilar`**. Para gerar do zero: **`@lsp-gerar`**.
 
 ## Checklist
 
