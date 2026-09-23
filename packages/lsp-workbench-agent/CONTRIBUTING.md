@@ -16,13 +16,13 @@ Depois: **Developer: Reload Window**. Conferir `@lsp-compilar`, `/compilar-lsp`,
 
 ## Convenção de skills
 
-Padrão **`lsp-<ação>`**: `linguagem` | `gerar` | `compilar` | `revisar` | `formatar` | `refatorar` | `logs` | `banco` | `contexto`
+Padrão **`lsp-<ação>`**: `linguagem` | `gerar` | `compilar` | `depurar` | `revisar` | `formatar` | `refatorar` | `logs` | `banco` | `contexto`
 
-Commands: `/compilar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
+Commands: `/compilar-lsp`, `/depurar-lsp`, `/formatar-lsp`, `/refatorar-lsp`, `/gerar-lista-lsp`, `/gerar-cursor-lsp`, `/gerar-http-lsp`, `/gerar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
 
-| Rápido | Completo |
-|--------|----------|
-| `@lsp-revisar` | `/compilar-lsp` |
+| Rápido | Completo (estático) | Fluxo (dinâmico) |
+|--------|---------------------|------------------|
+| `@lsp-revisar` | `/compilar-lsp` | `/depurar-lsp` |
 
 ## Antes de release / submit Marketplace
 

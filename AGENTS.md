@@ -16,6 +16,7 @@ Monorepo **LSP Workbench**: extensão IDE + Agent Cursor + analyzer / language s
 | [lsp-linguagem](.cursor/skills/lsp-linguagem/SKILL.md) | Sintaxe / padrões da linguagem |
 | [lsp-gerar](.cursor/skills/lsp-gerar/SKILL.md) | Fluxo antes/depois de gerar `.lsp` |
 | [lsp-compilar](.cursor/skills/lsp-compilar/SKILL.md) | Pré-compilação com IDs (ex-`lsp-validar`) |
+| [lsp-depurar](.cursor/skills/lsp-depurar/SKILL.md) | Fluxo de execução / cursores / resultado |
 | [lsp-formatar](.cursor/skills/lsp-formatar/SKILL.md) | Só layout |
 | [lsp-refatorar](.cursor/skills/lsp-refatorar/SKILL.md) | Refactor + relatório de lógica |
 | [lsp-revisar](.cursor/skills/lsp-revisar/SKILL.md) | Checklist pré-compilação |

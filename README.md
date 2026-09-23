@@ -57,6 +57,7 @@ Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 | Command | Função |
 |---------|--------|
 | `/compilar-lsp` | Pré-compilação: regras + sintaxe + semântica (IDs) |
+| `/depurar-lsp` | Resumo + ordem de execução + cursores/SQL |
 | `/formatar-lsp` | Layout canônico |
 | `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
 | `/gerar-relatorio` | Scaffold de projeto de relatório (PDR-008) |
@@ -66,7 +67,7 @@ Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 | `/gerar-cursor-lsp` | Cursor (+ SQL) |
 | `/gerar-http-lsp` | HTTP + parse JSON/XML |
 
-Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
+Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-depurar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
 
 ## Configurar (dev)
 
