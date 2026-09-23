@@ -21,6 +21,7 @@
         "SYN008",
         "SYN009",
         "SYN010",
+        "SYN011",
         "RUL008"
       ],
       "quickFixIds": [
@@ -34,6 +35,7 @@
         "SYN008",
         "SYN009",
         "SYN010",
+        "SYN011",
         "RUL008"
       ]
     },
@@ -112,9 +114,11 @@
         "SQL006",
         "SQL007",
         "SQL008",
-        "SQL009"
+        "SQL009",
+        "SQL010",
+        "SQL011"
       ],
-      "quickFixIds": ["SQL001", "SQL002", "SQL003", "SQL004", "SQL005", "SQL006", "SQL007", "SQL008", "SQL009"]
+      "quickFixIds": ["SQL001", "SQL002", "SQL003", "SQL004", "SQL005", "SQL006", "SQL007", "SQL008", "SQL009", "SQL010", "SQL011"]
     },
     {
       "path": "format-if.lsp",

@@ -27,10 +27,7 @@ export const LSP_FUNCTION_CATALOG: LspFunctionEntry[] = mergeCatalog();
 export function functionsMatchingPrefix(prefix: string): LspFunctionEntry[] {
   const p = prefix.trim().toLowerCase();
   if (!p) return [];
-  return LSP_FUNCTION_CATALOG.filter((e) => e.label.toLowerCase().startsWith(p)).sort((a, b) => {
-    const as = a.label.toLowerCase().startsWith(p) ? a.label.length : 999;
-    const bs = b.label.toLowerCase().startsWith(p) ? b.label.length : 999;
-    if (as !== bs) return as - bs;
-    return a.label.localeCompare(b.label);
-  });
+  return LSP_FUNCTION_CATALOG.filter((e) => e.label.toLowerCase().startsWith(p)).sort((a, b) =>
+    a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" })
+  );
 }

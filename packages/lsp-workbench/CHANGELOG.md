@@ -1,5 +1,25 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.1 — 2026-09-23
+
+### Documentação (Marketplace / GitHub)
+
+- README da extensão com capturas reais + GIF de validação (`media/01`…`08`)
+- README raiz do monorepo com galeria e badge do Marketplace
+- Keywords ampliadas (Senior, Sapiens, HCM, syntax highlighting, formatter, …)
+- Exemplos de captura: banners com `/* */` (não `@` multi-linha — inválido em LSP)
+
+### Corrigido
+
+- TextMate: comentário `@` não atravessa linhas (só até `@` ou fim da linha)
+- **SYN011**: detecta `@` aberto numa linha e fechado noutra; QF → `/* … */`
+- **RUL006**: não trata `++`/`--` nem `Para`/`Se`/`Enquanto` como concatenação em argumentos
+- Completion: com alerta na linha (ex. SYN010 em `Tam`), ainda sugere funções do catálogo (`TamanhoAlfa`)
+- Completion: qualquer prefixo (`D`/`De`/`S`/`Tam`…) → match exato, depois variáveis, funções, comandos; lista afunila ao digitar
+- Completion: dentro de cada faixa, ordem alfabética (`TamanhoAlfa` antes de `TamanhoStr`)
+- Completion de membros (`vlItens.` / Cursor): ordem alfabética (antes era ordem do catálogo)
+- Catálogo: fallback + setting F5 para `docs/banco-senior-base/catalog.example.json` (E012FAM. no Debug)
+
 ## 0.2.0 — 2026-09-18
 
 ### Adicionado (PDR-004 — Opção 1)

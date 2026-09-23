@@ -20,6 +20,7 @@ Status extensão: `ok` = implementado | `pendente`
 | SYN008 | Chaves `{`/`}` balanceadas | contagem fora de string (alerta na linha do `}` extra) | sim (remover `}` extra) | ok | sintaxe |
 | SYN009 | String longa / SQL: preferir `\` ~col 80 | literal > ~100 sem `\` | sim (quebrar com `\`) | ok | padroes, sql |
 | SYN010 | Identificador/tipo solto (não compila) | linha = só `Nome` ou `Nome;` sem atribuição/chamada/comando | sim (remover; ou `Definir Tipo …` se for tipo) | ok | Senior: "falta valor, expressão ou comando" |
+| SYN011 | `@` só na mesma linha | abertura `@` sem fechar + fechamento `@` em outra linha | sim (converter para `/* … */`) | ok | comentarios, padroes |
 
 ## RUL — Regras de ouro / limites
 
@@ -81,6 +82,8 @@ Status extensão: `ok` = implementado | `pendente`
 | SQL007 | `SQL_DefinirComando` após `SQL_Criar` | DefinirComando sem Criar | sim (inserir Criar) | ok | sql |
 | SQL008 | JOIN/subquery → nativo | comando com JOIN/`(SELECT` sem UsarAbrangencia(0)+UsarSQLSenior2(0) | sim (inserir Usar*) | ok | sql nativo |
 | SQL009 | Não misturar API simples × completa | `SQL_*` em `Definir Cursor` ou `.AbrirCursor` em handle de `SQL_Criar` | sim (**esqueleto** do modo certo; ou só converter a linha). SQL002 adiado enquanto a API estiver misturada | ok | cursores |
+| SQL010 | Função nativa do banco em SQL Senior 2 | `TO_DATE`/`NVL`/`SYSDATE`/… no comando com dialeto Senior 2 | sim (→ `STRTODATE`/`IFNULL`/`TODAY`/…) | ok | dialeto Senior 2 |
+| SQL011 | Agregação no SELECT sob Senior 2 | `COUNT`/`SUM`/`MAX`/`MIN`/`AVG` na lista do SELECT | sim (inserir Usar* nativo) | ok | dialeto Senior 2 |
 
 ## ANL — Analyzer (`@lsp-workbench/analyzer`)
 

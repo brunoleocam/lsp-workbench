@@ -39,6 +39,16 @@ describe("ACC-MEM members", () => {
     assert.ok(m.some((x) => x.name === "Achou"));
   });
 
+  it("membros de Lista em ordem alfabética", () => {
+    const names = membersAfterDot(SRC, "vlItens", "").map((x) => x.name);
+    const sorted = [...names].sort((a, b) =>
+      a.localeCompare(b, "pt-BR", { sensitivity: "base" })
+    );
+    assert.deepEqual(names, sorted);
+    assert.ok(names.indexOf("Adicionar") < names.indexOf("DefinirCampos"));
+    assert.ok(names.indexOf("CODIGO") < names.indexOf("NOME"));
+  });
+
   it("ACC-MEM-02 lista methods", () => {
     const m = membersAfterDot(SRC, "vlItens", "Ad");
     assert.ok(m.some((x) => x.name === "Adicionar"));

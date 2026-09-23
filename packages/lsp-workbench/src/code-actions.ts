@@ -28,6 +28,7 @@ import {
   applySyn007CloseComment,
   applySyn010DefinirStub,
   applySyn009BreakString,
+  applySyn011ToBlockComment,
   applySyn004PairFix,
   applySyn004InicioFim,
   findSql002Criar,
@@ -490,8 +491,11 @@ function sql008Actions(
   const missing = sql008MissingFlags(document.getText(), info.handle, line.lineNumber);
   const insert = sql008NativeInsert(line.text, missing);
   if (!insert) return [];
+  const code = String(diagnostic.code || "");
   const a = new vscode.CodeAction(
-    `Inserir SQL_UsarAbrangencia/SQL_UsarSQLSenior2(${info.handle}, 0)`,
+    code === "SQL011"
+      ? `Inserir SQL_Usar* nativo (agregação no SELECT — SQL011)`
+      : `Inserir SQL_UsarAbrangencia/SQL_UsarSQLSenior2(${info.handle}, 0)`,
     vscode.CodeActionKind.QuickFix
   );
   a.diagnostics = [diagnostic];
@@ -800,6 +804,25 @@ function syn007Actions(
   ];
 }
 
+function syn011Actions(
+  document: vscode.TextDocument,
+  diagnostic: vscode.Diagnostic
+): vscode.CodeAction[] {
+  const next = applySyn011ToBlockComment(
+    document.getText(),
+    diagnostic.range.start.line
+  );
+  if (!next) return [];
+  return [
+    replaceWholeDocument(
+      document,
+      diagnostic,
+      "Converter comentário @ multi-linha em /* … */",
+      next
+    ),
+  ];
+}
+
 function syn009Actions(
   document: vscode.TextDocument,
   diagnostic: vscode.Diagnostic
@@ -994,13 +1017,14 @@ function actionsForDiagnostic(
   if (code === "SQL005") return sql005Actions(document, diagnostic);
   if (code === "SQL006") return sql006Actions(document, diagnostic);
   if (code === "SQL007") return sql007Actions(document, diagnostic);
-  if (code === "SQL008") return sql008Actions(document, diagnostic);
+  if (code === "SQL008" || code === "SQL011") return sql008Actions(document, diagnostic);
   if (code === "SQL009") return sql009Actions(document, diagnostic);
   if (code === "SYN004") return syn004Actions(document, diagnostic);
   if (code === "SYN005") return syn005Actions(document, diagnostic);
   if (code === "SYN007") return syn007Actions(document, diagnostic);
   if (code === "SYN009") return syn009Actions(document, diagnostic);
   if (code === "SYN010") return syn010Actions(document, diagnostic);
+  if (code === "SYN011") return syn011Actions(document, diagnostic);
   if (code === "SYN006" || code === "RUL008") return prefixRenameActions(document, diagnostic, code);
   return lineFixerActions(document, diagnostic);
 }

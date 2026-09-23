@@ -14,6 +14,8 @@ const DEFAULT_RELATIVE_CANDIDATES = [
   path.join("docs", "banco-senior", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", "catalog.json"),
+  // Demo / F5 / marketplace prints (repo público só versiona o exemplo)
+  path.join("docs", "banco-senior-base", "catalog.example.json"),
 ];
 
 function fileExists(p: string): boolean {

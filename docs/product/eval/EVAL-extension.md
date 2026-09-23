@@ -15,7 +15,7 @@ Guia F5: [`fixtures/README.md`](../../../packages/lsp-workbench/fixtures/README.
 | `smoke-fun-pdr003.lsp` | FUN007–009 |
 | `smoke-sem.lsp` | SEM001–003 |
 | `smoke-sem004.lsp` | SEM004 |
-| `smoke-sql.lsp` | SQL001–009 |
+| `smoke-sql.lsp` | SQL001–011 |
 | `smoke-ger.lsp` / `smoke-ger-pre.lsp` | GER001–004 |
 | `format-if.lsp` | Format Document (golden manual) |
 

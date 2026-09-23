@@ -1,4 +1,4 @@
-@ smoke-sql — SQL001..SQL009 @
+@ smoke-sql — SQL001..SQL011 @
 Definir Alfa vaSql;
 Definir Numero vnId;
 Definir Numero vnH;
@@ -8,6 +8,8 @@ Definir Alfa vaOrfao;
 Definir Alfa vaJoin;
 Definir Cursor Cur_Simples;
 Definir Alfa vaCompleto;
+Definir Alfa vaSenior;
+Definir Alfa vaAgg;
 
 @ SQL001: concat sem :bind — QF → :vnId @
 vaSql = "SELECT * FROM E120PED WHERE NUMPED = " + vnId;
@@ -44,3 +46,11 @@ SQL_AbrirCursor(Cur_Simples);
 @ (SQL002/003/005 só depois de corrigir a API — não misturar QFs dos dois modos) @
 SQL_Criar(vaCompleto);
 vaCompleto.AbrirCursor();
+
+@ SQL010: TO_DATE em Senior 2 — QF → STRTODATE @
+SQL_Criar(vaSenior);
+SQL_DefinirComando(vaSenior, "SELECT * FROM E070FIL WHERE DATALT = TO_DATE('01/01/2024')");
+
+@ SQL011: COUNT no SELECT em Senior 2 — QF → Usar* nativo @
+SQL_Criar(vaAgg);
+SQL_DefinirComando(vaAgg, "SELECT COUNT(CODIGO) FROM E070FIL");

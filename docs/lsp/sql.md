@@ -210,6 +210,14 @@ Funcao exemploPlaceholdersSQL(); {
 
 A linguagem Senior SQL 2 pode ser utilizada nas regras dos geradores de informação (gerador de relatórios e consultas), regras de cálculo (regras avulsas executadas diretamente pelo sistema) e importador/exportador de arquivos texto. Esta linguagem é um padrão adotado pela Senior para que os comandos SQL possam ser escritos em um formato padrão que permita um melhor aprendizado e uma melhor tradução para os bancos de dados suportados pelos sistemas da Senior.
 
+**Fontes oficiais (Tecnologia 5.10.3):**
+
+- [Funções do dialeto SQL Senior 2](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm) — catálogo abaixo
+- [SQL Senior 2 dentro das regras](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/ling_lsp_seniorsql2nasregras.htm) — ativação, restrições, `__inserir`
+- [Operadores](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/operadores.htm)
+
+Estas funções entram **dentro da string do comando SQL** (Senior 2). Não confundir com a API LSP `SQL_*` / `ExecSQL*` deste arquivo. Com SQL nativo (`SQL_UsarSQLSenior2(cursor, 0)`), use o dialeto do banco, não este catálogo.
+
 #### Ativação da Linguagem
 
 - **Gerador de Relatórios**: Menu principal do gerador > Diversos > Usar Senior SQL 2.
@@ -217,11 +225,88 @@ A linguagem Senior SQL 2 pode ser utilizada nas regras dos geradores de informa�
 - **Gerador de Consultas**: Tela principal de definição de modelos > Senior SQL 2.
 - **Regras**: Editor de regras > Compilar > Usar Senior SQL 2 ou Ctrl + F12.
 
-#### Restrições
+Cursores criados com `SQL_Criar` **não** herdam a flag global da regra: o dialeto do comando é o definido por `SQL_UsarSQLSenior2` (padrão = Senior 2).
 
-- **Funções de Agregação**: Funções como SUM, COUNT, MAX não podem ser usadas dentro da cláusula SELECT.
-- **Comandos Nativos do Banco de Dados**: Comandos como TO_DATE ou CONVERT devem ser substituídos por comandos da linguagem Senior SQL 2.
-- **JOIN e UNION**: Não têm garantias de funcionamento dentro das regras.
+#### Restrições (regras com Senior SQL 2)
+
+- **Funções de agregação no SELECT**: `SUM`, `COUNT`, `MAX` (e equivalentes) **não** podem ser usadas na cláusula `SELECT` do cursor. Funções do dialeto Senior 2 **podem** aparecer no `WHERE`.
+- **Comandos nativos do banco**: `TO_DATE`, `CONVERT`, etc. devem ser substituídos pelas funções Senior 2 (ex.: `STRTODATE`, `DATETOSTR`).
+- **JOIN e UNION**: sem garantia de funcionamento dentro das regras; preferir SQL nativo + `UsarAbrangencia(0)` + `UsarSQLSenior2(0)` quando precisar (heurística SQL008).
+
+#### Funções do dialeto (catálogo)
+
+##### Usadas em grupos (agregação)
+
+| Nome | Explicação | Exemplo |
+|------|------------|---------|
+| `COUNT` | Contagem de ocorrências não nulas da expressão, ou de registros. | `select count(cod_produto) from produto;` |
+| `MAX` | Maior valor da expressão. | `select max(vlr_unit) from item_pedido;` |
+| `MIN` | Menor valor da expressão. | `select min(vlr_unit) from item_pedido;` |
+| `SUM` | Soma dos valores. | `select sum(vlr_unit) from item_pedido;` |
+| `AVG` | Média simples. | `select avg(vlr_unit) from item_pedido;` |
+
+Em regras com Senior SQL 2, estas agregações **não** vão no `SELECT` do cursor (ver restrições acima). Em outros contextos do gerador/modelo, a doc Senior as lista como funções de grupo.
+
+##### Escalares
+
+| Nome | Explicação | Exemplo / nota |
+|------|------------|----------------|
+| `LENGTH` | Tamanho em caracteres do texto. | `select length('Informática') from R999VER;` |
+| `DATALENGTH` | Tamanho em caracteres, incluindo espaços à esquerda e à direita. | |
+| `TRUNC` | Corta dígitos após a vírgula (reduz escala). | `select trunc(3.566233,2) from R999VER;` |
+| `SUBSTR` | Substring por posição e tamanho. **Posição inicial do 1º caractere = 0.** | `select substr('Oracle SQL',0,6) from R999VER;` |
+| `UPPER` | Texto em maiúsculas. | `Select Upper('blumenau') from R999VER;` |
+| `LOWER` | Texto em minúsculas. | `select Lower('BLUMENAU') from R999VER;` |
+| `IFNULL` | Se a expressão for `NULL`, retorna a segunda; senão a primeira. | |
+| `STRTONUMBER` | Texto → número. | Preferir em vez de conversões nativas. |
+| `NUMBERTOSTR` | Número → texto. | |
+| `STRTODATE` | Texto → data. | Preferir em vez de `TO_DATE` / `CONVERT`. |
+| `DATETOSTR` | Data → texto. | |
+| `FIRSTDAY` | Primeiro dia do mês da data. | |
+| `LASTDAY` | Último dia do mês da data. | |
+| `DAYOF` | Dia da data. | |
+| `MONTHOF` | Mês da data. | |
+| `YEAROF` | Ano da data. | |
+| `TODAY` | Data de hoje. | |
+| `ASCII` | Código ASCII do 1º caractere. | `select ascii('F') from R999VER;` |
+| `CHR` | Caractere cujo código ASCII é o número. | `select chr(244) from R999VER;` |
+| `CASE` | Expressão condicional resultante. | |
+| `DAYTOHOURS` | Dia → horas. | |
+| `DAYTOMINUTES` | Dia → minutos. | |
+| `DAYTOSECONDS` | Dia → segundos. | |
+| `DAYTOMILLISECONDS` | Dia → milissegundos. | |
+| `HOURTOMINUTES` | Horas → minutos. | |
+| `HOURTOSECONDS` | Horas → segundos. | |
+| `HOURTOMILLISECONDS` | Horas → milissegundos. | |
+| `MINUTETOSECONDS` | Minutos → segundos. | |
+| `MINUTETOMILLISECONDS` | Minutos → milissegundos. | |
+| `SECONDTOMILLISECONDS` | Segundos → milissegundos. | |
+| `MOD` | Resto da divisão `m` por `n`. | `select mod(11,3) from R999VER;` |
+| `ADDYEAR` | Soma anos à data. | |
+| `ADDMONTH` | Soma meses à data. | |
+| `ADDDAY` | Soma dias à data. | |
+| `ADDHOUR` | Soma horas à data. | |
+| `ADDMINUTE` | Soma minutos à data. | |
+| `ADDSECOND` | Soma segundos à data. | |
+| `ADDMILLISECOND` | Soma milissegundos à data. | |
+| `DATETIMEDIF` | Diferença entre duas datas (quantidade de dias). | |
+| `SIGN` | `-1` se `n < 0`; `0` se `n = 0`; `1` se `n > 0`. | `select SIGN(-23) from R999VER;` |
+| `SQRT` | Raiz quadrada. | `select SQRT(40) from R999VER;` |
+| `TRIM` | Remove espaços no início e no fim. | |
+| `LTRIM` | Remove espaços no início. | `select Ltrim('Informática') from R999VER;` |
+| `RTRIM` | Remove espaços no fim. | `select Rtrim('Informática') from R999VER;` |
+| `REPLACE` | Substitui ocorrência de texto. | `select replace('Cidade de Blumenau','Cidade de','Informática') from R999VER;` |
+| `ROUND` | Arredonda `n` para `m` casas (`m` omitido → inteiro). | `select round(3.566233,2) from R999VER;` |
+| `POWER` | `m` elevado a `n`. | `select power(5,2) from R999VER;` |
+
+##### Formato
+
+| Nome | Explicação | Exemplo |
+|------|------------|---------|
+| `ALIAS` | Títulos para as colunas. | |
+| Concatenação `\|\|` | Concatena duas colunas/expressões texto. | `select Cod_Produto\|\|' - '\|\|Dsc_produto from produto;` |
+
+O runtime traduz Senior SQL 2 para SQL nativo (`SeniorSql_2ToNativeSql` / RtSql). Comentários em comando SQL seguem a sintaxe aceita pelo dialeto Senior 2.
 
 ### Exemplos
 

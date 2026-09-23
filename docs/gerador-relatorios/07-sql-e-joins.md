@@ -52,7 +52,7 @@ Nomes de seção no primeiro parâmetro devem bater com o **Nome** da Detalhe no
 
 ## Senior SQL 2
 
-Várias funções de cláusula usam **sempre** SQL Senior 2, independente da configuração do modelo. Visão geral em [`docs/lsp/sql.md`](../lsp/sql.md).
+Várias funções de cláusula usam **sempre** SQL Senior 2, independente da configuração do modelo. Visão geral, restrições e **catálogo do dialeto** (`IFNULL`, `SUBSTR`, `STRTODATE`, `||`, …) em [`docs/lsp/sql.md`](../lsp/sql.md) (seção SQL Senior 2). Oficial: [funções](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm).
 
 No gerador: menu Diversos → Usar Senior SQL 2 (quando aplicável).
 

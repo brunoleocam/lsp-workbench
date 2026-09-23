@@ -77,3 +77,4 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 ## Docs
 
 - [Senior – tecnologia](https://documentacao.senior.com.br/tecnologia)
+- SQL cursores + dialeto Senior 2: `docs/lsp/sql.md` no monorepo · [funções oficiais](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm)

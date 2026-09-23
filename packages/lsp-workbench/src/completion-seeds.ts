@@ -46,7 +46,7 @@ export function getTruncateCompletionSeeds(): LspCompletionSeed[] {
 }
 
 /** Keywords / tipos estruturais (além do catálogo de funções). */
-function getStructuralSeeds(): LspCompletionSeed[] {
+export function getStructuralSeeds(): LspCompletionSeed[] {
   return [
     {
       label: "Definir",
@@ -146,10 +146,16 @@ export function getLspCompletionSeedsMatching(prefix: string): LspCompletionSeed
   if (!p) return [];
   return getLspCompletionSeeds()
     .filter((s) => s.label.toLowerCase().startsWith(p))
-    .sort((a, b) => {
-      if (a.label.length !== b.label.length) return a.label.length - b.label.length;
-      return a.label.localeCompare(b.label);
-    });
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
+}
+
+/** Comandos / tipos estruturais no prefixo (Definir, Se, Alfa, …) — sem funções do catálogo. */
+export function getStructuralSeedsMatching(prefix: string): LspCompletionSeed[] {
+  const p = prefix.trim().toLowerCase();
+  if (!p) return [];
+  return getStructuralSeeds()
+    .filter((s) => s.label.toLowerCase().startsWith(p))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
 }
 
 export function completionLabels(): string[] {

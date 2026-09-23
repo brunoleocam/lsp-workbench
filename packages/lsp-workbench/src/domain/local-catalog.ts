@@ -90,7 +90,9 @@ export function columnsForTable(
   const cols = p
     ? t.columns.filter((c) => c.name.toUpperCase().startsWith(p))
     : t.columns;
-  return cols.slice(0, limit);
+  return [...cols]
+    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }))
+    .slice(0, limit);
 }
 
 /** Export para testes — limpa cache. */

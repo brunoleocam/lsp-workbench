@@ -16,3 +16,6 @@ test/**
 **/*.test.js
 **/*.tsbuildinfo
 PUBLISH.md
+media/README.md
+media/exemplos/**
+media/08-validation-*.png

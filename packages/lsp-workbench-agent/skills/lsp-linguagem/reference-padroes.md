@@ -21,6 +21,17 @@ Cur_Consulta.FecharCursor;
 
 Placeholders LSP em SQL: `:vnCodigo`, `:vaNome` (conforme tipo).
 
+### SQL Senior 2 (dialeto dentro da string)
+
+Com Senior 2 ativo (padrão do cursor `SQL_Criar`), use funções do dialeto — não nativas do banco:
+
+- Datas/números/texto: `STRTODATE`, `DATETOSTR`, `IFNULL`, `SUBSTR` (**índice inicia em 0**), `LENGTH`, `UPPER`/`LOWER`, `||` para concatenar colunas
+- Não usar `TO_DATE` / `CONVERT` no comando
+- Agregação (`SUM`/`COUNT`/…) **não** no `SELECT` do cursor em regra Senior 2
+- JOIN/subquery → SQL nativo: `SQL_UsarAbrangencia(h, 0)` + `SQL_UsarSQLSenior2(h, 0)` antes de `DefinirComando`
+
+Catálogo completo: `docs/lsp/sql.md` (seção SQL Senior 2). Oficial: [funções](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm).
+
 ### ExecSQLEx
 
 ```lsp

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { getLspCompletionSeedsMatching } from "./completion-seeds";
+import { getStructuralSeedsMatching } from "./completion-seeds";
+import { completionSortText } from "./completion-rank";
 import { functionsMatchingPrefix } from "./function-catalog";
 import { completeMembersAt } from "./application/complete-members";
 import { functionsMatchingPrefixForSystem } from "./domain/system-catalog";
@@ -11,6 +12,10 @@ import {
 } from "./rewrite-options";
 import { buildDefinirInsertEdit, definirStatement, tipoFromPrefix } from "./definir-insert";
 import { analyzeLsp } from "./diagnostics";
+import {
+  filterSenior2Completions,
+  isSqlStringCompletionContext,
+} from "./sql-native-heuristics";
 import {
   applyFun003Fix,
   applyFun004Fix,
@@ -42,6 +47,7 @@ import {
   applySyn007CloseComment,
   applySyn007CloseCommentLine,
   applySyn010DefinirStub,
+  applySyn011ToBlockComment,
   applySyn009BreakString,
   applySyn004InicioFim,
   syn004PairLineEdits,
@@ -265,7 +271,7 @@ function definirCompletion(
     `Insere \`${definirStatement(word)}\` no bloco de declarações.`
   );
   item.filterText = `${word} Definir`;
-  item.sortText = "00_Definir";
+  item.sortText = completionSortText("other", definirStatement(word), word);
   item.preselect = true;
   item.range = wordRange;
   item.insertText = word;
@@ -766,7 +772,7 @@ function quickFixCompletions(
       continue;
     }
 
-    if (hit.id === "SQL008") {
+    if (hit.id === "SQL008" || hit.id === "SQL011") {
       const info = findSqlHandleCall(line.text, "SQL_DefinirComando");
       if (info) {
         const missing = sql008MissingFlags(document.getText(), info.handle, line.lineNumber);
@@ -774,10 +780,12 @@ function quickFixCompletions(
         if (insert) {
           pushQfEditsOnly(
             `QF: UsarAbrangencia/UsarSQLSenior2(${info.handle}, 0)`,
-            "LSP · SQL008 — SQL nativo (JOIN/subquery)",
-            "00_QF_SQL008",
+            hit.id === "SQL011"
+              ? "LSP · SQL011 — agregação no SELECT exige SQL nativo"
+              : "LSP · SQL008 — SQL nativo (JOIN/subquery)",
+            hit.id === "SQL011" ? "00_QF_SQL011" : "00_QF_SQL008",
             [vscode.TextEdit.insert(new vscode.Position(line.lineNumber, 0), insert)],
-            "SQL_UsarSQLSenior2 SQL008"
+            "SQL_UsarSQLSenior2 SQL008 SQL011"
           );
         }
       }
@@ -839,6 +847,20 @@ function quickFixCompletions(
           "00_QF_SYN007",
           [],
           true
+        );
+      }
+      continue;
+    }
+
+    if (hit.id === "SYN011") {
+      const next = applySyn011ToBlockComment(document.getText(), line.lineNumber);
+      if (next) {
+        pushWholeDocFix(
+          "QF: Converter @ multi-linha em /* … */",
+          "LSP · SYN011 — @ só na mesma linha",
+          next,
+          "00_QF_SYN011",
+          "comentario SYN011"
         );
       }
       continue;
@@ -1060,28 +1082,33 @@ function functionCompletionItems(
   system: string = ""
 ): vscode.CompletionItem[] {
   if (!word || word.length < 1) return [];
-  // Catálogo de funções (prioridade) + seeds estruturais (Definir, Se, …)
-  const fromCatalog = system
-    ? functionsMatchingPrefixForSystem(word, system)
-    : functionsMatchingPrefix(word);
-  const catalogLabels = new Set(fromCatalog.map((e) => e.label.toLowerCase()));
-  const extras = getLspCompletionSeedsMatching(word).filter(
-    (s) => !catalogLabels.has(s.label.toLowerCase())
-  );
+  const fromCatalog = (
+    system ? functionsMatchingPrefixForSystem(word, system) : functionsMatchingPrefix(word)
+  ).filter((e) => e.kind !== "keyword");
 
   const items: vscode.CompletionItem[] = [];
-  let i = 0;
-  for (const seed of [
-    ...fromCatalog.map((e) => ({
-      label: e.label,
-      insertText: e.insertText,
-      kind: (e.kind === "keyword" ? "keyword" : "function") as "keyword" | "function" | "type",
-      detail: e.detail,
-      documentation: e.documentation,
-      isSnippet: e.isSnippet,
-    })),
-    ...extras,
-  ]) {
+  for (const e of fromCatalog) {
+    const item = new vscode.CompletionItem(e.label, toKind(e.kind === "keyword" ? "keyword" : "function"));
+    item.detail = `LSP · ${e.detail}`;
+    item.documentation = new vscode.MarkdownString(e.documentation ?? e.detail);
+    item.filterText = e.label;
+    item.range = wordRange;
+    if (e.isSnippet) {
+      item.insertText = new vscode.SnippetString(e.insertText);
+    } else {
+      item.insertText = e.insertText;
+    }
+    item.sortText = completionSortText("function", e.label, word);
+    items.push(item);
+  }
+  return items;
+}
+
+/** Comandos / keywords / tipos (Definir, Se, Alfa, …) no prefixo digitado. */
+function commandCompletionItems(word: string, wordRange: vscode.Range): vscode.CompletionItem[] {
+  if (!word || word.length < 1) return [];
+  const items: vscode.CompletionItem[] = [];
+  for (const seed of getStructuralSeedsMatching(word)) {
     const item = new vscode.CompletionItem(seed.label, toKind(seed.kind));
     item.detail = `LSP · ${seed.detail}`;
     item.documentation = new vscode.MarkdownString(seed.documentation ?? seed.detail);
@@ -1092,9 +1119,7 @@ function functionCompletionItems(
     } else {
       item.insertText = seed.insertText;
     }
-    // Prefixo curto → ordenar por tamanho do label (Mensagem antes de …mais longos)
-    item.sortText = `1_${String(i).padStart(3, "0")}_${seed.label}`;
-    i++;
+    item.sortText = completionSortText("command", seed.label, word);
     items.push(item);
   }
   return items;
@@ -1109,21 +1134,6 @@ function customSymbolCompletions(
 ): vscode.CompletionItem[] {
   const p = word.toLowerCase();
   const items: vscode.CompletionItem[] = [];
-
-  for (const fn of functions) {
-    if (p && !fn.name.toLowerCase().startsWith(p)) continue;
-    const item = new vscode.CompletionItem(fn.name, vscode.CompletionItemKind.Function);
-    const remote = fn.uri && fn.uri !== currentUri;
-    item.detail = remote
-      ? `LSP · customizada · ${fn.fileName ?? "projeto"}`
-      : "LSP · customizada · local";
-    item.documentation = new vscode.MarkdownString(markdownForFunction(fn));
-    item.filterText = fn.name;
-    item.range = wordRange;
-    item.insertText = new vscode.SnippetString(callSnippetFor(fn));
-    item.sortText = `0_fn_${fn.name}`;
-    items.push(item);
-  }
 
   const seenVar = new Set<string>();
   for (const v of variables) {
@@ -1142,7 +1152,22 @@ function customSymbolCompletions(
     item.filterText = v.name;
     item.range = wordRange;
     item.insertText = v.name;
-    item.sortText = `0_var_${v.name}`;
+    item.sortText = completionSortText("variable", v.name, word);
+    items.push(item);
+  }
+
+  for (const fn of functions) {
+    if (p && !fn.name.toLowerCase().startsWith(p)) continue;
+    const item = new vscode.CompletionItem(fn.name, vscode.CompletionItemKind.Function);
+    const remote = fn.uri && fn.uri !== currentUri;
+    item.detail = remote
+      ? `LSP · customizada · ${fn.fileName ?? "projeto"}`
+      : "LSP · customizada · local";
+    item.documentation = new vscode.MarkdownString(markdownForFunction(fn));
+    item.filterText = fn.name;
+    item.range = wordRange;
+    item.insertText = new vscode.SnippetString(callSnippetFor(fn));
+    item.sortText = completionSortText("function", fn.name, word);
     items.push(item);
   }
 
@@ -1169,7 +1194,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
 
       const memberSuggestions = completeMembersAt(document.getText(), linePrefix);
       if (memberSuggestions.length) {
-        const memberItems = memberSuggestions.map((m, i) => {
+        const memberItems = memberSuggestions.map((m) => {
           const kind =
             m.kind === "method"
               ? vscode.CompletionItemKind.Method
@@ -1177,7 +1202,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
           const item = new vscode.CompletionItem(m.name, kind);
           item.detail = m.detail;
           item.documentation = new vscode.MarkdownString(m.documentation);
-          item.sortText = `0${String(i).padStart(2, "0")}`;
+          item.sortText = m.name.toLowerCase();
           if (m.isSnippet) {
             item.insertText = new vscode.SnippetString(m.insertText);
           } else {
@@ -1199,6 +1224,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         system = "";
       }
       const fnItems = functionCompletionItems(word, wordRange, system);
+      const cmdItems = commandCompletionItems(word, wordRange);
 
       let customItems: vscode.CompletionItem[] = [];
       try {
@@ -1238,10 +1264,60 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         customItems = [];
       }
 
+      // QFs no fim da lista (não escondem vars/funções/comandos do prefixo).
+      for (const q of qfItems) {
+        const label = typeof q.label === "string" ? q.label : q.label.label;
+        q.sortText = completionSortText("qf", label, word || "_");
+      }
+
       if (quotes % 2 === 1) {
         const mask = maskCompletion(line, position);
         if (mask) {
-          return new vscode.CompletionList([...qfItems, ...mask.items], false);
+          return new vscode.CompletionList([...mask.items, ...qfItems], false);
+        }
+        // Dialeto SQL Senior 2 dentro de literais (DefinirComando / .SQL / SELECT…)
+        if (isSqlStringCompletionContext(line.text, linePrefix)) {
+          const sqlPrefix = (linePrefix.match(/[A-Za-z_][A-Za-z0-9_]*$/) || [""])[0];
+          const sqlRange =
+            sqlPrefix.length > 0
+              ? new vscode.Range(
+                  position.line,
+                  position.character - sqlPrefix.length,
+                  position.line,
+                  position.character
+                )
+              : new vscode.Range(position, position);
+          const sqlItems = filterSenior2Completions(sqlPrefix).map((f, i) => {
+            const item = new vscode.CompletionItem(
+              f.name,
+              f.category === "aggregate"
+                ? vscode.CompletionItemKind.Keyword
+                : vscode.CompletionItemKind.Function
+            );
+            item.detail = f.detail;
+            if (f.documentation) {
+              item.documentation = new vscode.MarkdownString(f.documentation);
+            }
+            item.insertText = new vscode.SnippetString(f.insertText);
+            item.range = sqlRange;
+            item.sortText = `0${String(i).padStart(3, "0")}_${f.name}`;
+            item.filterText = `${sqlPrefix} ${f.name} Senior2 SQL`;
+            return item;
+          });
+          // Operador de concatenação Senior 2
+          if (!sqlPrefix || "||".startsWith(sqlPrefix)) {
+            const concat = new vscode.CompletionItem(
+              "||",
+              vscode.CompletionItemKind.Operator
+            );
+            concat.detail = "SQL Senior 2 · concatenação de texto";
+            concat.insertText = "||";
+            concat.range = sqlRange;
+            concat.sortText = "0999_concat";
+            concat.filterText = `${sqlPrefix} || concat Senior2`;
+            sqlItems.push(concat);
+          }
+          return new vscode.CompletionList([...sqlItems, ...qfItems], false);
         }
         // Só QFs da linha — incomplete:false evita o cliente refiltrar e sumir o SYN009.
         if (lineHasAlerts) {
@@ -1253,7 +1329,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       if (/^Arredond/i.test(word)) {
         const rewrite = rewriteItems(document, line, word, "arredondar");
         return new vscode.CompletionList(
-          [...qfItems, ...rewrite.items, ...customItems, ...fnItems],
+          [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
           false
         );
       }
@@ -1261,15 +1337,9 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       if (/^Truncar/i.test(word)) {
         const rewrite = rewriteItems(document, line, word, "truncar");
         return new vscode.CompletionList(
-          [...qfItems, ...rewrite.items, ...customItems, ...fnItems],
+          [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
           false
         );
-      }
-
-      // Com alerta na linha: só QFs (SEM001+SYN009 juntos). Não misturar Definir duplicado /
-      // catálogo — o suggest priorizava Keyword "Definir" e escondia o quebrar literal.
-      if (lineHasAlerts) {
-        return new vscode.CompletionList(qfItems, false);
       }
 
       // Após "E012FAM." — somente campos dessa tabela (sem builtins/funções/variáveis).
@@ -1280,7 +1350,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
           item.insertText = t.insertText;
           item.detail = t.detail;
           if (t.documentation) item.documentation = t.documentation;
-          item.sortText = `0${String(i).padStart(3, "0")}`;
+          item.sortText = completionSortText("other", t.label, word);
           const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
           const suf = m?.[1]?.length ?? 0;
           item.range = new vscode.Range(
@@ -1296,12 +1366,12 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
 
       const defItem = definirCompletion(document, position, word, wordRange);
       const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
-      const catalogColItems = catalogColRaw.map((t, i) => {
+      const catalogColItems = catalogColRaw.map((t) => {
         const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
         item.insertText = t.insertText;
         item.detail = t.detail;
         if (t.documentation) item.documentation = t.documentation;
-        item.sortText = `1${String(i).padStart(3, "0")}`;
+        item.sortText = completionSortText("other", t.label, word);
         if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
           const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
           const suf = m?.[1]?.length ?? 0;
@@ -1318,37 +1388,43 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       });
       const catalogTableItems =
         word.length >= 1 && /^[A-Za-z_]/.test(word)
-          ? localTableCompletions(word).map((t, i) => {
+          ? localTableCompletions(word).map((t) => {
               const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
               item.detail = t.detail;
               if (t.documentation) {
                 item.documentation = t.documentation;
               }
               item.range = wordRange;
-              item.sortText = `2${String(i).padStart(3, "0")}`;
+              item.sortText = completionSortText("other", t.label, word);
               return item;
             })
           : [];
+
+      // Ordem via sortText: match exato → vars → funções → comandos → outros → QFs.
+      // Com alerta na linha (SYN010 em prefixo parcial etc.) NÃO esconder o catálogo.
       const base = [
-        ...qfItems,
-        ...(defItem ? [defItem] : []),
         ...customItems,
         ...fnItems,
+        ...cmdItems,
+        ...(defItem ? [defItem] : []),
         ...catalogColItems,
         ...catalogTableItems,
+        ...qfItems,
       ];
 
       if (
         fnItems.length ||
+        cmdItems.length ||
         defItem ||
         customItems.length ||
         catalogTableItems.length ||
-        catalogColItems.length
+        catalogColItems.length ||
+        qfItems.length
       ) {
         return new vscode.CompletionList(base, false);
       }
 
-      return new vscode.CompletionList(qfItems, false);
+      return new vscode.CompletionList([], false);
     },
   };
 }

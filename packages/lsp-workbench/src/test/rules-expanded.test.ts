@@ -23,6 +23,7 @@ import {
   applySem002CompleteFix,
   applySem003CompleteFix,
   applySql001Fix,
+  applySql010Fix,
   findSem002FileOpen,
   findSem003Cursor,
   findSem004InsertAfterLine,
@@ -43,6 +44,7 @@ import {
   applySyn008RemoveExtraBrace,
   applySyn009BreakString,
   applySyn010DefinirStub,
+  applySyn011ToBlockComment,
   isSyn010OrphanStatement,
   findSql002Criar,
   findSql003Abrir,
@@ -69,6 +71,9 @@ import {
 import {
   sqlNeedsNativeDialect,
   resolveSqlText,
+  findNativeSqlFunctions,
+  filterSenior2Completions,
+  hasAggregateInSelect,
 } from "../sql-native-heuristics";
 import {
   addSuppression,
@@ -204,6 +209,9 @@ describe("quick-fixes", () => {
     assert.ok(sqlNeedsNativeDialect("SELECT a FROM t INNER JOIN u ON 1=1"));
     assert.ok(sqlNeedsNativeDialect("SELECT (SELECT 1 FROM DUAL) x FROM t"));
     assert.equal(sqlNeedsNativeDialect("SELECT 1 FROM DUAL"), false);
+    assert.ok(findNativeSqlFunctions("SELECT TO_DATE('x') FROM T").length >= 1);
+    assert.ok(hasAggregateInSelect("SELECT COUNT(1) FROM T"));
+    assert.ok(filterSenior2Completions("IFN").some((f) => f.name === "IFNULL"));
     assert.equal(
       sql008NativeInsert('SQL_DefinirComando(vaJoin, "SELECT 1");'),
       "SQL_UsarAbrangencia(vaJoin, 0);\nSQL_UsarSQLSenior2(vaJoin, 0);\n"
@@ -396,6 +404,18 @@ describe("analyzeLsp expanded", () => {
     assert.ok(hits.some((h) => h.id === "RUL006"));
   });
 
+  it("RUL006 não alerta ++ em Para (incremento)", () => {
+    const hits = analyzeLsp(
+      "Definir Numero vnCodigo;\nPara (vnCodigo = 1; vnCodigo <= 3; vnCodigo++) {\n  vnCodigo = vnCodigo;\n}\n"
+    );
+    assert.equal(hits.some((h) => h.id === "RUL006"), false);
+  });
+
+  it("RUL006 não alerta Se/Enquanto com + aritmético", () => {
+    const hits = analyzeLsp("Se (vnA + vnB > 0) {\n}\n");
+    assert.equal(hits.some((h) => h.id === "RUL006"), false);
+  });
+
   it("detects RUL011 percent", () => {
     const hits = analyzeLsp("vnR = vnA % vnB;\n");
     assert.ok(hits.some((h) => h.id === "RUL011"));
@@ -551,6 +571,22 @@ describe("analyzeLsp expanded", () => {
     assert.equal(applySyn010DefinirStub("numero;"), "Definir Numero vnValor;");
   });
 
+  it("SYN011 alerta @ multi-linha e QF converte para bloco", () => {
+    const src = "@ banner\n  texto\n  fim @\nDefinir Numero vnX;\n";
+    const hits = analyzeLsp(src);
+    assert.ok(hits.some((h) => h.id === "SYN011" && h.line === 0));
+    const next = applySyn011ToBlockComment(src, 0);
+    assert.ok(next);
+    assert.match(next!, /\/\*/);
+    assert.match(next!, /\*\//);
+    assert.equal(analyzeLsp(next!).some((h) => h.id === "SYN011"), false);
+  });
+
+  it("SYN011 não alerta @ de uma linha seguido de código", () => {
+    const hits = analyzeLsp("@ so uma linha\nDefinir Numero vnX;\n");
+    assert.equal(hits.some((h) => h.id === "SYN011"), false);
+  });
+
   it("detects SEM004 list field without AdicionarCampo", () => {
     const hits = analyzeLsp(
       "Definir Lista vlX;\nvlX.DefinirCampos();\nvlX.EfetivarCampos();\nvlX.Codigo = 1;\n"
@@ -677,5 +713,34 @@ describe("analyzeLsp expanded", () => {
     );
     assert.ok(hits.some((x) => x.id === "SQL009"));
     assert.ok(hits.filter((x) => x.id === "SQL009").length >= 2);
+  });
+
+  it("SQL010 TO_DATE em Senior 2", () => {
+    const hits = analyzeLsp(
+      'Definir Alfa vaCur;\nSQL_Criar(vaCur);\nSQL_DefinirComando(vaCur, "SELECT * FROM T WHERE D = TO_DATE(\'01/01/2024\')");\n'
+    );
+    assert.ok(hits.some((x) => x.id === "SQL010"));
+  });
+
+  it("SQL010 some com SQL nativo (UsarSQLSenior2 0)", () => {
+    const hits = analyzeLsp(
+      'Definir Alfa vaCur;\nSQL_Criar(vaCur);\nSQL_UsarAbrangencia(vaCur, 0);\nSQL_UsarSQLSenior2(vaCur, 0);\nSQL_DefinirComando(vaCur, "SELECT TO_DATE(\'x\') FROM T");\nSQL_FecharCursor(vaCur);\nSQL_Destruir(vaCur);\n'
+    );
+    assert.equal(hits.some((x) => x.id === "SQL010"), false);
+  });
+
+  it("SQL011 COUNT no SELECT em Senior 2", () => {
+    const hits = analyzeLsp(
+      'Definir Alfa vaCur;\nSQL_Criar(vaCur);\nSQL_DefinirComando(vaCur, "SELECT COUNT(ID) FROM T");\n'
+    );
+    assert.ok(hits.some((x) => x.id === "SQL011"));
+  });
+
+  it("SQL010 QF TO_DATE → STRTODATE", () => {
+    assert.ok(
+      applySql010Fix(
+        'SQL_DefinirComando(vaCur, "SELECT TO_DATE(\'x\') FROM T");'
+      ).includes("STRTODATE")
+    );
   });
 });

@@ -1,5 +1,8 @@
 /** Transformações puras usadas por Quick Fix (testáveis sem vscode). */
 import { OUT_PARAM_FUNCS, RESERVED_WORDS } from "./rule-catalog";
+import { applySql010Fix } from "./sql-senior2-functions";
+
+export { applySql010Fix } from "./sql-senior2-functions";
 
 export function applyRul007Fix(line: string): string {
   return line
@@ -308,6 +311,8 @@ export const SUPPRESSIBLE_RULE_IDS = new Set([
   "RUL010",
   "SYN009",
   "SQL001",
+  "SQL010",
+  "SQL011",
   "FUN009",
 ]);
 
@@ -324,6 +329,7 @@ export const NEVER_SUPPRESS_RULE_IDS = new Set([
   "SYN007",
   "SYN008",
   "SYN010",
+  "SYN011",
 ]);
 
 export function isSuppressible(ruleId: string): boolean {
@@ -1263,6 +1269,54 @@ export function applySyn005MoveDefinir(source: string, lineNumber: number): stri
   return next === source.replace(/\r\n/g, "\n") ? null : next;
 }
 
+/**
+ * SYN011: converte bloco @ multi-linha em comentario de bloco slash-star.
+ * `openLine` = linha do diagnóstico (abertura).
+ */
+export function applySyn011ToBlockComment(
+  source: string,
+  openLine: number
+): string | null {
+  const useCrlf = /\r\n/.test(source);
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  if (openLine < 0 || openLine >= lines.length) return null;
+
+  let end = -1;
+  for (let i = openLine + 1; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trimEnd();
+    if (
+      /@\s*$/.test(trimmed) &&
+      !/^\s*@/.test(line) &&
+      !/;/.test(trimmed.replace(/@\s*$/, ""))
+    ) {
+      const without = trimmed.replace(/@\s*$/, "").trim();
+      if (without.length > 0) {
+        end = i;
+        break;
+      }
+    }
+    const probe = line
+      .replace(/@[^@]*@/g, " ")
+      .replace(/@[^@\n]*$/g, "")
+      .trim();
+    if (/^(Definir|Se\b|Senao|Enquanto|Para\b|Funcao|Mensagem|Cancel)\b/i.test(probe)) {
+      return null;
+    }
+  }
+  if (end < 0) return null;
+
+  const indent = lines[openLine].match(/^\s*/)?.[0] ?? "";
+  const body: string[] = [];
+  body.push(lines[openLine].replace(/^\s*@\s?/, ""));
+  for (let i = openLine + 1; i < end; i++) body.push(lines[i]);
+  body.push(lines[end].replace(/\s*@\s*$/, ""));
+
+  const block = [`${indent}/*`, ...body, `${indent}*/`];
+  const next = [...lines.slice(0, openLine), ...block, ...lines.slice(end + 1)].join("\n");
+  return useCrlf ? next.replace(/\n/g, "\r\n") : next;
+}
+
 /** SYN007: fecha comentario de bloco na linha do /* (preferido para completion). */
 export function applySyn007CloseCommentLine(line: string): string {
   if (!/\/\*/.test(line) || /\*\//.test(line)) return line;
@@ -1439,6 +1493,13 @@ export const LINE_FIXERS: Array<{
     title: "Concat SQL → placeholder :variavel",
     apply: applySql001Fix,
     tokenRe: /\+/,
+  },
+  {
+    id: "SQL010",
+    title: "Função nativa → dialeto SQL Senior 2",
+    apply: applySql010Fix,
+    tokenRe:
+      /\b(?:TO_DATE|TO_CHAR|CONVERT|NVL|ISNULL|COALESCE|SYSDATE|GETDATE|SUBSTRING|LEN|DECODE)\b/i,
   },
   {
     id: "SYN001",

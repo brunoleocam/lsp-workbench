@@ -10,7 +10,7 @@ alwaysApply: false
 - Prefixos: va (Alfa), vn (Numero), vd (Data), vl (Lista), Cur_ (Cursor).
 
 ## Terminadores e estrutura
-- Ponto e vírgula `;` no final de cada comando. Case insensitive. Comentários: `@ linha @` ou `/* */`. Identação: 2 espaços. **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
+- Ponto e vírgula `;` no final de cada comando. Case insensitive. Comentários: `@ linha @` ou `/* */` (`@` não fecha noutra linha — SYN011). Identação: 2 espaços. **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
 
 ## Múltiplas condições em Se/Enquanto
 Quando houver mais de uma condição (`e`/`ou`), **cada condição entre parênteses** — senão não compila.

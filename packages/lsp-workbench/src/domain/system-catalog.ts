@@ -58,5 +58,8 @@ export function functionsMatchingPrefixForSystem(
   const p = prefix.toLowerCase();
   const cat = catalogForSystem(system);
   if (!p) return cat.slice(0, limit);
-  return cat.filter((e) => e.label.toLowerCase().startsWith(p)).slice(0, limit);
+  return cat
+    .filter((e) => e.label.toLowerCase().startsWith(p))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }))
+    .slice(0, limit);
 }

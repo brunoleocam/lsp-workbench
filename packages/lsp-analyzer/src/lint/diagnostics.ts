@@ -15,6 +15,10 @@ import {
   resolveSqlText,
   sqlNeedsNativeDialect,
 } from "./sql-native-heuristics";
+import {
+  findNativeSqlFunctions,
+  hasAggregateInSelect,
+} from "./sql-senior2-functions";
 import { parseFileSymbols } from "./document-symbols";
 import { findCustomCalls, localEligibleNames } from "./symbol-scope";
 import { collectGerDiagnostics } from "./ger-diagnostics";
@@ -80,6 +84,70 @@ function stripStringsAndComments(line: string): string {
   return s;
 }
 
+/** Remove pares `@…@` e strings; `@` restante = comentário de linha sem fechar. */
+function stripAtPairsAndStrings(line: string): string {
+  let s = line.replace(/"(?:\\.|[^"\\])*"/g, '""');
+  let prev = "";
+  while (s !== prev) {
+    prev = s;
+    s = s.replace(/@[^@\n]*@/g, " ");
+  }
+  return s;
+}
+
+/** `@` no início sem fechar na mesma linha (válido sozinho = até EOL). */
+function isAtLineOpenOnly(line: string): boolean {
+  return /^\s*@/.test(stripAtPairsAndStrings(line));
+}
+
+/**
+ * Trecho “código LSP” (não continuação de banner `@` multi-linha).
+ * Usado para abandonar openAt quando o `@` era só comentário de uma linha.
+ */
+function looksLikeLspCodeLine(line: string): boolean {
+  let code = stripAtPairsAndStrings(line);
+  code = code.replace(/@[^@\n]*$/g, "").trim();
+  if (!code) return false;
+  return (
+    /^(Definir|Se\b|Senao|Enquanto|Para\b|Funcao|Mensagem|Cancel)\b/i.test(code) ||
+    /^(Inicio|FimSe|FimEnquanto)\b/i.test(code) ||
+    /^Fim\s*;/i.test(code) ||
+    /^(vn|va|vd|vl|Cur_)/i.test(code) ||
+    /^[A-Za-z_]\w*\s*=/.test(code) ||
+    /^[A-Za-z_]\w*\s*\(/.test(code) ||
+    /^[A-Za-z_]\w*\./.test(code) ||
+    /[{};]$/.test(code)
+  );
+}
+
+/**
+ * Fechamento de `@` em outra linha (anti-padrão: `@ …` / `… @`).
+ * Ex.: `  ===== @` — não confundir com `vnX = 1; @ resto`.
+ */
+function isAtMultilineCloser(line: string): boolean {
+  const trimmed = line.trimEnd();
+  if (!/@\s*$/.test(trimmed)) return false;
+  if (/^\s*@/.test(line)) return false;
+  if (/^\s*@[^@]*@\s*$/.test(line)) return false;
+  const withoutClose = trimmed.replace(/@\s*$/, "").trim();
+  if (!withoutClose) return false;
+  if (/;/.test(withoutClose)) return false;
+  if (/[=()]/.test(withoutClose)) return false;
+  if (/^(Definir|Se\b|Senao|Enquanto|Para\b|Funcao|Mensagem|Cancel)\b/i.test(withoutClose)) {
+    return false;
+  }
+  return true;
+}
+
+/** Localiza o fim do bloco `@` multi-linha a partir da linha de abertura (SYN011). */
+export function findSyn011BlockEnd(lines: readonly string[], openLine: number): number {
+  for (let i = openLine + 1; i < lines.length; i++) {
+    if (isAtMultilineCloser(lines[i])) return i;
+    if (looksLikeLspCodeLine(lines[i])) return -1;
+  }
+  return -1;
+}
+
 function push(
   hits: DiagnosticHit[],
   id: string,
@@ -90,6 +158,43 @@ function push(
   endCol?: number
 ): void {
   hits.push({ id, message, line, severity, startCol, endCol });
+}
+
+/** SQL010 (nativos) + SQL011 (agregação no SELECT) em texto SQL Senior 2. */
+function pushSenior2DialectHits(
+  hits: DiagnosticHit[],
+  rawLine: string,
+  lineIdx: number,
+  sqlText: string
+): void {
+  for (const n of findNativeSqlFunctions(sqlText)) {
+    const re = new RegExp(String.raw`\b${n.native}\b`, "i");
+    const tok = findTokenRange(rawLine, re);
+    push(
+      hits,
+      "SQL010",
+      `SQL Senior 2: evite ${n.native} — use ${n.suggestion}.`,
+      lineIdx,
+      "warning",
+      tok?.start,
+      tok?.end
+    );
+  }
+  if (hasAggregateInSelect(sqlText)) {
+    const tok =
+      findTokenRange(rawLine, /\b(?:COUNT|SUM|MAX|MIN|AVG)\b/i) ??
+      findTokenRange(rawLine, /\bSQL_DefinirComando\b/i) ??
+      findTokenRange(rawLine, /\.SQL\b/i);
+    push(
+      hits,
+      "SQL011",
+      "SQL Senior 2: agregação (COUNT/SUM/MAX/…) não pode ir no SELECT do cursor — use SQL nativo (UsarAbrangencia(0)+UsarSQLSenior2(0)) ou mova a agregação.",
+      lineIdx,
+      "warning",
+      tok?.start,
+      tok?.end
+    );
+  }
 }
 
 const BUILTIN_OR_KW =
@@ -160,7 +265,7 @@ export function analyzeLsp(
 
   const SQL_KW = /\b(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|MERGE|WITH)\b/i;
 
-  // SYN007 / SYN008 pré-pass (alerta na linha do problema, não só no topo)
+  // SYN007 / SYN008 / SYN011 pré-pass (alerta na linha do problema, não só no topo)
   // Ignora @ … @ para não contar `*/` dentro de comentário de linha do smoke/docs.
   const full = source.replace(/\r\n/g, "\n");
   {
@@ -178,6 +283,37 @@ export function analyzeLsp(
     if (cDepth > 0) {
       const line = openCommentLine >= 0 ? openCommentLine : 0;
       push(hits, "SYN007", "Comentário de bloco /* sem */ correspondente.", line, "error");
+    }
+  }
+
+  // SYN011 — `@` só na mesma linha; fechamento `@` em outra linha → use /* */
+  {
+    const synLines = full.split("\n");
+    let openAt = -1;
+    for (let i = 0; i < synLines.length; i++) {
+      const line = synLines[i];
+      if (openAt < 0) {
+        if (isAtLineOpenOnly(line)) openAt = i;
+        continue;
+      }
+      if (isAtMultilineCloser(line)) {
+        push(
+          hits,
+          "SYN011",
+          "Comentário @ vale só na mesma linha; use /* … */ para múltiplas linhas.",
+          openAt,
+          "error"
+        );
+        openAt = -1;
+        continue;
+      }
+      if (looksLikeLspCodeLine(line)) {
+        openAt = -1;
+        continue;
+      }
+      if (isAtLineOpenOnly(line)) {
+        openAt = i;
+      }
     }
   }
 
@@ -678,9 +814,22 @@ export function analyzeLsp(
               );
             }
           }
+
+          // SQL010 / SQL011 — dialeto Senior 2 (padrão do cursor)
+          if (sqlText && !sqlSenior2Off.has(h)) {
+            pushSenior2DialectHits(hits, raw, i, sqlText);
+          }
         }
 
         sqlHasComando.add(h);
+      }
+
+      // Cursor simples: .SQL "…" — Senior 2 por padrão
+      {
+        const simpleSql = raw.match(/\b\w+\.SQL\s+"([^"]*)"/i);
+        if (simpleSql?.[1]) {
+          pushSenior2DialectHits(hits, raw, i, simpleSql[1]);
+        }
       }
 
       const abrir = raw.match(/\bSQL_AbrirCursor\s*\(\s*(\w+)\s*\)/i);
@@ -933,18 +1082,23 @@ export function analyzeLsp(
       }
     }
 
-    // RUL006 concat/ops in args (Mensagem e calls)
-    if (/\b[A-Za-z_]\w*\s*\([^)]*\+[^)]*\)/.test(code)) {
-      const tok = findTokenRange(raw, /\+/);
-      push(
-        hits,
-        "RUL006",
-        "Não concatene (+) dentro de argumentos de função — monte em variável antes.",
-        i,
-        "error",
-        tok?.start,
-        tok?.end
-      );
+    // RUL006 concat em args de função (não ++/-- nem Se/Enquanto/Para)
+    {
+      const forConcat = code.replace(/\+\+|--/g, " ");
+      const callWithPlus =
+        /\b(?!(?:Se|Senao|Enquanto|Para)\b)[A-Za-z_]\w*\s*\([^)]*\+[^)]*\)/i;
+      if (callWithPlus.test(forConcat)) {
+        const tok = findTokenRange(raw, /(?<!\+)\+(?!\+)/);
+        push(
+          hits,
+          "RUL006",
+          "Não concatene (+) dentro de argumentos de função — monte em variável antes.",
+          i,
+          "error",
+          tok?.start,
+          tok?.end
+        );
+      }
     }
 
     // RUL009 ExecSQLEx: tratar =1 como sucesso (mesma linha ou logo abaixo)

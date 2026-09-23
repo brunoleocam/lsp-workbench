@@ -60,6 +60,7 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | SYN008 | `{`/`}` desbalanceados | Balancear blocos |
 | SYN009 | Literal muito longo sem `\` | Quebrar ~col 80 com `\` |
 | SYN010 | Identificador/tipo solto | Remover ou `Definir Tipo …` |
+| SYN011 | `@` multi-linha (fechamento noutra linha) | Converter para `/* … */` |
 
 ## Checklist RUL
 
@@ -121,6 +122,8 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | SQL007 | DefinirComando após Criar |
 | SQL008 | JOIN/subquery → nativo (`UsarAbrangencia`/`UsarSQLSenior2`) |
 | SQL009 | não misturar API simples × completa |
+| SQL010 | função nativa (`TO_DATE`/`NVL`/…) → dialeto Senior 2 |
+| SQL011 | agregação no SELECT sob Senior 2 → nativo ou mover |
 
 ## Checklist DEM (se catálogo local existir)
 

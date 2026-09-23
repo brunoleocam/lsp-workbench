@@ -1,4 +1,4 @@
-@ smoke-syn — SYN001..SYN010 (+ RUL008 via SYN006) — todos com QF (Ctrl+. / Ctrl+Espaço) @
+@ smoke-syn — SYN001..SYN011 (+ RUL008 via SYN006) — todos com QF (Ctrl+. / Ctrl+Espaço) @
 @ SYN001: falta ponto-e-virgula — QF → acrescentar ; @
 Definir Numero vnA
 Definir Numero vnB;
@@ -27,5 +27,9 @@ vaLonga = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 Se ((vnB = 1)) {
   vnB = 5;
 }}
+@ SYN011: @ multi-linha (invalido) — QF → bloco slash-star @
+@ banner aberto
+  texto do banner
+  banner fechado @
 @ SYN007: comentario bloco aberto — QF → fechar bloco (deixe por ultimo) @
 /* comentario sem fechar

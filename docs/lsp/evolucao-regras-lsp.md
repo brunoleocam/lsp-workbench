@@ -9,6 +9,20 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-09-23 — Catálogo SQL Senior 2 (dialeto)
+
+- **Contexto:** Doc oficial [funções SQL Senior 2](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm) não estava no pacote; só havia ativação/restrições (página “dentro das regras”).
+- **Texto canônico:**
+  > Dentro de strings SQL com Senior 2: usar dialeto (`IFNULL`, `SUBSTR` com índice 0, `STRTODATE`, `||`, …), não funções nativas (`TO_DATE`). Agregação no SELECT de cursor em regra Senior 2 é proibida. Catálogo em `docs/lsp/sql.md`.
+- **Status:** docs em `docs/lsp/sql.md`; completion em strings SQL; lint SQL010 (nativos) + SQL011 (agregação no SELECT) + QFs.
+
+### 2026-09-23 — SYN011: `@` só na mesma linha
+
+- **Contexto:** Exemplos Marketplace usavam `@ …` / `… @` em várias linhas; TextMate também destacava como bloco (enganoso). Em LSP, `@` é só até o fim da linha (ou `@` de fechamento na mesma linha); multi-linha = `/* */`.
+- **Texto canônico:**
+  > Comentário `@` só na mesma linha. Para várias linhas use `/* … */`. Workbench: SYN011 + QF; TextMate não atravessa linhas.
+- **Status:** exemplos `media/exemplos/` corrigidos; SYN011 + TextMate + docs.
+
 ### 2026-09-21 — SEM001: qualquer variável, não só prefixos
 
 - **Contexto:** Códigos legados usam nomes sem `va`/`vn`/`vd`/`vl`/`Cur_` (ex. `controle`). Prefixo é boa prática (SYN006/RUL008 no Definir), não requisito para detectar uso sem Definir.

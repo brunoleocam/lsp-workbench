@@ -1,56 +1,84 @@
 <br />
 <p align="center">
-  <a href="https://github.com/brunoleocam/lsp-workbench">
-    <img src="https://github.com/brunoleocam/lsp-workbench/raw/main/assets/icon.png" alt="Logo" width="160" height="160">
+  <a href="https://marketplace.visualstudio.com/items?itemName=brunoleocam.lsp-workbench">
+    <img src="assets/icon.png" alt="LSP Workbench" width="128" height="128">
   </a>
 
   <h2 align="center">LSP Workbench</h2>
 
   <p align="center">
-    Suporte à <b>Linguagem Senior de Programação</b> no Cursor e no Visual Studio Code —
-    extensão IDE, Agent e documentação da linguagem.
+    Suporte à <b>Linguagem Senior de Programação (LSP)</b> no Cursor e no Visual Studio Code —
+    extensão IDE, Agent e documentação da linguagem para o ecossistema <b>Senior Sistemas</b> (Sapiens, HCM e afins).
   </p>
 
-  <p align="center" style="display:flex;gap:7px;justify-content:center;align-items:center;">
+  <p align="center">
+    <a href="https://marketplace.visualstudio.com/items?itemName=brunoleocam.lsp-workbench"><img alt="VS Marketplace" src="https://img.shields.io/visual-studio-marketplace/v/brunoleocam.lsp-workbench?label=VS%20Marketplace&logo=visualstudiocode"></a>
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/brunoleocam/lsp-workbench">
+    <img alt="License" src="https://img.shields.io/github/license/brunoleocam/lsp-workbench">
   </p>
 </p>
 
-Remoto: https://github.com/brunoleocam/lsp-workbench
+**Instalar a extensão:** [Marketplace — LSP Workbench](https://marketplace.visualstudio.com/items?itemName=brunoleocam.lsp-workbench) · `ext install brunoleocam.lsp-workbench`
 
-## Status (0.2.0)
+---
 
-| Artefato | Versão |
-|----------|--------|
-| Extensão `packages/lsp-workbench` | **0.2.0** |
-| Analyzer `@lsp-workbench/analyzer` | **0.3.0** |
-| Language Server (opt-in) | **0.2.0** |
-| Agent `packages/lsp-workbench-agent` | PDR-006 |
+## Prévia
 
-Roadmap do motor (PDR-003…007 / ADR-006): **foundation concluída**. Relatórios: PDR-008 + PDR-010 (escopo por pasta). Próximo foco público: Marketplace / catálogos multi-sistema.
+<p align="center">
+  <img src="packages/lsp-workbench/media/01-syntax-highlighting.png" alt="Syntax highlighting" width="720">
+</p>
 
-A extensão cobre o **subconjunto estático** de regras (SYN/RUL/FUN/SEM/SQL + ANL/DEM/GER) em [`docs/product/regras-estaticas-lsp.md`](docs/product/regras-estaticas-lsp.md) — não o manual completo em [`docs/lsp/`](docs/lsp/).
+| Highlight | Autocomplete | Hover |
+|:---------:|:------------:|:-----:|
+| <img src="packages/lsp-workbench/media/01-syntax-highlighting.png" width="260" alt="Highlight"> | <img src="packages/lsp-workbench/media/02-autocomplete.png" width="260" alt="Autocomplete"> | <img src="packages/lsp-workbench/media/03-hover.png" width="260" alt="Hover"> |
 
-## Visão geral
+| Parâmetros | Membros Lista/Cursor | Catálogo de banco |
+|:----------:|:--------------------:|:-----------------:|
+| <img src="packages/lsp-workbench/media/04-signature-help.png" width="260" alt="Signature help"> | <img src="packages/lsp-workbench/media/05-membros-lista.png" width="260" alt="Membros"> | <img src="packages/lsp-workbench/media/06-catalog-autocomplete.png" width="260" alt="Catálogo"> |
 
-- colorização, snippets e semantic tokens para `.lsp` / `.lspt`
-- autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
-- diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
-- formatação e refactors
-- contextos multiarquivo e modo arquivo único
-- **projeto de relatório** multi-arquivo (Gerador Senior) com escopo automático por pasta
-- Agent Cursor alinhado às regras de ouro
+**Diagnósticos** e fluxo de validação + quick fix:
 
-## Extensão IDE
+<p align="center">
+  <img src="packages/lsp-workbench/media/07-diagnostics.png" alt="Diagnósticos" width="720"><br>
+  <img src="packages/lsp-workbench/media/08-validation.gif" alt="Validação e quick fix" width="720">
+</p>
 
-Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
+Guia completo do usuário (settings, atalhos, catálogo): [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md).
 
-- Formatação, diagnostics, QF, completion/hover (~214 builtins)
-- Semantic tokens, Outline, snippets
-- Contextos (`lsp.contexts`) e escopo de símbolos
-- Projeto de relatório: scaffold, GER*, escopo implícito + `contextoExtra`
-- Refactors e SQL embutido opt-in
+---
+
+## O que é este repositório
+
+Monorepo da plataforma:
+
+| Pacote | Função |
+|--------|--------|
+| [`packages/lsp-workbench`](packages/lsp-workbench) | Extensão VS Code / Cursor |
+| [`packages/lsp-analyzer`](packages/lsp-analyzer) | Analyzer / lint compartilhado |
+| [`packages/lsp-language-server`](packages/lsp-language-server) | Language Server (opt-in) |
+| [`packages/lsp-workbench-agent`](packages/lsp-workbench-agent) | Agent Cursor (skills / commands) |
+| [`docs/lsp`](docs/lsp) | Documentação da linguagem |
+| [`docs/gerador-relatorios`](docs/gerador-relatorios) | Modelo mental do Gerador de Relatórios |
+
+Versões atuais: extensão **0.2.1** · analyzer **0.3.x** · LS opt-in. Detalhe de produto: [`docs/product/`](docs/product/).
+
+---
+
+## Extensão IDE (usuário)
+
+Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`**
+
+- Coloração, snippets e semantic tokens
+- Autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
+- Hover, signature help, Go to Definition, Outline
+- Diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
+- Formatação e refactors
+- Contextos multiarquivo e modo arquivo único
+- Catálogo local de tabelas/campos (`lsp.catalog.path`)
+- Projeto de relatório (Gerador Senior) com escopo por pasta
 - Language Server opt-in (`lsp.server.enabled`, default `false`)
+
+---
 
 ## Agent Cursor
 
@@ -60,7 +88,7 @@ Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 | `/depurar-lsp` | Resumo + ordem de execução + cursores/SQL |
 | `/formatar-lsp` | Layout canônico |
 | `/refatorar-lsp` | Estrutura, braces, relatório de lógica |
-| `/gerar-relatorio` | Scaffold de projeto de relatório (PDR-008) |
+| `/gerar-relatorio` | Scaffold de projeto de relatório |
 | `/escopo-relatorio` | Escopo do relatório aberto |
 | `/copiar-regra-relatorio` | Juntar regras `.lsp` do relatório |
 | `/gerar-lista-lsp` | Lista dinâmica |
@@ -69,7 +97,9 @@ Language id: **`senior-lsp`** · **`.lsp`**, **`.lspt`**
 
 Skills: `@lsp-linguagem` · `@lsp-gerar` · `@lsp-compilar` · `@lsp-depurar` · `@lsp-revisar` · `@lsp-formatar` · `@lsp-refatorar` · `@lsp-logs` · `@lsp-banco` · `@lsp-contexto`
 
-## Configurar (dev)
+---
+
+## Configurar (desenvolvimento)
 
 ```powershell
 cd packages\lsp-analyzer
@@ -82,9 +112,9 @@ npm test
 
 Abra a **raiz do monorepo** → **Run and Debug** → **Run LSP Workbench Extension** (F5).
 
-Setup detalhado: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md) · mantenedores: [docs/product/DEVELOPER.md](docs/product/DEVELOPER.md).
+Setup detalhado: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md) · mantenedores: [docs/product/DEVELOPER.md](docs/product/DEVELOPER.md) · publicar: [packages/lsp-workbench/PUBLISH.md](packages/lsp-workbench/PUBLISH.md).
 
-### Associate `.txt` de regra (opcional)
+### Associar `.txt` de regra (opcional)
 
 ```json
 {
@@ -95,7 +125,9 @@ Setup detalhado: [docs/product/LOCAL-TEST.md](docs/product/LOCAL-TEST.md) · man
 }
 ```
 
-## Usar
+---
+
+## Usar no workspace
 
 ### Arquivo único
 
@@ -120,7 +152,7 @@ Abra um `.lsp` / `.lspt` — ativa `senior-lsp` sem config extra.
 
 ### Projeto de relatório (Gerador)
 
-Pasta com `relatorio.json` + `Definicao/` ou `Secoes/` — o Ctrl+Espaço fica **só nessa pasta** (não mistura irmãos como `RDCG183` / `RDCG184`).
+Pasta com `relatorio.json` + `Definicao/` ou `Secoes/` — o Ctrl+Espaço fica **só nessa pasta** (não mistura irmãos).
 
 ```json
 {
@@ -134,23 +166,22 @@ Pasta com `relatorio.json` + `Definicao/` ou `Secoes/` — o Ctrl+Espaço fica *
 | Comando (Palette) | Função |
 |-------------------|--------|
 | **Gerar Projeto de Relatório** | Scaffold da árvore |
-| **Importar Contexto de…** | Pasta/arquivo → `contextoExtra` do relatório aberto |
+| **Importar Contexto de…** | Pasta/arquivo → `contextoExtra` |
 | **Exportar Contexto para…** | Escopo aberto → outro relatório ou `lsp.contexts` |
 | **Mostrar Escopo do Relatório** | Root + extras ativos |
-| **Copiar Regra** / **Visualizar Todas as Regras** | Clipboard do evento / juntar todos os `.lsp` num arquivo |
+| **Copiar Regra** / **Visualizar Todas as Regras** | Clipboard / juntar `.lsp` |
 
-Scaffold: comando **Gerar Relatório** / `/gerar-relatorio` · docs: [`docs/gerador-relatorios/`](docs/gerador-relatorios/) · [PDR-008](docs/product/pdr/PDR-008-projeto-relatorio.md) · [PDR-010](docs/product/pdr/PDR-010-escopo-projeto-relatorio.md).
+Docs: [`docs/gerador-relatorios/`](docs/gerador-relatorios/).
 
-### Catálogo local de tabelas (sem dados de cliente)
+### Catálogo local de tabelas
 
 A extensão **não** embute dicionário Senior. Gere o seu `catalog.json` a partir do banco (R996/R998):
 
 ```powershell
-# Ver docs/banco-senior-base/consultar-dicionario.sql
 node scripts/catalog-from-r996-tsv.mjs --in r996.tsv --out docs/banco-senior-base/catalog.json
 ```
 
-Detalhes: [`docs/banco-senior-base/`](docs/banco-senior-base/) · setting opcional `lsp.catalog.path` · [PDR-009](docs/product/pdr/PDR-009-catalogo-base-overlay.md).
+Detalhes: [`docs/banco-senior-base/`](docs/banco-senior-base/) · setting `lsp.catalog.path`.
 
 ### Formatação / SQL / Language Server
 
@@ -163,15 +194,21 @@ Detalhes: [`docs/banco-senior-base/`](docs/banco-senior-base/) · setting opcion
 }
 ```
 
+---
+
 ## Docs
 
 | Recurso | Onde |
 |---------|------|
-| Exemplos | [`exemplos/`](exemplos/) |
+| Guia da extensão (Marketplace) | [`packages/lsp-workbench/README.md`](packages/lsp-workbench/README.md) |
+| Exemplos de print / demos | [`packages/lsp-workbench/media/`](packages/lsp-workbench/media/) |
+| Exemplos de projeto | [`exemplos/`](exemplos/) |
 | Linguagem | [`docs/lsp/`](docs/lsp/) |
 | Gerador de Relatórios | [`docs/gerador-relatorios/`](docs/gerador-relatorios/) |
 | Produto (PDR/ADR) | [`docs/product/`](docs/product/) |
 | Regras estáticas | [`docs/product/regras-estaticas-lsp.md`](docs/product/regras-estaticas-lsp.md) |
+
+---
 
 ## Licença e créditos
 

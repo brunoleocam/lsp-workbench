@@ -53,7 +53,8 @@ Se (<Condição>) {
 ### Comentários
 
 ✅ **Utilize comentários para explicar o código e facilitar a manutenção.**
-✅ **Utilize `@` para comentários de uma linha e `/* */` para comentários de múltiplas linhas.**
+✅ **Utilize `@` para comentários de uma linha e `/* */` para comentários de múltiplas linhas.**  
+❌ **Não** abra com `@` numa linha e feche com `@` noutra (use `/* … */`). O Workbench alerta SYN011.
 
 Exemplo de comentário de uma linha:
 

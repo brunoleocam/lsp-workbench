@@ -291,6 +291,7 @@ export function membersAfterDot(
     }
   }
 
+  out.sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }));
   return out;
 }
 
