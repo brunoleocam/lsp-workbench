@@ -2,83 +2,141 @@
   "name": "LSP Workbench (Dark)",
   "type": "dark",
   "colors": {
-    "editor.background": "#1e1e1e",
-    "editor.foreground": "#d4d4d4",
-    "editor.inactiveSelectionBackground": "#3a3d41",
-    "editor.selectionHighlightBackground": "#add6ff26",
-    "editorIndentGuide.background1": "#404040",
-    "activityBarBadge.background": "#007acc",
-    "sideBarTitle.foreground": "#bbbbbb"
+    "editor.background": "#232a2f",
+    "editor.foreground": "#ffffff",
+    "editor.inactiveSelectionBackground": "#20406280",
+    "editor.selectionBackground": "#204062",
+    "editor.selectionHighlightBackground": "#939da530",
+    "editor.lineHighlightBorder": "#939da515",
+    "editor.wordHighlightBackground": "#939da530",
+    "editorCursor.foreground": "#939da5",
+    "editorCursor.background": "#232a2f",
+    "editorLineNumber.foreground": "#707a84",
+    "editorLineNumber.activeForeground": "#d4dce4",
+    "editorIndentGuide.background1": "#939da520",
+    "editorIndentGuide.activeBackground1": "#939da550",
+    "editorWidget.background": "#232a2f",
+    "editorWidget.border": "#707a84",
+    "editorGroup.border": "#00000060",
+    "editorGroupHeader.tabsBackground": "#1a2023",
+    "editorGroupHeader.tabsBorder": "#00000060",
+    "tab.inactiveBackground": "#1a2023",
+    "tab.activeBackground": "#1a2023",
+    "tab.activeForeground": "#939da5",
+    "tab.hoverBackground": "#232a2f",
+    "tab.activeBorderTop": "#ffea6b",
+    "tab.border": "#00000060",
+    "sideBar.background": "#1a2023",
+    "sideBar.foreground": "#939da5",
+    "sideBar.border": "#00000060",
+    "sideBarTitle.foreground": "#939da5",
+    "sideBarSectionHeader.background": "#232a2f",
+    "activityBar.background": "#1a2023",
+    "activityBar.foreground": "#89ddff",
+    "activityBar.inactiveForeground": "#939da5",
+    "activityBar.border": "#00000060",
+    "activityBar.activeBorder": "#89ddff",
+    "activityBarBadge.background": "#89ddff",
+    "activityBarBadge.foreground": "#1a2023",
+    "statusBar.background": "#1a2023",
+    "statusBar.foreground": "#939da5",
+    "statusBar.debuggingBackground": "#ffa763",
+    "statusBar.debuggingForeground": "#1a2023",
+    "titleBar.activeBackground": "#1a2023",
+    "titleBar.activeForeground": "#939da5",
+    "titleBar.inactiveBackground": "#232a2f",
+    "titleBar.border": "#00000060",
+    "list.hoverBackground": "#232a2f",
+    "list.activeSelectionBackground": "#232a2f",
+    "list.focusBackground": "#232a2f",
+    "list.dropBackground": "#232a2f",
+    "list.focusOutline": "#707a84",
+    "focusBorder": "#707a84",
+    "button.background": "#ffea6b",
+    "button.foreground": "#1a2023",
+    "input.background": "#232a2f",
+    "dropdown.background": "#1a2023",
+    "dropdown.listBackground": "#232a2f",
+    "quickInput.background": "#1a2023",
+    "quickInput.foreground": "#939da5",
+    "quickInputList.focusBackground": "#232a2f",
+    "quickInputList.focusForeground": "#d4dce4",
+    "panelTitle.activeForeground": "#d4dce4",
+    "panelTitle.inactiveForeground": "#939da5",
+    "selection.background": "#89ddff40",
+    "textLink.foreground": "#89ddff",
+    "widget.shadow": "#1a2023"
   },
   "semanticHighlighting": true,
   "semanticTokenColors": {
-    "function": "#c678dd",
-    "variable": "#4EC9B0",
-    "method": "#dcdcaa",
-    "property": "#9cdcfe",
-    "keyword": "#ffffff",
-    "type": "#569cd6",
-    "macro": "#c586c0"
+    "function": "#ffea6b",
+    "variable": "#ffffff",
+    "method": "#ffea6b",
+    "property": "#ffa763",
+    "keyword": "#ba8ef7",
+    "type": "#89ddff",
+    "macro": "#ba8ef7"
   },
   "tokenColors": [
     {
       "scope": "comment",
       "settings": {
         "fontStyle": "italic",
-        "foreground": "#608b4e"
+        "foreground": "#707a84"
       }
     },
     {
       "scope": ["comment.line.lsp", "comment.block.lsp"],
       "settings": {
         "fontStyle": "italic",
-        "foreground": "#608b4e"
+        "foreground": "#707a84"
       }
     },
     {
       "scope": "constant.numeric.lsp",
       "settings": {
-        "foreground": "#b5cea8"
+        "foreground": "#ffa763"
       }
     },
     {
       "scope": "string.quoted.double.lsp",
       "settings": {
-        "foreground": "#4fa6ef"
+        "foreground": "#5bec95"
       }
     },
     {
       "scope": "storage.type.lsp",
       "settings": {
-        "foreground": "#569cd6"
+        "foreground": "#89ddff"
       }
     },
     {
       "name": "Modificador End (param de saída)",
       "scope": "storage.modifier.lsp",
       "settings": {
-        "foreground": "#ce9178"
+        "foreground": "#ffa763"
       }
     },
     {
       "name": "Variáveis Declaradas",
       "scope": ["variable.other.lsp", "variable.parameter.lsp"],
       "settings": {
-        "foreground": "#4EC9B0"
+        "foreground": "#ffffff"
       }
     },
     {
       "name": "Variáveis de sistema",
       "scope": "constant.language.lsp",
       "settings": {
-        "foreground": "#f44747"
+        "fontStyle": "bold",
+        "foreground": "#ff5555"
       }
     },
     {
       "name": "Funções LSP",
       "scope": "entity.name.function.lsp",
       "settings": {
-        "foreground": "#c678dd"
+        "foreground": "#ffea6b"
       }
     },
     {
@@ -86,7 +144,7 @@
       "scope": "keyword.control.lsp",
       "settings": {
         "fontStyle": "bold",
-        "foreground": "#ffffff"
+        "foreground": "#ba8ef7"
       }
     },
     {
@@ -94,7 +152,7 @@
       "scope": "keyword.control.flow.lsp",
       "settings": {
         "fontStyle": "bold",
-        "foreground": "#c586c0"
+        "foreground": "#ba8ef7"
       }
     },
     {
@@ -102,147 +160,154 @@
       "scope": "keyword.operator.logical.lsp",
       "settings": {
         "fontStyle": "bold",
-        "foreground": "#d7ba7d"
+        "foreground": "#ba8ef7"
       }
     },
     {
       "name": "Operadores ++ --",
       "scope": "keyword.operator.increment.lsp",
       "settings": {
-        "foreground": "#d7ba7d"
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "Operadores comparação",
       "scope": "keyword.operator.comparison.lsp",
       "settings": {
-        "foreground": "#d4d4d4"
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "Operadores aritméticos",
       "scope": "keyword.operator.arithmetic.lsp",
       "settings": {
-        "foreground": "#d4d4d4"
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "Operador divisão /",
       "scope": "keyword.operator.arithmetic.division.lsp",
       "settings": {
-        "foreground": "#569cd6"
+        "foreground": "#ff6a80"
+      }
+    },
+    {
+      "name": "Terminador ;",
+      "scope": "punctuation.terminator.lsp",
+      "settings": {
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "Continuação de linha \\",
       "scope": ["keyword.operator.continuation.lsp", "constant.character.escape.lsp"],
       "settings": {
-        "foreground": "#f44747"
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "Tipo Lista",
       "scope": "storage.type.lista.lsp",
       "settings": {
-        "foreground": "#b5cea8"
+        "foreground": "#89ddff"
       }
     },
     {
       "name": "Variável Lista",
       "scope": "variable.other.lista.lsp",
       "settings": {
-        "foreground": "#9cdcfe"
+        "foreground": "#89ddff"
       }
     },
     {
       "name": "Campo de Lista",
       "scope": "variable.other.property.lista.lsp",
       "settings": {
-        "foreground": "#ce9178"
+        "foreground": "#ffa763"
       }
     },
     {
       "name": "Método de Lista",
       "scope": "entity.name.function.member.lista.lsp",
       "settings": {
-        "foreground": "#dcdcaa"
+        "foreground": "#ffea6b"
       }
     },
     {
       "name": "Tipo Cursor",
       "scope": "storage.type.cursor.lsp",
       "settings": {
-        "foreground": "#4EC9B0"
+        "foreground": "#89ddff"
       }
     },
     {
       "name": "Variável Cursor",
       "scope": "variable.other.cursor.lsp",
       "settings": {
-        "foreground": "#56b6c2"
+        "foreground": "#56adb7"
       }
     },
     {
       "name": "Campo de Cursor",
       "scope": "variable.other.property.cursor.lsp",
       "settings": {
-        "foreground": "#e5c07b"
+        "foreground": "#ffa763"
       }
     },
     {
       "name": "Método de Cursor",
       "scope": "entity.name.function.member.cursor.lsp",
       "settings": {
-        "foreground": "#c678dd"
+        "foreground": "#ffea6b"
       }
     },
     {
       "name": "WebService — caminho (tipo)",
       "scope": "entity.name.type.webservice.lsp",
       "settings": {
-        "foreground": "#d7ba7d"
+        "foreground": "#ffea6b"
       }
     },
     {
       "name": "WebService — instância",
       "scope": "variable.other.webservice.lsp",
       "settings": {
-        "foreground": "#e06c75"
+        "foreground": "#ff6a80"
       }
     },
     {
       "name": "WebService — tabela/estrutura",
       "scope": "variable.other.webservice.table.lsp",
       "settings": {
-        "foreground": "#c678dd"
+        "foreground": "#ba8ef7"
       }
     },
     {
       "name": "WebService — campo",
       "scope": "variable.other.webservice.field.lsp",
       "settings": {
-        "foreground": "#98c379"
+        "foreground": "#5bec95"
       }
     },
     {
       "name": "SQL embutido — keywords",
       "scope": "keyword.other.sql.lsp",
       "settings": {
-        "foreground": "#4EC9B0"
+        "foreground": "#ba8ef7"
       }
     },
     {
       "name": "SQL embutido — funções",
       "scope": "support.function.sql.lsp",
       "settings": {
-        "foreground": "#dcdcaa"
+        "foreground": "#ffea6b"
       }
     },
     {
       "name": "SQL embutido — binds :nome",
       "scope": "variable.other.bind.sql.lsp",
       "settings": {
-        "foreground": "#d7ba7d"
+        "foreground": "#ffa763"
       }
     }
   ]
