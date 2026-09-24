@@ -11,12 +11,15 @@ import {
 } from "../../domain/local-catalog";
 import { loadReportAnalyzeOpts } from "../../domain/report-project-loader";
 
-/** Overlay (cliente) depois base pública (PDR-009). */
-const DEFAULT_RELATIVE_CANDIDATES = [
+/** Overlay do projeto, antes do catálogo embutido na extensão Demobile. */
+const PROJECT_CATALOG_CANDIDATES = [
   path.join("docs", "banco-senior", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", "catalog.json"),
-  // Demo / F5 / marketplace prints (repo público só versiona o exemplo)
+];
+
+/** Demo / F5 — só se não houver catálogo de cliente nem extensão Demobile. */
+const EXAMPLE_CATALOG_CANDIDATES = [
   path.join("docs", "banco-senior-base", "catalog.example.json"),
 ];
 
@@ -28,11 +31,10 @@ function fileExists(p: string): boolean {
   }
 }
 
-/** Sobe pastas a partir de `start` procurando docs/banco-senior(-base)/catalog.json. */
-function findCatalogWalkingUp(startDir: string, maxLevels = 8): string | undefined {
+function findRelativeCatalog(startDir: string, relatives: string[], maxLevels = 8): string | undefined {
   let dir = path.resolve(startDir);
   for (let i = 0; i < maxLevels; i++) {
-    for (const rel of DEFAULT_RELATIVE_CANDIDATES) {
+    for (const rel of relatives) {
       const abs = path.join(dir, rel);
       if (fileExists(abs)) return abs;
     }
@@ -41,6 +43,14 @@ function findCatalogWalkingUp(startDir: string, maxLevels = 8): string | undefin
     dir = parent;
   }
   return undefined;
+}
+
+/** Catálogo que vai dentro do VSIX `demobile.lsp-workbench-demobile`. */
+function demobileBundledCatalog(): string | undefined {
+  const ext = vscode.extensions.getExtension("demobile.lsp-workbench-demobile");
+  if (!ext) return undefined;
+  const candidate = path.join(ext.extensionPath, "catalog", "catalog.json");
+  return fileExists(candidate) ? candidate : undefined;
 }
 
 /**
@@ -56,23 +66,26 @@ export function resolveLocalCatalogPath(): string | undefined {
   ).trim();
   const folder = vscode.workspace.workspaceFolders?.[0];
 
-  if (configured) {
-    if (path.isAbsolute(configured)) {
-      return fileExists(configured) ? configured : undefined;
-    }
-    if (!folder) return undefined;
-    const abs = path.join(folder.uri.fsPath, configured);
-    return fileExists(abs) ? abs : undefined;
+  if (configured && folder) {
+    const abs = path.isAbsolute(configured)
+      ? configured
+      : path.join(folder.uri.fsPath, configured);
+    if (fileExists(abs)) return abs;
+  } else if (configured && path.isAbsolute(configured) && fileExists(configured)) {
+    return configured;
   }
 
   if (folder) {
-    for (const rel of DEFAULT_RELATIVE_CANDIDATES) {
-      const abs = path.join(folder.uri.fsPath, rel);
-      if (fileExists(abs)) return abs;
-    }
-    // F5 abre só packages/lsp-workbench/fixtures — sobe até a raiz do monorepo
-    const walked = findCatalogWalkingUp(folder.uri.fsPath);
-    if (walked) return walked;
+    const projectCatalog = findRelativeCatalog(folder.uri.fsPath, PROJECT_CATALOG_CANDIDATES);
+    if (projectCatalog) return projectCatalog;
+  }
+
+  const bundled = demobileBundledCatalog();
+  if (bundled) return bundled;
+
+  if (folder) {
+    const example = findRelativeCatalog(folder.uri.fsPath, EXAMPLE_CATALOG_CANDIDATES);
+    if (example) return example;
   }
 
   return undefined;

@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.9 — 2026-09-24
+
+### Corrigido
+
+- Ctrl+Espaço de tabelas usa o `catalog.json` da extensão Demobile quando `lsp.catalog.path` está vazio ou aponta para um arquivo que não existe
+
 ## 0.2.8 — 2026-09-24
 
 ### Adicionado

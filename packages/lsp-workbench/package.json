@@ -2,7 +2,7 @@
   "name": "lsp-workbench",
   "displayName": "LSP Workbench",
   "description": "Linguagem Senior de Programação (LSP): syntax highlighting, snippets, autocomplete, hover, formatação e validação para Senior Sistemas / Sapiens / HCM.",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "publisher": "brunoleocam",
   "icon": "icon.png",
   "license": "MIT",
