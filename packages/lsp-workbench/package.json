@@ -100,7 +100,9 @@
       {
         "language": "senior-lsp",
         "scopes": {
-          "macro": ["keyword.control.flow.lsp"]
+          "macro": [
+            "keyword.control.flow.lsp"
+          ]
         }
       }
     ],
