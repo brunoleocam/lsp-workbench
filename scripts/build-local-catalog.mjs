@@ -38,13 +38,16 @@ function upsert(name, patch) {
   if (patch.description) {
     if (!prev.description || patch.forceDescription) prev.description = patch.description;
   }
+  if (patch.primaryKey?.length && (!prev.primaryKey || prev.primaryKey.length === 0)) {
+    prev.primaryKey = patch.primaryKey;
+  }
   if (patch.columns?.length) {
     const seen = new Set(prev.columns.map((c) => c.name.toUpperCase()));
     for (const c of patch.columns) {
       const cn = String(c.name);
       const ck = cn.toUpperCase();
       if (!seen.has(ck)) {
-        prev.columns.push({ name: cn, type: c.type });
+        prev.columns.push({ name: cn, type: c.type, ...(c.key ? { key: true } : {}) });
         seen.add(ck);
       } else if (c.type) {
         const existing = prev.columns.find((x) => x.name.toUpperCase() === ck);
@@ -65,10 +68,13 @@ function loadCatalogJson(absPath) {
       if (!t || typeof t.name !== "string") continue;
       upsert(t.name, {
         description: t.description,
+        primaryKey: Array.isArray(t.primaryKey)
+          ? t.primaryKey.filter((k) => typeof k === "string" && k.trim()).map((k) => String(k).trim())
+          : undefined,
         columns: Array.isArray(t.columns)
           ? t.columns
               .filter((c) => c && typeof c.name === "string")
-              .map((c) => ({ name: String(c.name), type: c.type }))
+              .map((c) => ({ name: String(c.name), type: c.type, key: c.key === true }))
           : [],
         forceDescription: Boolean(t.description),
       });
@@ -77,6 +83,13 @@ function loadCatalogJson(absPath) {
   } catch {
     return false;
   }
+}
+
+function parsePrimaryKeyFromMd(text) {
+  const pk = text.match(/\*\*Chave prim[aá]ria:\*\*\s*(.+)/i);
+  if (!pk) return undefined;
+  const names = [...pk[1].matchAll(/`([^`]+)`/g)].map((x) => x[1].trim()).filter(Boolean);
+  return names.length ? names : undefined;
 }
 
 function parseColumnsFromTableMd(text) {
@@ -117,7 +130,7 @@ function ingestBancoRoot(bancoRoot) {
       const keys = m[3].split(",").map((s) => s.trim()).filter((s) => s && s !== "-");
       const typical = m[4].split(",").map((s) => s.trim()).filter((s) => s && s !== "-");
       const cols = [...new Set([...keys, ...typical])].map((n) => ({ name: n }));
-      upsert(name, { description, columns: cols });
+      upsert(name, { description, columns: cols, primaryKey: keys });
     }
   }
 
@@ -132,8 +145,10 @@ function ingestBancoRoot(bancoRoot) {
       const description = tm ? tm[2].trim() : undefined;
       const name = tm ? tm[1].toUpperCase() : fileBase;
       const columns = parseColumnsFromTableMd(text);
+      const primaryKey = parsePrimaryKeyFromMd(text);
       upsert(name, {
         description,
+        primaryKey,
         columns,
         forceDescription: Boolean(description && columns.length),
       });

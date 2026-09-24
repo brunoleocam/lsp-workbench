@@ -7,6 +7,7 @@ import {
   getStructuralSeedsMatching,
 } from "../completion-seeds";
 import {
+  catalogMemberSortText,
   compareCompletionSortText,
   completionSortText,
 } from "../completion-rank";
@@ -124,5 +125,17 @@ describe("completion-rank", () => {
     const alfa = completionSortText("function", "TamanhoAlfa", "Tam");
     const str = completionSortText("function", "TamanhoStr", "Tam");
     assert.ok(compareCompletionSortText(alfa, str) < 0);
+  });
+
+  it("tabelas e campos do banco seguem o índice do catálogo, não A→Z", () => {
+    const zeta = catalogMemberSortText("field", 0);
+    const alfa = catalogMemberSortText("field", 1);
+    const table = catalogMemberSortText("table", 0);
+    const cmd = completionSortText("command", "Se", "S");
+    const qf = completionSortText("qf", "Ignorar", "I");
+    assert.ok(compareCompletionSortText(zeta, alfa) < 0);
+    assert.ok(compareCompletionSortText(alfa, table) < 0);
+    assert.ok(compareCompletionSortText(cmd, zeta) < 0);
+    assert.ok(compareCompletionSortText(table, qf) < 0);
   });
 });

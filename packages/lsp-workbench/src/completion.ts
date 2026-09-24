@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getStructuralSeedsMatching } from "./completion-seeds";
-import { completionSortText } from "./completion-rank";
+import { catalogMemberSortText, completionSortText } from "./completion-rank";
 import { completionDetailLine, completionOriginLabel } from "./completion-labels";
 import { functionsMatchingPrefix, systemVarsMatchingPrefix } from "./function-catalog";
 import { completeMembersAt } from "./application/complete-members";
@@ -100,6 +100,20 @@ function toKind(kind: "keyword" | "function" | "type"): vscode.CompletionItemKin
     default:
       return vscode.CompletionItemKind.Keyword;
   }
+}
+
+/** Campo do catálogo: marca chave e fixa a ordem do banco (sem A→Z). */
+function applyCatalogColumnPresentation(
+  item: vscode.CompletionItem,
+  entry: { label: string; detail: string; documentation?: string; key?: boolean },
+  index: number
+): void {
+  if (entry.key) {
+    item.label = { label: entry.label, description: "chave" };
+  }
+  item.detail = entry.detail;
+  if (entry.documentation) item.documentation = entry.documentation;
+  item.sortText = catalogMemberSortText("field", index);
 }
 
 function isDefined(source: string, name: string): boolean {
@@ -1465,9 +1479,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
         const catalogColItems = catalogColRaw.map((t, i) => {
           const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
           item.insertText = t.insertText;
-          item.detail = t.detail;
-          if (t.documentation) item.documentation = t.documentation;
-          item.sortText = completionSortText("other", t.label, word);
+          applyCatalogColumnPresentation(item, t, i);
           const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
           const suf = m?.[1]?.length ?? 0;
           item.range = new vscode.Range(
@@ -1483,12 +1495,10 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
 
       const defItem = definirCompletion(document, position, word, wordRange);
       const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
-      const catalogColItems = catalogColRaw.map((t) => {
+      const catalogColItems = catalogColRaw.map((t, i) => {
         const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
         item.insertText = t.insertText;
-        item.detail = t.detail;
-        if (t.documentation) item.documentation = t.documentation;
-        item.sortText = completionSortText("other", t.label, word);
+        applyCatalogColumnPresentation(item, t, i);
         if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
           const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
           const suf = m?.[1]?.length ?? 0;
@@ -1505,7 +1515,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       });
       const catalogTableItems =
         word.length >= 1 && /^[A-Za-z_]/.test(word)
-          ? localTableCompletions(word).map((t) => {
+          ? localTableCompletions(word).map((t, i) => {
               const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
               item.label = {
                 label: t.label,
@@ -1516,12 +1526,13 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
                 item.documentation = t.documentation;
               }
               item.range = wordRange;
-              item.sortText = completionSortText("other", t.label, word);
+              item.sortText = catalogMemberSortText("table", i);
               return item;
             })
           : [];
 
       // Ordem via sortText: match exato → vars → funções → comandos → outros → QFs.
+      // Tabelas e campos do banco ficam na faixa "outros", na ordem do catálogo (FLDORD).
       // isIncomplete: true → ao digitar (ex. Cod) o provider é chamado de novo.
       const base = [
         ...customItems,
