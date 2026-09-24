@@ -9,6 +9,7 @@ node_modules/
 Thumbs.db
 *.log
 logs/
+tmp/
 
 # Conteúdo local privado — não versionar em remoto público
 docs/banco-senior/

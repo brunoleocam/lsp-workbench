@@ -143,17 +143,23 @@ export function activate(context: vscode.ExtensionContext): void {
       console.error("[LSP Workbench] diagnostics sync failed", key, err);
     }
 
-    // 2ª passada — FUN009 / peers (scopedExternal).
+    // 2ª passada — FUN009 / peers (scopedExternal) + SEM001 via Definir dos peers.
     void (async () => {
       try {
         idx.invalidate(doc.uri);
         let scopedExternal: Map<string, { fileName: string }> | undefined;
+        let peerGlobals: string[] = [];
         try {
           scopedExternal = await idx.externalMapFor(doc);
+          peerGlobals = await idx.peerFileScopeGlobalsFor(doc);
         } catch {
           scopedExternal = undefined;
+          peerGlobals = [];
         }
         if (refreshSeqByUri.get(key) !== seq) return;
+        const knownGlobals = [
+          ...new Set([...(reportOpts?.knownGlobals ?? []), ...peerGlobals]),
+        ];
         const hits = filterSuppressedHits(
           key,
           lines,
@@ -162,7 +168,7 @@ export function activate(context: vscode.ExtensionContext): void {
             scopedExternal,
             catalogTableNames,
             reportContext: reportOpts?.reportContext,
-            knownGlobals: reportOpts?.knownGlobals,
+            knownGlobals: knownGlobals.length ? knownGlobals : undefined,
           })
         );
         if (refreshSeqByUri.get(key) !== seq) return;

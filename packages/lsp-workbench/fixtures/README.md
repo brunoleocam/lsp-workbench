@@ -23,6 +23,8 @@ Projetos de relatório reais: use o comando **Gerar Relatório** / `/gerar-relat
 | `smoke-sql.lsp` | SQL001–009 |
 | `format-if.lsp` | Format Document |
 | `smoke-ger.lsp` / `smoke-ger-pre.lsp` | GER001–GER004 (`reportContext` no MANIFEST) |
-| `extracted-functions.json` | Cobertura do catálogo / TextMate |
+| `extracted-functions.json` | Cobertura do catálogo / TextMate (docs/lsp) |
+| `senior-docs-hcm-functions.json` | Índice HCM → `function-catalog.hcm.generated.ts` |
+| `senior-docs-erp-functions.json` | Índice ERP programador 5.10.4 (+ gerador) → `function-catalog.erp.generated.ts` (com sintaxe/params quando enriquecido) |
 
 Expectativas: [`MANIFEST.json`](./MANIFEST.json) ↔ [`docs/product/regras-estaticas-lsp.md`](../../../docs/product/regras-estaticas-lsp.md).

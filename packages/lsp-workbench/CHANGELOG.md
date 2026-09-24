@@ -1,5 +1,14 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.4 — 2026-09-24
+
+### Adicionado
+
+- Catálogo unificado (~1500+ builtins): plataforma (`docs/lsp`) + índices HCM e ERP
+- Fixtures `senior-docs-hcm-functions.json` / `senior-docs-erp-functions.json` com sintaxe, parâmetros e links Senior
+- Merge HCM/ERP no analyzer; filtro por sistema no Ctrl+Espaço (`catalogForSystem`)
+- Script `generate-system-functions` (regenera catálogos a partir das fixtures)
+
 ## 0.2.3 — 2026-09-23
 
 ### Adicionado
