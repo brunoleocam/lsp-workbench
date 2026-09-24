@@ -65,7 +65,7 @@ Status extensão: `ok` = implementado | `pendente`
 
 | ID | Regra | Detecção | QF | Ext | Fonte |
 |----|-------|----------|----|-----|-------|
-| SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0; instâncias `Definir caminho.ws Nome`; membros após `.`). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório, `E*` da Entrada via `knownGlobals` | qualquer id (não keyword/builtin/função/tabela/`vn*`/WS) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008, web-service |
+| SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0; instâncias `Definir caminho.ws Nome`; membros após `.`). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório: `E*` da Entrada **e** `Definir` file-scope dos peers (`Inicializacao`, seções, `contextoExtra`) via `knownGlobals`; em escopo multiarquivo, peers do índice também | qualquer id (não keyword/builtin/função/tabela/`vn*`/WS) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008, web-service |
 | SEM002 | `Abrir`/`Fechar` pareados (arquivo) | alerta na linha do `Abrir` órfão | sim (Fechar / Completar) | ok | arquivos |
 | SEM003 | Cursor: `.AbrirCursor` ↔ `.FecharCursor` | alerta na linha do AbrirCursor órfão | sim (FecharCursor / Completar) | ok | cursores / lsp.md |
 | SEM004 | Lista: campo usado sem `AdicionarCampo` | `vl.Campo` ∉ set de AdicionarCampo | sim (inserir AdicionarCampo) | ok | listas |

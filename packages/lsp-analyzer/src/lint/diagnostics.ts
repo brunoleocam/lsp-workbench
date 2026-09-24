@@ -75,7 +75,8 @@ export type AnalyzeLspOptions = {
    */
   reportContext?: ReportContext;
   /**
-   * Globais conhecidas (ex. E* de Entrada.json) — evitam SEM001 falso.
+   * Globais conhecidas (ex. E* de Entrada.json + Definir file-scope dos peers
+   * do relatório/escopo) — evitam SEM001 falso.
    */
   knownGlobals?: readonly string[];
 };

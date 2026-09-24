@@ -31,7 +31,7 @@ Validação: `report-scaffold.test.ts` (árvore em temp) + smokes GER* no MANIFE
 |----|----------|--------|
 | REL-01 | `/gerar-relatorio` ou comando VS Code cria árvore válida | MVP |
 | REL-02 | Analyzer resolve evento pelo path e emite GER* | MVP |
-| REL-03 | `E*` de `Entrada.json` não geram SEM001 falso | MVP |
+| REL-03 | `E*` de `Entrada.json` e `Definir` file-scope dos peers do relatório não geram SEM001 falso | MVP |
 | REL-04 | Completion de colunas da `tabelaBase` quando catálogo existe | MVP |
 | REL-05 | Copiar regra atual / export multi-trecho | MVP |
 | REL-06 | Sem editor visual / descompilador `.GER` | Explicitamente fora |

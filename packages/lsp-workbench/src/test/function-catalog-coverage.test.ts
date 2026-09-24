@@ -67,4 +67,14 @@ describe("function-catalog coverage", () => {
       `catálogo pequeno demais: ${LSP_FUNCTION_CATALOG.length}`
     );
   });
+
+  it("catálogo unificado inclui HCM + ERP (máxima cobertura)", () => {
+    assert.ok(
+      LSP_FUNCTION_CATALOG.length >= 900,
+      `catálogo unificado pequeno demais: ${LSP_FUNCTION_CATALOG.length}`
+    );
+    const labels = new Set(LSP_FUNCTION_CATALOG.map((e) => e.label));
+    assert.ok(labels.has("AcuEveCol"), "HCM AcuEveCol");
+    assert.ok(labels.has("ComposicaoProduto"), "ERP ComposicaoProduto");
+  });
 });

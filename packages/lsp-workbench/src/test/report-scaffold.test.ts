@@ -139,4 +139,53 @@ describe("report scaffold", () => {
     assert.ok(hits.some((h) => h.id === "GER001"));
     fs.rmSync(parent, { recursive: true, force: true });
   });
+
+  it("SEM001 nao alerta var Definir na Inicializacao usada em secao", () => {
+    const parent = fs.mkdtempSync(path.join(os.tmpdir(), "lsp-rel-"));
+    const root = scaffoldRelatorioProject({
+      parentDir: parent,
+      codigo: "TST004",
+      descricao: "Cross-file SEM001",
+    });
+    const initPath = path.join(root, "Definicao", "Inicializacao.lsp");
+    const secaoPath = path.join(root, "Secoes", "Detalhe_1", "antes-imprimir.lsp");
+    fs.writeFileSync(
+      initPath,
+      "Definir Alfa vaMosLog;\nvaMosLog = \"logs/teste.log\";\n",
+      "utf8"
+    );
+    fs.writeFileSync(
+      secaoPath,
+      'Definir Alfa vaMsg;\nvaMsg = "ok";\nGravarArquivo(vaMosLog, vaMsg);\n',
+      "utf8"
+    );
+
+    const opts = loadReportAnalyzeOpts(secaoPath)!;
+    assert.ok(
+      opts.knownGlobals.some((n) => n.toLowerCase() === "vamoslog"),
+      `knownGlobals deveria incluir vaMosLog; got ${opts.knownGlobals.join(",")}`
+    );
+
+    const hits = analyzeLsp(fs.readFileSync(secaoPath, "utf8"), {
+      reportContext: opts.reportContext,
+      knownGlobals: opts.knownGlobals,
+    });
+    assert.equal(
+      hits.filter((h) => h.id === "SEM001" && /vamoslog/i.test(h.message)).length,
+      0,
+      hits.map((h) => `${h.id}:${h.message}`).join(" | ")
+    );
+
+    // Ainda alerta se a var não existir em nenhum peer
+    const orphan = analyzeLsp(
+      'Definir Alfa vaLocal;\nvaLocal = vaNaoExiste;\n',
+      {
+        reportContext: opts.reportContext,
+        knownGlobals: opts.knownGlobals,
+      }
+    );
+    assert.ok(orphan.some((h) => h.id === "SEM001" && /vanaoexiste/i.test(h.message)));
+
+    fs.rmSync(parent, { recursive: true, force: true });
+  });
 });

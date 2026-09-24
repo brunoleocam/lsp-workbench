@@ -9,6 +9,7 @@ import {
   findReportRoot,
   normalizeFsPath,
   parseEntradaNomes,
+  parseFileSymbols,
   parseRelatorioMeta,
   parseSecaoTabelaBase,
   sectionNameFromRelPath,
@@ -48,6 +49,77 @@ function existsForFinder(p: string): boolean {
   return existsPath(p.replace(/\//g, path.sep));
 }
 
+function isLspSourceFile(filePath: string): boolean {
+  const lower = filePath.toLowerCase();
+  return lower.endsWith(".lsp") || lower.endsWith(".lspt");
+}
+
+/** Lista `.lsp`/`.lspt` sob pasta ou inclui o próprio arquivo. */
+export function listLspSourcesUnder(absPath: string, depth = 0, out: string[] = []): string[] {
+  if (depth > 14 || !existsPath(absPath)) return out;
+  let st: fs.Stats;
+  try {
+    st = fs.statSync(absPath);
+  } catch {
+    return out;
+  }
+  if (st.isFile()) {
+    if (isLspSourceFile(absPath)) out.push(path.resolve(absPath));
+    return out;
+  }
+  if (!st.isDirectory()) return out;
+  let entries: string[];
+  try {
+    entries = fs.readdirSync(absPath);
+  } catch {
+    return out;
+  }
+  for (const name of entries) {
+    if (name === "node_modules" || name === ".git") continue;
+    listLspSourcesUnder(path.join(absPath, name), depth + 1, out);
+  }
+  return out;
+}
+
+/**
+ * `Definir` de escopo de arquivo nos peers (exceto `currentFileAbs`).
+ * Usado para SEM001 em projeto de relatório (Inicialização → seções, etc.).
+ */
+export function collectPeerFileScopeGlobals(
+  includeRootsAbs: string[],
+  currentFileAbs: string
+): string[] {
+  const current = path.resolve(currentFileAbs);
+  const names = new Set<string>();
+  const seenFiles = new Set<string>();
+
+  for (const root of includeRootsAbs) {
+    for (const file of listLspSourcesUnder(root)) {
+      const resolved = path.resolve(file);
+      if (resolved === current) continue;
+      const key = resolved.toLowerCase();
+      if (seenFiles.has(key)) continue;
+      seenFiles.add(key);
+      const text = readText(resolved);
+      if (!text) continue;
+      for (const v of parseFileSymbols(text).variables) {
+        if (v.scope === "file" && v.name) names.add(v.name);
+      }
+    }
+  }
+  return [...names];
+}
+
+function mergeUniqueNames(...lists: readonly (readonly string[])[]): string[] {
+  const out = new Set<string>();
+  for (const list of lists) {
+    for (const n of list) {
+      if (n) out.add(n);
+    }
+  }
+  return [...out];
+}
+
 export type LoadedReportOpts = {
   reportContext: ReportContext;
   knownGlobals: string[];
@@ -60,10 +132,14 @@ export function loadReportAnalyzeOpts(filePath: string): LoadedReportOpts | unde
   if (!root) return undefined;
 
   const rootFs = root.replace(/\//g, path.sep);
+  const overlay = loadReportScopeOverlay(filePath);
+  const includeRoots = overlay?.includeRootsAbs ?? [rootFs];
   const relatorioRaw = readText(path.join(rootFs, "relatorio.json"));
   const entradaRaw = readText(path.join(rootFs, "Definicao", "Entrada.json"));
   const meta = relatorioRaw ? parseRelatorioMeta(relatorioRaw) : {};
-  const knownGlobals = entradaRaw ? parseEntradaNomes(entradaRaw) : [];
+  const entradaNames = entradaRaw ? parseEntradaNomes(entradaRaw) : [];
+  const peerNames = collectPeerFileScopeGlobals(includeRoots, filePath);
+  const knownGlobals = mergeUniqueNames(entradaNames, peerNames);
   const sectionNames = listSectionDirs(path.join(rootFs, "Secoes"));
 
   const relPath = path.relative(rootFs, filePath).split(path.sep).join("/");

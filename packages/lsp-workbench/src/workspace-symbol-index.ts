@@ -172,6 +172,25 @@ export class WorkspaceSymbolIndex {
     return m;
   }
 
+  /**
+   * Nomes de `Definir` file-scope nos peers do escopo (SEM001 / ACC-09).
+   * Em singleFile retorna [].
+   */
+  async peerFileScopeGlobalsFor(document: vscode.TextDocument): Promise<string[]> {
+    const { resolution } = await this.getScopedEligible(document);
+    if (resolution.mode === "singleFile") return [];
+    const current = document.uri.fsPath.replace(/\\/g, "/").toLowerCase();
+    const names = new Set<string>();
+    for (const peerPath of resolution.peers) {
+      if (peerPath.replace(/\\/g, "/").toLowerCase() === current) continue;
+      const sym = await this.getSymbols(vscode.Uri.file(peerPath));
+      for (const v of sym.variables) {
+        if (v.scope === "file" && v.name) names.add(v.name);
+      }
+    }
+    return [...names];
+  }
+
   async findFunctionDefinition(
     document: vscode.TextDocument,
     name: string

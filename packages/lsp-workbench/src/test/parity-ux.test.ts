@@ -196,15 +196,46 @@ describe("ACC-SQLF embedded sql", () => {
 });
 
 describe("ACC-SYS system catalog", () => {
-  it("ACC-SYS-01 HCM merges stub", () => {
+  it("ACC-SYS-01 HCM merges índice HCM", () => {
     const cat = catalogForSystem("HCM");
     assert.ok(cat.some((e) => e.label === "RetDiaSemana"));
     assert.ok(cat.some((e) => e.label === "Mensagem"));
+    assert.ok(cat.some((e) => e.label === "AcuEveCol"), "função HCM do índice");
+    assert.ok(!cat.some((e) => e.label === "ComposicaoProduto"), "ERP não deve entrar no filtro HCM");
   });
 
-  it("ACC-SYS-02 empty is SENIOR", () => {
+  it("ACC-SYS-01b AbrirArquivo HCM enriquecido", () => {
+    const cat = catalogForSystem("HCM");
+    const e = cat.find((x) => x.label === "AbrirArquivo");
+    assert.ok(e);
+    assert.match(e.insertText, /aArquivo/);
+    assert.match(e.documentation, /aRetorno|AbrirArquivo/);
+    assert.match(e.detail, /^HCM/);
+  });
+
+  it("ACC-SYS-02 empty is união completa (SENIOR)", () => {
     const cat = catalogForSystem("");
     assert.ok(cat.some((e) => e.label === "Mensagem"));
+    assert.ok(cat.some((e) => e.label === "AcuEveCol"), "HCM na união");
+    assert.ok(cat.some((e) => e.label === "ComposicaoProduto"), "ERP na união");
+  });
+
+  it("ACC-SYS-03 ERP filtra produto", () => {
+    const cat = catalogForSystem("ERP");
+    assert.ok(cat.some((e) => e.label === "Mensagem"));
+    assert.ok(cat.some((e) => e.label === "ComposicaoProduto"));
+    assert.ok(cat.some((e) => e.label === "AbrirTelaSistema"), "índice programador ERP");
+    assert.ok(!cat.some((e) => e.label === "AcuEveCol"), "HCM não deve entrar no filtro ERP");
+  });
+
+  it("ACC-SYS-04 AbrirTelaSistema tem sintaxe/params enriquecidos", () => {
+    const cat = catalogForSystem("ERP");
+    const e = cat.find((x) => x.label === "AbrirTelaSistema");
+    assert.ok(e);
+    assert.match(e.insertText, /aTela/);
+    assert.match(e.documentation, /aParametros/);
+    assert.match(e.documentation, /Numero End aResultado|aResultado/);
+    assert.match(e.detail, /^ERP/);
   });
 });
 

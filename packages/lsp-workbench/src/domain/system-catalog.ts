@@ -1,53 +1,52 @@
 /**
- * Catálogos por sistema adicional (SENIOR sempre; HCM/ACESSO/ERP stubs até extração completa).
+ * Catálogos por sistema adicional (SENIOR/vazio = união completa; HCM/ERP filtram produto).
  */
 
-import { LSP_FUNCTION_CATALOG } from "../function-catalog";
+import {
+  LSP_FUNCTION_CATALOG,
+  LSP_FUNCTION_CATALOG_ERP,
+  LSP_FUNCTION_CATALOG_HCM,
+} from "../function-catalog";
 import type { LspFunctionEntry } from "../function-catalog.types";
 
 export type LspSystem = "" | "HCM" | "ACESSO" | "ERP";
 
-/** Extensões stub — nomes típicos; expandir via extract futuro. */
-const HCM_STUB: LspFunctionEntry[] = [
-  {
-    label: "RetDiaSemana",
-    insertText: "RetDiaSemana(${1:vnData}, ${2:vnDia});",
-    detail: "HCM · RetDiaSemana",
-    documentation: "Retorna dia da semana (catálogo HCM stub).",
-    kind: "function",
-  },
-];
-
 const ACESSO_STUB: LspFunctionEntry[] = [];
 
-const ERP_STUB: LspFunctionEntry[] = [
-  {
-    label: "BuscarTitEdi",
-    insertText: "BuscarTitEdi(${1:vnEmp}, ${2:vnFil}, ${3:vnNum});",
-    detail: "ERP · BuscarTitEdi",
-    documentation: "Stub ERP — expandir com docs oficiais.",
-    kind: "function",
-  },
-];
-
-export function catalogForSystem(system: LspSystem | string): LspFunctionEntry[] {
-  const base = [...LSP_FUNCTION_CATALOG];
-  const extra =
-    system === "HCM"
-      ? HCM_STUB
-      : system === "ACESSO"
-        ? ACESSO_STUB
-        : system === "ERP"
-          ? ERP_STUB
-          : [];
-  const seen = new Set(base.map((e) => e.label.toLowerCase()));
+function mergeUnique(base: LspFunctionEntry[], extra: LspFunctionEntry[]): LspFunctionEntry[] {
+  const byLabel = new Map<string, LspFunctionEntry>();
+  for (const e of base) byLabel.set(e.label.toLowerCase(), e);
   for (const e of extra) {
-    if (!seen.has(e.label.toLowerCase())) {
-      base.push(e);
-      seen.add(e.label.toLowerCase());
-    }
+    const k = e.label.toLowerCase();
+    if (!byLabel.has(k)) byLabel.set(k, e);
   }
-  return base;
+  return [...byLabel.values()].sort((a, b) =>
+    a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" })
+  );
+}
+
+/**
+ * - `""` / SENIOR: catálogo unificado (plataforma + HCM + ERP) — máxima cobertura.
+ * - `HCM`: plataforma + funções do índice HCM (já inclusas no unificado; filtro por system tag + base).
+ * - `ERP`: plataforma + funções do índice ERP.
+ * - `ACESSO`: plataforma (+ stub vazio).
+ */
+export function catalogForSystem(system: LspSystem | string): LspFunctionEntry[] {
+  const sys = (system || "").toUpperCase();
+  if (sys === "HCM") {
+    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
+    return mergeUnique(platform, LSP_FUNCTION_CATALOG_HCM);
+  }
+  if (sys === "ERP") {
+    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
+    return mergeUnique(platform, LSP_FUNCTION_CATALOG_ERP);
+  }
+  if (sys === "ACESSO") {
+    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
+    return mergeUnique(platform, ACESSO_STUB);
+  }
+  // vazio / SENIOR / desconhecido → união completa
+  return LSP_FUNCTION_CATALOG;
 }
 
 export function functionsMatchingPrefixForSystem(
