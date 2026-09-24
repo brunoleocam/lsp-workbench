@@ -2,7 +2,9 @@
 
 Plugin Cursor (Agent) do **LSP Workbench**: rules, skills e commands para a [Linguagem Senior de Programação](https://documentacao.senior.com.br/tecnologia).
 
-Complementa a extensão **LSP Workbench** (IDE / Marketplace). Escopo: sintaxe, padrões e geradores — sem dicionário Oracle embutido (use catálogo local / `@lsp-banco`).
+Complementa a extensão **LSP Workbench** (IDE / Marketplace) **≥ 0.2.4**. Escopo: sintaxe, padrões e geradores — sem dicionário Oracle embutido (use catálogo local / `@lsp-banco`).
+
+Versão do agent: ver [CHANGELOG.md](CHANGELOG.md) · IDs estáticos: [docs/ids-estaticos.md](docs/ids-estaticos.md).
 
 ## Commands
 
@@ -45,4 +47,4 @@ Complementa a extensão **LSP Workbench** (IDE / Marketplace). Escopo: sintaxe, 
 
 MIT — [LICENSE](LICENSE).
 
-Docs: [docs/product](../../docs/product/) · [PUBLISH.md](PUBLISH.md) · [CONTRIBUTING.md](CONTRIBUTING.md).
+Docs: [ids-estaticos.md](docs/ids-estaticos.md) · [docs/product](../../docs/product/) (monorepo) · [PUBLISH.md](PUBLISH.md) · [CONTRIBUTING.md](CONTRIBUTING.md).
