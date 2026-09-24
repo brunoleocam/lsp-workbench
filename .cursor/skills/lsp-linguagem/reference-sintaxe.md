@@ -16,9 +16,24 @@ Definir Data vdNascimento;
    multi-linha */
 ```
 
-Toda instrução termina com `;`.
+- `@ ... @` **só na mesma linha** (SYN011). Multi-linha → `/* */`.
+- Toda instrução termina com `;`.
+- String `"` aberta deve fechar na linha ou continuar com `\` (SYN012).
 
 **Blocos:** sempre `{ }`. Não usar `Inicio`/`Fim;` / `FimSe` / `FimEnquanto`.
+
+## WebService
+
+```lsp
+Definir Pedido.Retorno wsPed;
+wsPed.Usuario.CmpUsu = vaUser;
+```
+
+Não inventar tipo genérico; o caminho pontuado é o tipo.
+
+## Variáveis de sistema
+
+`CodEmp`, `CodFil`, etc. só como identificador solto. Depois de `.` (ex. `ws.Pedido.CodEmp`) tratam-se como campo.
 
 ## Condicional e laço
 
@@ -44,7 +59,7 @@ Se ((vnA > 0) e (vnB < 10)) {
 
 ## Funções – padrão Senior
 
-Declarações (`Definir Funcao`) ficam no **topo do arquivo**, **depois** das variáveis (`Definir Numero` … `Definir Cursor`). Ver ordem em [variaveis.md](../../../docs/lsp/variaveis.md).
+Declarações (`Definir Funcao`) ficam no **topo do arquivo**, **depois** das variáveis. Ordem dos tipos: Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao.
 
 ```lsp
 @ Declaração (bloco inicial, após variáveis) @

@@ -6,19 +6,13 @@
   },
   "metadata": {
     "description": "LSP Workbench — Agent Cursor para a Linguagem Senior de Programação",
-    "version": "1.4.0",
-    "pluginRoot": "packages"
+    "version": "1.4.1"
   },
   "plugins": [
     {
       "name": "lsp-workbench-agent",
-      "source": "lsp-workbench-agent",
-      "description": "Pré-compilar, depurar fluxo, formatar, refatorar, catálogo local e gerar trechos LSP (lista, cursor, HTTP, relatório).",
-      "version": "1.4.0",
-      "logo": "packages/lsp-workbench-agent/assets/logo.svg",
-      "keywords": ["lsp", "senior", "linguagem-senior", "workbench", "relatorio"],
-      "category": "languages",
-      "tags": ["lsp", "validation", "formatting", "generators", "report"]
+      "source": "./packages/lsp-workbench-agent",
+      "description": "Pré-compilar, depurar fluxo, formatar, refatorar, catálogo local e gerar trechos LSP (lista, cursor, HTTP, relatório)."
     }
   ]
 }

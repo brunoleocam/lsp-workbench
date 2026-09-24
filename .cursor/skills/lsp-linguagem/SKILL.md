@@ -7,6 +7,8 @@ description: Base da Linguagem Senior de Programação (LSP). Use ao criar, edit
 
 Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negócio de um ERP/cliente.
 
+**Compat:** extensão LSP Workbench **≥ 0.2.4** (catálogo unificado de builtins plataforma + HCM + ERP).
+
 ## Quando usar
 
 - Criar ou editar `.lsp` / `.lspt`
@@ -15,7 +17,8 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 
 ## Quando NÃO usar sozinha
 
-- Tabelas/colunas de um ERP concreto: usar dicionário do workspace do cliente; não inventar schema.
+- Tabelas/colunas de um ERP concreto: `@lsp-banco` / catálogo local; não inventar schema.
+- Funções Senior: preferir completion da extensão (filtro por `system` em `lsp.contexts`); não inventar assinaturas.
 
 ## Fluxo
 
@@ -74,7 +77,15 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 | `@lsp-revisar` | Checklist rápido pré-compilação |
 | `@lsp-logs` | Padrão `vaMosLog` / pasta `logs/` |
 
+## Catálogo de funções (0.2.4+)
+
+- Extensão mescla builtins de plataforma + índices HCM/ERP (~1500+).
+- Escopo por sistema: campo `system` em `lsp.contexts` (`HCM` / `ERP`) — ver `@lsp-contexto`.
+- Membros Cursor/Lista: só os de [reference-membros.md](reference-membros.md).
+- Assinaturas de funções: IDE / docs Senior — não inventar params.
+
 ## Docs
 
 - [Senior – tecnologia](https://documentacao.senior.com.br/tecnologia)
-- SQL cursores + dialeto Senior 2: [`docs/lsp/sql.md`](../../../docs/lsp/sql.md) · [funções oficiais](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm)
+- IDs estáticos no plugin: `docs/ids-estaticos.md`
+- SQL cursores (monorepo): `docs/lsp/sql.md` · [funções oficiais](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm)

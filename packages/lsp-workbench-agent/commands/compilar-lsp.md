@@ -16,12 +16,8 @@ Mesmos diagnósticos da IDE: **ANL*** + **SYN/RUL/FUN/SEM/SQL** (+ **DEM**/**GER
 ## Passos
 
 1. Escopo: seleção > arquivo > pasta. Se existir `relatorio.json` acima, tratar como **projeto de relatório** (GER*).
-2. Na raiz do monorepo:
-   ```powershell
-   node scripts/analyze-lsp.mjs <arquivo-ou-pasta-do-relatorio>
-   ```
-   Reportar todos os `[ANL…]`.
-3. Seguir **@lsp-compilar** (incl. DEM se catálogo; GER se relatório).
+2. Diagnósticos: Problems da extensão IDE; se monorepo aberto, `node scripts/analyze-lsp.mjs <arquivo-ou-pasta>`. Reportar `[ANL…]`.
+3. Seguir **@lsp-compilar** (IDs em `docs/ids-estaticos.md`; DEM se catálogo; GER se relatório).
 4. Rules: `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites`, `lsp-listas`, `lsp-banco-http`.
 5. Entregar relatório no formato da skill.
 6. Se pedir correção: aplicar e reexecutar.

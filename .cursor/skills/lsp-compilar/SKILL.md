@@ -9,18 +9,19 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 
 > Nome antigo: `@lsp-validar` / `/validar-lsp` — use **`@lsp-compilar`** / **`/compilar-lsp`**.
 
-**Fonte de verdade dos IDs:** [`docs/product/regras-estaticas-lsp.md`](../../../docs/product/regras-estaticas-lsp.md)  
-**Docs de linguagem:** `docs/lsp/` + rules `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites`.
+**IDs (canônico monorepo):** [`docs/product/regras-estaticas-lsp.md`](../../../docs/product/regras-estaticas-lsp.md)  
+**IDs (resumo no plugin Marketplace):** [`packages/lsp-workbench-agent/docs/ids-estaticos.md`](../../../packages/lsp-workbench-agent/docs/ids-estaticos.md)  
+**Docs de linguagem:** rules `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites` (+ `docs/lsp/`).  
+**Compat:** extensão LSP Workbench **≥ 0.2.4**.
 
 ## Fluxo
 
 1. Identificar escopo (arquivo / seleção / pasta / projeto de relatório)
-2. **Rodar o analyzer** (mesmos ANL* da IDE), na raiz do monorepo:
+2. **Diagnósticos:** preferir Problems da extensão IDE (mesmos ANL*). Se o monorepo estiver aberto:
    ```powershell
-   cd packages\lsp-analyzer; npm run compile
-   node ..\..\scripts\analyze-lsp.mjs <arquivo-ou-pasta>
+   node scripts/analyze-lsp.mjs <arquivo-ou-pasta>
    ```
-   Incluir toda linha `file:line: [ANL…]` no relatório.
+   Incluir toda linha `file:line: [ANL…]` no relatório. Sem monorepo: checklist SYN/RUL abaixo + Problems.
 3. Aplicar checklists SYN / RUL / FUN / SEM / SQL abaixo (complementares ao analyzer)
 4. Se houver **projeto de relatório** (`relatorio.json` acima): checklist GER*
 5. Se houver **catálogo local** (`lsp.catalog.path` ou `docs/banco-senior-base/catalog.json` / overlay): checklist DEM001
@@ -176,14 +177,14 @@ Preferir a extensão (Problems) quando o workspace estiver aberto com LSP Workbe
 
 | Extensão (Problems / QF) | Agent |
 |--------------------------|--------|
-| SYN/RUL/FUN/SEM/SQL/ANL | este skill + `analyze-lsp.mjs` |
-| DEM001 | só com catálogo local |
+| SYN/RUL/FUN/SEM/SQL/ANL | este skill + Problems (ou `analyze-lsp.mjs` no monorepo) |
+| DEM001 | só com catálogo local de tabelas |
 | GER* | só em projeto `relatorio.json` |
+| Builtins HCM/ERP (0.2.4+) | completion filtrado por `system` no contexto |
 | Scaffold relatório | `/gerar-relatorio` + comando IDE |
 
 ## Referências
 
-- Catálogo: `docs/product/regras-estaticas-lsp.md`
-- Analyzer: `packages/lsp-analyzer`
-- Extensão: `packages/lsp-workbench`
+- IDs no plugin: `docs/ids-estaticos.md`
+- Monorepo: `docs/product/regras-estaticas-lsp.md`, `packages/lsp-analyzer`, `packages/lsp-workbench`
 - `@lsp-linguagem` / `@lsp-revisar` / `/gerar-relatorio`

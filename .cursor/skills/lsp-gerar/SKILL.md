@@ -29,12 +29,14 @@ Garante que código novo ou alterado siga as rules (`lsp-nucleo`, `lsp-limites`,
 
 ### 2. Schema de ERP (catálogo local — PDR-009)
 
-Este plugin **não** embute dicionário. Ordem:
+Este plugin **não** embute dicionário de tabelas. Ordem:
 
 1. **`@lsp-banco`** — `docs/banco-senior-base/` (README + `catalog.example.json`) e, se existir, overlay `docs/banco-senior/`.
 2. Setting da extensão: `lsp.catalog.path` (completion `Tabela.Campo` / DEM001).
 3. Gerar catálogo: `node scripts/catalog-from-r996-tsv.mjs` (ver `docs/banco-senior-base/consultar-dicionario.sql`).
 4. Sem evidência local → **não inventar** colunas/JOINs; pedir doc do cliente ou TSV R996.
+
+**Funções builtins** (extensão ≥ 0.2.4): catálogo unificado plataforma + HCM/ERP; filtrar com `system` em `lsp.contexts` (`@lsp-contexto`). Não inventar assinaturas.
 
 ### 3. Gerar ou editar
 

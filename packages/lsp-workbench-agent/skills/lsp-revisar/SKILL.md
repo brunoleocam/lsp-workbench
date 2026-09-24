@@ -26,9 +26,12 @@ Checklist **curto** depois de implementar. Não substitui o relatório completo.
 - [ ] **Interrupção:** `Cancel(1);` nunca `Retorna`
 - [ ] **CopiarAlfa:** se precisar preservar original
 - [ ] **SQL longo:** `\` ~coluna 80
+- [ ] **Comentário `@`:** só na mesma linha (SYN011); multi-linha → `/* */`
+- [ ] **String `"`:** fechada ou com `\` no fim (SYN012)
 - [ ] **Terminador:** `;` em todo comando
 - [ ] **Cursor/arquivo:** Abrir/Fechar pareados
 - [ ] **ExecSQLEx:** `0` = sucesso
+- [ ] **WebService:** `Definir caminho.pontuado wsNome;` (não inventar tipo)
 - [ ] **Relatório:** se em projeto `relatorio.json`, lembrar GER* → preferir `/compilar-lsp`
 - [ ] **Tabelas:** se citou E*/R*/USU_*, usar `@lsp-banco` (não inventar)
 
