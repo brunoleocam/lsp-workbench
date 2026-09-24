@@ -9,10 +9,13 @@ Manifesto multi-plugin (monorepo): [`.cursor-plugin/marketplace.json`](../../.cu
 ## Pré-requisitos
 
 - [x] `.cursor-plugin/plugin.json` com `name`: `lsp-workbench-agent`
+- [x] `.cursor-plugin/marketplace.json` com `source`: `./packages/lsp-workbench-agent` (schema oficial)
 - [x] Logo em `assets/` (sem paths `..`)
 - [x] Sem `docs/banco-senior` / `docs/senior`
 - [ ] Teste local (abaixo)
 - [ ] Submit em https://cursor.com/marketplace/publish
+
+Schema de referência: [cursor/plugins schemas](https://github.com/cursor/plugins/tree/main/schemas).
 
 ## Teste local
 

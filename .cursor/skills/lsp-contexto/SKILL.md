@@ -32,12 +32,14 @@ O Agent **não** substitui a UI da extensão. Use este skill para orientar o usu
 }
 ```
 
+`system` (`HCM` / `ERP`): filtra builtins do catálogo unificado na extensão (≥ 0.2.4). Sem `system`, completion mistura plataformas conforme fallback da IDE.
+
 ## Projeto de relatório
 
-- Escopo = pasta do `relatorio.json` (não mistura irmãos `RDCGXXX`/`RDCGXXY`).
-- `contextoExtra`: pastas/arquivos compartilhados (ex. `../FUNCOES`).
-- Comandos Agent: `/gerar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
-- Comandos IDE: Importar/Exportar Contexto, Mostrar Escopo, Visualizar Todas as Regras.
+- Escopo = pasta do `relatorio.json` (não mistura irmãos `RDCGXXX`/`RDCGXXY`) — PDR-010.
+- `contextoExtra` em `relatorio.json`: pastas/arquivos compartilhados (ex. `../FUNCOES`).
+- Comandos Agent: `/gerar-relatorio`, `/importar-relatorio`, `/escopo-relatorio`, `/copiar-regra-relatorio`.
+- Comandos IDE: Importar Relatório, Importar/Exportar Contexto, Mostrar Escopo, Visualizar Todas as Regras.
 
 ## O que o Agent deve fazer
 
