@@ -1,5 +1,12 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.6 — 2026-09-24
+
+### Alterado
+
+- Temas **Dark** e **Full Dark**: paleta inspirada no [Copilot Theme](https://github.com/benjaminbenais/copilot-theme) — fundo `#232a2f` / `#161b1e`, string `#5bec95`, função `#ffea6b`, keyword `#ba8ef7`, número `#ffa763`, variável/operador branco `#ffffff`, tipo `#89ddff`, variável de sistema vermelha negrito `#ff5555`, operadores (`+` `-` `=` `>` `<` `/` `\\` `;`) rosa `#ff6a80`
+- Tema **Clássico** (claro): mesma hierarquia — string `#0d9f56`, função `#9a7b00`, keyword `#8250df`, número `#bc4c00`, variável/operador `#1a2023`, tipo `#0550ae`
+
 ## 0.2.5 — 2026-09-24
 
 ### Corrigido

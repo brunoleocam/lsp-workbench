@@ -26,3 +26,9 @@ O Workbench pode **copiar**, **adaptar** ou **inspirar-se** em ideias e código 
 | — | — | (ainda sem cópia direta; política liberada em 2026-09-21) | — |
 
 Atualize a tabela acima na primeira incorporação concreta.
+
+### Copilot Theme (Benjamin Benais)
+
+- Autor: [Benjamin Benais](https://github.com/benjaminbenais)
+- Repositório: <https://github.com/benjaminbenais/copilot-theme>
+- Uso: **inspiração de paleta** (fundo, verde de string, amarelo de função, roxo de keyword, laranja de constante) nos temas Dark / Full Dark / Clássico do Workbench — scopes TextMate/LSP próprios; não é redistribuição do arquivo do tema.
