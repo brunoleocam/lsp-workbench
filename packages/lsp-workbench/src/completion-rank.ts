@@ -8,6 +8,8 @@
  * 6. Quick Fixes
  *
  * Dentro de cada faixa: ordem alfabética (A→Z, case-insensitive).
+ * Tabelas e campos do catálogo não usam esta função: ver `catalogMemberSortText`
+ * (índice do catálogo, a mesma ordem do banco).
  */
 
 export type CompletionSortBand =
@@ -41,6 +43,18 @@ export function completionSortText(
   const l = label.toLowerCase();
   const effective: CompletionSortBand = p.length > 0 && l === p ? "exact" : band;
   return `${BAND_CODE[effective]}_${l}`;
+}
+
+/**
+ * sortText de tabela/campo do catálogo.
+ * Fica na faixa "outros" (depois de comandos, antes de quick fixes),
+ * mas a posição interna é o índice do banco — sem reordenar A→Z.
+ * Campos (`field`) vêm antes de tabelas (`table`).
+ */
+export function catalogMemberSortText(kind: "field" | "table", index: number): string {
+  const slot = kind === "field" ? "c" : "t";
+  const n = Number.isFinite(index) && index >= 0 ? Math.floor(index) : 0;
+  return `4${slot}${String(n).padStart(5, "0")}`;
 }
 
 /** Compara dois sortText (útil em testes). */

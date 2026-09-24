@@ -1,5 +1,12 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.7 — 2026-09-24
+
+### Alterado
+
+- Ctrl+Espaço de tabelas e campos do banco segue a ordem do catálogo (`FLDORD`), sem reordenar em A–Z
+- Campo da chave primária marcado como **chave** na lista
+
 ## 0.2.6 — 2026-09-24
 
 ### Alterado

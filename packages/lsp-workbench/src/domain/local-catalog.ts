@@ -3,10 +3,12 @@
  * Path configurável via `lsp.catalog.path` (PDR-009).
  */
 
-export type LocalCatalogColumn = { name: string; type?: string };
+export type LocalCatalogColumn = { name: string; type?: string; key?: boolean };
 export type LocalCatalogTable = {
   name: string;
   description?: string;
+  /** Nomes dos campos da chave primária, na ordem do banco. */
+  primaryKey?: string[];
   columns: LocalCatalogColumn[];
 };
 export type LocalCatalog = {
@@ -30,10 +32,15 @@ export function parseLocalCatalogJson(raw: string): LocalCatalog | undefined {
         .map((t) => ({
           name: String(t.name).toUpperCase(),
           description: t.description,
+          primaryKey: parsePrimaryKey(t.primaryKey),
           columns: Array.isArray(t.columns)
             ? t.columns
                 .filter((c) => c && typeof c.name === "string")
-                .map((c) => ({ name: String(c.name), type: c.type }))
+                .map((c) => ({
+                  name: String(c.name),
+                  type: c.type,
+                  key: c.key === true ? true : undefined,
+                }))
             : [],
         })),
       enums: data.enums ?? [],
@@ -73,11 +80,34 @@ export function tablesMatchingPrefix(
   limit = 40
 ): LocalCatalogTable[] {
   const p = prefix.toUpperCase();
-  if (!p) return catalog.tables.slice(0, limit);
-  return catalog.tables.filter((t) => t.name.startsWith(p)).slice(0, limit);
+  const matched = p ? catalog.tables.filter((t) => t.name.startsWith(p)) : catalog.tables;
+  return matched.slice(0, limit);
 }
 
-/** Colunas de uma tabela (nome case-insensitive). */
+function parsePrimaryKey(raw: unknown): string[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const names = raw.filter((x) => typeof x === "string" && x.trim()).map((x) => String(x).trim());
+  return names.length ? names : undefined;
+}
+
+/**
+ * Mantém a ordem do catálogo (FLDORD do banco) e só marca os campos da chave.
+ */
+export function markCatalogColumns(table: LocalCatalogTable): LocalCatalogColumn[] {
+  const pkSet = new Set((table.primaryKey ?? []).map((n) => n.toUpperCase()));
+  const seen = new Set<string>();
+  const columns: LocalCatalogColumn[] = [];
+  for (const c of table.columns) {
+    const up = c.name.toUpperCase();
+    if (seen.has(up)) continue;
+    seen.add(up);
+    const key = c.key === true || pkSet.has(up);
+    columns.push({ ...c, key: key ? true : undefined });
+  }
+  return columns;
+}
+
+/** Colunas de uma tabela (nome case-insensitive), na ordem do banco. */
 export function columnsForTable(
   catalog: LocalCatalog,
   tableName: string,
@@ -86,13 +116,10 @@ export function columnsForTable(
 ): LocalCatalogColumn[] {
   const t = catalog.tables.find((x) => x.name === tableName.toUpperCase());
   if (!t) return [];
+  const ordered = markCatalogColumns(t);
   const p = prefix.toUpperCase();
-  const cols = p
-    ? t.columns.filter((c) => c.name.toUpperCase().startsWith(p))
-    : t.columns;
-  return [...cols]
-    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" }))
-    .slice(0, limit);
+  const cols = p ? ordered.filter((c) => c.name.toUpperCase().startsWith(p)) : ordered;
+  return cols.slice(0, limit);
 }
 
 /** Export para testes — limpa cache. */

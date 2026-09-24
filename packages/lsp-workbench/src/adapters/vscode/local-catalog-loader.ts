@@ -92,6 +92,17 @@ export function getLocalCatalog(): LocalCatalog | undefined {
   );
 }
 
+function columnDetail(base: string, type: string | undefined, key: boolean | undefined): string {
+  const body = type ? `${base} · ${type}` : base;
+  return key ? `Chave · ${body}` : body;
+}
+
+function columnDocumentation(type: string | undefined, key: boolean | undefined): string | undefined {
+  if (key && type) return `Campo chave · ${type}`;
+  if (key) return "Campo chave";
+  return type;
+}
+
 /** Itens de completion para nomes de tabela (quando há catálogo local). */
 export function localTableCompletions(
   prefix: string
@@ -111,7 +122,7 @@ export function localTableCompletions(
 export function localColumnCompletions(
   filePath: string,
   linePrefix: string
-): { label: string; insertText: string; detail: string; documentation?: string }[] {
+): { label: string; insertText: string; detail: string; documentation?: string; key?: boolean }[] {
   const catalog = getLocalCatalog();
   if (!catalog) return [];
 
@@ -124,8 +135,9 @@ export function localColumnCompletions(
     return columnsForTable(catalog, table, colPrefix).map((c) => ({
       label: c.name,
       insertText: c.name,
-      detail: `${table}.${c.name}`,
-      documentation: c.type,
+      key: c.key === true,
+      detail: columnDetail(`${table}.${c.name}`, c.type, c.key),
+      documentation: columnDocumentation(c.type, c.key),
     }));
   }
 
@@ -140,8 +152,9 @@ export function localColumnCompletions(
   return columnsForTable(catalog, tabelaBase, prefix).map((c) => ({
     label: `${tabelaBase}.${c.name}`,
     insertText: `${tabelaBase}.${c.name}`,
-    detail: "Campo (tabelaBase da seção)",
-    documentation: c.type,
+    key: c.key === true,
+    detail: columnDetail("Campo (tabelaBase da seção)", c.type, c.key),
+    documentation: columnDocumentation(c.type, c.key),
   }));
 }
 

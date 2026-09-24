@@ -143,7 +143,16 @@ function rowsToTables(rows, stripUsu) {
       continue;
     }
     const type = typeLabel(r.dattyp, r.lenfld, r.prefld);
-    table.columns.push(type ? { name: colName, type } : { name: colName });
+    table.columns.push({
+      name: colName,
+      ...(type ? { type } : {}),
+      _ord: Number.isFinite(r.fldord) ? r.fldord : 0,
+    });
+  }
+
+  for (const table of map.values()) {
+    table.columns.sort((a, b) => (a._ord || 0) - (b._ord || 0));
+    table.columns = table.columns.map(({ name, type }) => (type ? { name, type } : { name }));
   }
 
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
