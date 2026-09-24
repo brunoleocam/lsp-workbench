@@ -7,10 +7,14 @@ alwaysApply: false
 
 ## Declaração e nomenclatura
 - `Definir Alfa vaNome;` / `Numero vnX;` / `Data vdX;` / `Lista vlX;` / `Cursor Cur_X;`
+- WebService: `Definir caminho.pontuado wsNome;` (ex.: `Definir Pedido.Retorno wsPed;`) — não inventar tipo.
+- Vars de sistema (`CodEmp`, `CodFil`, …): só sozinhas; após `.` são campo (ex. `ws.Pedido.CodEmp`).
 - Prefixos: va (Alfa), vn (Numero), vd (Data), vl (Lista), Cur_ (Cursor).
 
 ## Terminadores e estrutura
-- Ponto e vírgula `;` no final de cada comando. Case insensitive. Comentários: `@ linha @` ou `/* */`. Identação: 2 espaços. **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
+- Ponto e vírgula `;` no final de cada comando. Case insensitive.
+- Comentários: `@ linha @` **só na mesma linha** (SYN011) ou `/* */`. Identação: 2 espaços.
+- **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
 
 ## Múltiplas condições em Se/Enquanto
 Quando houver mais de uma condição (`e`/`ou`), **cada condição entre parênteses** — senão não compila.
@@ -26,4 +30,4 @@ Quando houver mais de uma condição (`e`/`ou`), **cada condição entre parênt
 - Nome da variável: não pode ser igual a parâmetro de função nem a campo de lista; máx 100 caracteres; sem acentuação (consulte skill `lsp-linguagem` → `reference-sintaxe.md`).
 
 ## Quebra de linha em strings longas
-Usar `\` no final da linha (coluna 80) para continuar na próxima. Alinhar e manter espaços consistentes.
+Usar `\` no final da linha (coluna 80) para continuar na próxima. `"` aberta sem `\` no fim = SYN012. Alinhar e manter espaços consistentes.

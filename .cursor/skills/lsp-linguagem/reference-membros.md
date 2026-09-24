@@ -1,7 +1,9 @@
 # Membros Cursor / Lista (canônico)
 
-Fonte: `packages/lsp-workbench/src/domain/members.ts` (gerado por `scripts/generate-members-reference.mjs`).
+Fonte no monorepo: `packages/lsp-workbench/src/domain/members.ts` (script `generate-members-reference.mjs`).
 **Não inventar** membros fora desta lista.
+
+Funções builtins (TamanhoAlfa, SQL_*, …) **não** estão aqui — vêm do catálogo da extensão (≥ 0.2.4, HCM/ERP por `system`).
 
 ## Cursor (`Definir Cursor Cur_…`)
 

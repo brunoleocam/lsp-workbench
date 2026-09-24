@@ -1,7 +1,7 @@
 {
   "name": "lsp-workbench-agent",
   "displayName": "LSP Workbench Agent",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Agent Cursor para Linguagem Senior: pré-compilar, depurar fluxo, formatar, refatorar, catálogo local e gerar (lista, cursor, HTTP, relatório).",
   "author": {
     "name": "Bruno Campos",
@@ -17,6 +17,14 @@
     "linguagem-senior",
     "sapiens",
     "relatorio"
+  ],
+  "category": "languages",
+  "tags": [
+    "lsp",
+    "validation",
+    "formatting",
+    "generators",
+    "report"
   ],
   "logo": "assets/logo.svg",
   "rules": "./rules/",
