@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.10 — 2026-09-24
+
+### Corrigido
+
+- Ctrl+Espaço mostra tabelas e campos do catálogo mesmo dentro de aspas (SQL da regra) e sem esperar o índice do projeto
+
 ## 0.2.9 — 2026-09-24
 
 ### Corrigido

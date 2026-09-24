@@ -103,6 +103,56 @@ function toKind(kind: "keyword" | "function" | "type"): vscode.CompletionItemKin
 }
 
 /** Campo do catálogo: marca chave e fixa a ordem do banco (sem A→Z). */
+function trailingIdent(linePrefix: string): string {
+  return linePrefix.match(/([A-Za-z_][A-Za-z0-9_]*)$/)?.[1] ?? "";
+}
+
+/** Prefixo de tabela Senior: E075, R999, USU_. */
+function looksLikeTablePrefix(ident: string): boolean {
+  return /^(?:E|R)\d/i.test(ident) || /^USU_/i.test(ident);
+}
+
+function buildCatalogColumnItems(
+  filePath: string,
+  position: vscode.Position,
+  linePrefix: string
+): vscode.CompletionItem[] {
+  return localColumnCompletions(filePath, linePrefix).map((t, i) => {
+    const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+    item.insertText = t.insertText;
+    item.filterText = t.label;
+    applyCatalogColumnPresentation(item, t, i);
+    const suf = linePrefix.match(/([A-Za-z0-9_]*)$/)?.[1]?.length ?? 0;
+    item.range = new vscode.Range(
+      position.line,
+      Math.max(0, position.character - suf),
+      position.line,
+      position.character
+    );
+    return item;
+  });
+}
+
+function buildCatalogTableItems(
+  ident: string,
+  range: vscode.Range
+): vscode.CompletionItem[] {
+  if (!looksLikeTablePrefix(ident)) return [];
+  return localTableCompletions(ident).map((t, i) => {
+    const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
+    item.label = {
+      label: t.label,
+      description: completionOriginLabel("catalogo"),
+    };
+    item.detail = completionDetailLine("catalogo", t.detail);
+    item.filterText = t.label;
+    if (t.documentation) item.documentation = new vscode.MarkdownString(t.documentation);
+    item.range = range;
+    item.sortText = catalogMemberSortText("table", i);
+    return item;
+  });
+}
+
 function applyCatalogColumnPresentation(
   item: vscode.CompletionItem,
   entry: { label: string; detail: string; documentation?: string; key?: boolean },
@@ -1300,6 +1350,22 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
     async provideCompletionItems(document, position) {
       const line = document.lineAt(position);
       const linePrefix = line.text.slice(0, position.character);
+      const ident = trailingIdent(linePrefix);
+      // Antes de aspas, índice do workspace e quick fixes: senão o catálogo não aparece.
+      if (isTableColumnCompletionContext(linePrefix)) {
+        const columns = buildCatalogColumnItems(document.uri.fsPath, position, linePrefix);
+        if (columns.length) return new vscode.CompletionList(columns, false);
+      }
+      if (looksLikeTablePrefix(ident)) {
+        const identRange = new vscode.Range(
+          position.line,
+          Math.max(0, position.character - ident.length),
+          position.line,
+          position.character
+        );
+        const tables = buildCatalogTableItems(ident, identRange);
+        if (tables.length) return new vscode.CompletionList(tables, false);
+      }
       const quotes = (linePrefix.match(/"/g) || []).length;
       const rawWordRange =
         document.getWordRangeAtPosition(position, /[A-Za-z_][\w]*/) ??
