@@ -112,7 +112,7 @@ function applyCatalogColumnPresentation(
     item.label = { label: entry.label, description: "chave" };
   }
   item.detail = entry.detail;
-  if (entry.documentation) item.documentation = entry.documentation;
+  if (entry.documentation) item.documentation = new vscode.MarkdownString(entry.documentation);
   item.sortText = catalogMemberSortText("field", index);
 }
 

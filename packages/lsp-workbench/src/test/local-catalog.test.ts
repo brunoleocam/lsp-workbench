@@ -64,6 +64,42 @@ describe("local-catalog example", () => {
       cols.map((c) => c.key === true),
       [false, false, true, false, true, false]
     );
+    assert.equal(catalog!.tables[0].columns[0].description, undefined);
+    const withEnum = parseLocalCatalogJson(
+      JSON.stringify({
+        version: 1,
+        tables: [
+          {
+            name: "E075PRO",
+            columns: [
+              {
+                name: "TipPro",
+                type: "Alfa(1)",
+                mask: "U",
+                size: "1",
+                description: "Tipo do produto",
+                enum: "LTipPro",
+                nullable: false,
+                required: true,
+              },
+            ],
+          },
+        ],
+        enums: [
+          {
+            name: "LTipPro",
+            values: [
+              { key: "P", description: "Produzido", order: 0 },
+              { key: "C", description: "Comprado", order: 1 },
+            ],
+          },
+        ],
+      })
+    );
+    assert.ok(withEnum);
+    assert.equal(withEnum!.tables[0].columns[0].enum, "LTipPro");
+    assert.equal(withEnum!.tables[0].columns[0].mask, "U");
+    assert.equal(withEnum!.enums?.[0].values[1].description, "Comprado");
     const filtered = columnsForTable(catalog!, "e001tns", "Cod");
     assert.deepEqual(
       filtered.map((c) => c.name),

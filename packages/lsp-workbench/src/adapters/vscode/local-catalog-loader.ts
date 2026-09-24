@@ -6,6 +6,8 @@ import {
   tablesMatchingPrefix,
   columnsForTable,
   type LocalCatalog,
+  type LocalCatalogColumn,
+  type LocalCatalogEnum,
 } from "../../domain/local-catalog";
 import { loadReportAnalyzeOpts } from "../../domain/report-project-loader";
 
@@ -97,10 +99,40 @@ function columnDetail(base: string, type: string | undefined, key: boolean | und
   return key ? `Chave · ${body}` : body;
 }
 
-function columnDocumentation(type: string | undefined, key: boolean | undefined): string | undefined {
-  if (key && type) return `Campo chave · ${type}`;
-  if (key) return "Campo chave";
-  return type;
+function enumByName(catalog: LocalCatalog, name: string | undefined): LocalCatalogEnum | undefined {
+  if (!name || !catalog.enums) return undefined;
+  const key = name.toUpperCase();
+  return catalog.enums.find((item) => item.name.toUpperCase() === key);
+}
+
+/** Texto do painel de detalhe: tipo, máscara, tamanho, descrição, lista e nulo/obrigatório. */
+function columnDocumentation(catalog: LocalCatalog, column: LocalCatalogColumn): string | undefined {
+  const lines: string[] = [];
+  if (column.description) lines.push(column.description, "");
+  const facts: string[] = [];
+  if (column.type) facts.push(`- **Tipo:** ${column.type}`);
+  if (column.mask) facts.push(`- **Máscara:** ${column.mask}`);
+  if (column.size) facts.push(`- **Tamanho:** ${column.size}`);
+  if (column.decimals) facts.push(`- **Decimais:** ${column.decimals}`);
+  if (column.nullable !== undefined) facts.push(`- **Nulo:** ${column.nullable ? "Sim" : "Não"}`);
+  if (column.required !== undefined) {
+    facts.push(`- **Obrigatório:** ${column.required ? "Sim" : "Não"}`);
+  }
+  lines.push(...facts);
+  const enumeration = enumByName(catalog, column.enum);
+  if (column.enum) {
+    if (lines.length && lines[lines.length - 1] !== "") lines.push("");
+    lines.push(`**Enumeração** ${column.enum}`);
+    const values = [...(enumeration?.values ?? [])].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.key.localeCompare(b.key)
+    );
+    for (const value of values) {
+      const order = value.order !== undefined ? ` (${value.order})` : "";
+      lines.push(`- \`${value.key}\` — ${value.description ?? ""}${order}`);
+    }
+  }
+  const text = lines.join("\n").trim();
+  return text || undefined;
 }
 
 /** Itens de completion para nomes de tabela (quando há catálogo local). */
@@ -137,7 +169,7 @@ export function localColumnCompletions(
       insertText: c.name,
       key: c.key === true,
       detail: columnDetail(`${table}.${c.name}`, c.type, c.key),
-      documentation: columnDocumentation(c.type, c.key),
+      documentation: columnDocumentation(catalog, c),
     }));
   }
 
@@ -154,7 +186,7 @@ export function localColumnCompletions(
     insertText: `${tabelaBase}.${c.name}`,
     key: c.key === true,
     detail: columnDetail("Campo (tabelaBase da seção)", c.type, c.key),
-    documentation: columnDocumentation(c.type, c.key),
+    documentation: columnDocumentation(catalog, c),
   }));
 }
 
