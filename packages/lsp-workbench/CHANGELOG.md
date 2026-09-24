@@ -1,5 +1,12 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.5 — 2026-09-24
+
+### Corrigido
+
+- Snippets ERP com parâmetros ausentes: `LeListaSimulaComponentes`, `SimulaCargaRecursos`, `AtualizarPesosPFA`
+- `LeLotesSubdivididos`: removido slot vazio na assinatura (typo da doc Senior)
+
 ## 0.2.4 — 2026-09-24
 
 ### Adicionado
