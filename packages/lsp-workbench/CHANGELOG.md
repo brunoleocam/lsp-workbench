@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.8 — 2026-09-24
+
+### Adicionado
+
+- Ctrl+Espaço de campo mostra tipo, máscara, tamanho, decimais, descrição, nulo, obrigatório e os valores da enumeração (`KEYNAM`, descrição e `KEYORD`)
+
 ## 0.2.7 — 2026-09-24
 
 ### Alterado

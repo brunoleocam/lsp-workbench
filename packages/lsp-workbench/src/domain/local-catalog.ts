@@ -3,7 +3,28 @@
  * Path configurável via `lsp.catalog.path` (PDR-009).
  */
 
-export type LocalCatalogColumn = { name: string; type?: string; key?: boolean };
+export type LocalCatalogEnumValue = {
+  key: string;
+  description?: string;
+  order?: number;
+};
+export type LocalCatalogEnum = {
+  name: string;
+  values: LocalCatalogEnumValue[];
+};
+export type LocalCatalogColumn = {
+  name: string;
+  type?: string;
+  mask?: string;
+  size?: string;
+  decimals?: string;
+  description?: string;
+  /** Nome da lista (LSTNAM), ex.: LTipPro. */
+  enum?: string;
+  nullable?: boolean;
+  required?: boolean;
+  key?: boolean;
+};
 export type LocalCatalogTable = {
   name: string;
   description?: string;
@@ -15,7 +36,7 @@ export type LocalCatalog = {
   version: number;
   generatedAt?: string;
   tables: LocalCatalogTable[];
-  enums?: unknown[];
+  enums?: LocalCatalogEnum[];
 };
 
 let cached: { path: string; mtimeMs: number; catalog: LocalCatalog } | undefined;
@@ -36,14 +57,10 @@ export function parseLocalCatalogJson(raw: string): LocalCatalog | undefined {
           columns: Array.isArray(t.columns)
             ? t.columns
                 .filter((c) => c && typeof c.name === "string")
-                .map((c) => ({
-                  name: String(c.name),
-                  type: c.type,
-                  key: c.key === true ? true : undefined,
-                }))
+                .map((c) => parseColumn(c))
             : [],
         })),
-      enums: data.enums ?? [],
+      enums: parseEnums(data.enums),
     };
   } catch {
     return undefined;
@@ -82,6 +99,65 @@ export function tablesMatchingPrefix(
   const p = prefix.toUpperCase();
   const matched = p ? catalog.tables.filter((t) => t.name.startsWith(p)) : catalog.tables;
   return matched.slice(0, limit);
+}
+
+function optionalText(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const text = raw.trim();
+  return text ? text : undefined;
+}
+
+function optionalBool(raw: unknown): boolean | undefined {
+  return raw === true || raw === false ? raw : undefined;
+}
+
+function parseColumn(raw: LocalCatalogColumn): LocalCatalogColumn {
+  const column: LocalCatalogColumn = { name: String(raw.name) };
+  const type = optionalText(raw.type);
+  const mask = optionalText(raw.mask);
+  const size = optionalText(raw.size);
+  const decimals = optionalText(raw.decimals);
+  const description = optionalText(raw.description);
+  const enumeration = optionalText(raw.enum);
+  if (type) column.type = type;
+  if (mask) column.mask = mask;
+  if (size) column.size = size;
+  if (decimals) column.decimals = decimals;
+  if (description) column.description = description;
+  if (enumeration) column.enum = enumeration;
+  const nullable = optionalBool(raw.nullable);
+  const required = optionalBool(raw.required);
+  if (nullable !== undefined) column.nullable = nullable;
+  if (required !== undefined) column.required = required;
+  if (raw.key === true) column.key = true;
+  return column;
+}
+
+function parseEnums(raw: unknown): LocalCatalogEnum[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const enums: LocalCatalogEnum[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const rec = item as { name?: unknown; values?: unknown };
+    const name = optionalText(rec.name);
+    if (!name || !Array.isArray(rec.values)) continue;
+    const values: LocalCatalogEnumValue[] = [];
+    for (const value of rec.values) {
+      if (!value || typeof value !== "object") continue;
+      const row = value as { key?: unknown; description?: unknown; order?: unknown };
+      const key = optionalText(row.key);
+      if (!key) continue;
+      const description = optionalText(row.description);
+      const order = typeof row.order === "number" && Number.isFinite(row.order) ? row.order : undefined;
+      values.push({
+        key,
+        ...(description ? { description } : {}),
+        ...(order !== undefined ? { order } : {}),
+      });
+    }
+    enums.push({ name, values });
+  }
+  return enums.length ? enums : undefined;
 }
 
 function parsePrimaryKey(raw: unknown): string[] | undefined {
