@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.12 — 2026-09-25
+
+### Corrigido
+
+- Campos Alfa voltam ao Ctrl+Espaço. O ícone de texto era ocultado junto com as palavras soltas
+
 ## 0.2.11 — 2026-09-25
 
 ### Alterado
