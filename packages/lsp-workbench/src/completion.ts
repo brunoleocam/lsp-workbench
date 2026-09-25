@@ -112,13 +112,32 @@ function looksLikeTablePrefix(ident: string): boolean {
   return /^(?:E|R)\d/i.test(ident) || /^USU_/i.test(ident);
 }
 
+/** Ícone da lista: o editor só tem os símbolos padrão, não um relógio avulso. */
+function columnItemKind(type?: string, enumeration?: string): vscode.CompletionItemKind {
+  if (enumeration) return vscode.CompletionItemKind.Enum;
+  const raw = (type ?? "").toLowerCase();
+  if (raw.startsWith("data") || raw.startsWith("hora")) return vscode.CompletionItemKind.Event;
+  if (
+    raw.startsWith("número") ||
+    raw.startsWith("numero") ||
+    raw.startsWith("inteiro") ||
+    raw.startsWith("decimal")
+  ) {
+    return vscode.CompletionItemKind.Constant;
+  }
+  if (raw.startsWith("alfa") || raw.startsWith("varchar") || raw.startsWith("texto")) {
+    return vscode.CompletionItemKind.Text;
+  }
+  return vscode.CompletionItemKind.Field;
+}
+
 function buildCatalogColumnItems(
   filePath: string,
   position: vscode.Position,
   linePrefix: string
 ): vscode.CompletionItem[] {
   return localColumnCompletions(filePath, linePrefix).map((t, i) => {
-    const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+    const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
     item.insertText = t.insertText;
     item.filterText = t.label;
     applyCatalogColumnPresentation(item, t, i);
@@ -1543,7 +1562,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       if (isTableColumnCompletionContext(linePrefix)) {
         const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
         const catalogColItems = catalogColRaw.map((t, i) => {
-          const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+          const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
           item.insertText = t.insertText;
           applyCatalogColumnPresentation(item, t, i);
           const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
@@ -1562,7 +1581,7 @@ export function createLspCompletionProvider(): vscode.CompletionItemProvider {
       const defItem = definirCompletion(document, position, word, wordRange);
       const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
       const catalogColItems = catalogColRaw.map((t, i) => {
-        const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Field);
+        const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
         item.insertText = t.insertText;
         applyCatalogColumnPresentation(item, t, i);
         if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
