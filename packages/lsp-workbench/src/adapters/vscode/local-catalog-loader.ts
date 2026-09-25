@@ -167,7 +167,15 @@ export function localTableCompletions(
 export function localColumnCompletions(
   filePath: string,
   linePrefix: string
-): { label: string; insertText: string; detail: string; documentation?: string; key?: boolean }[] {
+): {
+  label: string;
+  insertText: string;
+  detail: string;
+  documentation?: string;
+  key?: boolean;
+  type?: string;
+  enumeration?: string;
+}[] {
   const catalog = getLocalCatalog();
   if (!catalog) return [];
 
@@ -181,6 +189,8 @@ export function localColumnCompletions(
       label: c.name,
       insertText: c.name,
       key: c.key === true,
+      type: c.type,
+      enumeration: c.enum,
       detail: columnDetail(`${table}.${c.name}`, c.type, c.key),
       documentation: columnDocumentation(catalog, c),
     }));
@@ -198,6 +208,8 @@ export function localColumnCompletions(
     label: `${tabelaBase}.${c.name}`,
     insertText: `${tabelaBase}.${c.name}`,
     key: c.key === true,
+    type: c.type,
+    enumeration: c.enum,
     detail: columnDetail("Campo (tabelaBase da seção)", c.type, c.key),
     documentation: columnDocumentation(catalog, c),
   }));

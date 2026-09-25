@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.11 — 2026-09-25
+
+### Alterado
+
+- Ícone do campo no Ctrl+Espaço segue o tipo: enumeração, número, texto (Alfa) e data/hora
+
 ## 0.2.10 — 2026-09-24
 
 ### Corrigido
