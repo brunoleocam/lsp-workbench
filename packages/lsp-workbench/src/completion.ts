@@ -112,7 +112,10 @@ function looksLikeTablePrefix(ident: string): boolean {
   return /^(?:E|R)\d/i.test(ident) || /^USU_/i.test(ident);
 }
 
-/** Ícone da lista: o editor só tem os símbolos padrão, não um relógio avulso. */
+/**
+ * Ícone da lista. Não usar `Text`: o editor esconde esse tipo quando
+ * `editor.suggest.showWords` está desligado, e os campos Alfa somem.
+ */
 function columnItemKind(type?: string, enumeration?: string): vscode.CompletionItemKind {
   if (enumeration) return vscode.CompletionItemKind.Enum;
   const raw = (type ?? "").toLowerCase();
@@ -126,7 +129,7 @@ function columnItemKind(type?: string, enumeration?: string): vscode.CompletionI
     return vscode.CompletionItemKind.Constant;
   }
   if (raw.startsWith("alfa") || raw.startsWith("varchar") || raw.startsWith("texto")) {
-    return vscode.CompletionItemKind.Text;
+    return vscode.CompletionItemKind.Property;
   }
   return vscode.CompletionItemKind.Field;
 }
