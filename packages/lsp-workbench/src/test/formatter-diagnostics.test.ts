@@ -52,4 +52,41 @@ describe("analyzeLsp", () => {
     const hits = analyzeLsp(`vaSql = "SELECT * FROM E999ZZZ";`);
     assert.ok(!hits.some((h) => h.id === "DEM001"));
   });
+
+  it("DEM001 ignora coluna USU_* em SELECT, WHERE e ORDER BY", () => {
+    const src = [
+      'vaSQL = "SELECT USU_CAMPOA FROM USU_T999AAA \\',
+      "            WHERE USU_CAMPOB = :vnCodEmp    \\",
+      '            ORDER BY USU_CAMPOA DESC";',
+    ].join("\n");
+    const hits = analyzeLsp(src, { catalogTableNames: ["USU_T999AAA"] });
+    assert.ok(!hits.some((h) => h.id === "DEM001"));
+  });
+
+  it("DEM001 aponta a tabela do FROM e não a coluna homônima do padrão USU_", () => {
+    const src =
+      'vaSQL = "SELECT USU_CAMPOA FROM USU_T999ZZZ WHERE USU_CAMPOB = :vnCodEmp ORDER BY USU_CAMPOA";';
+    const dem = analyzeLsp(src, { catalogTableNames: ["E070FIL"] }).filter(
+      (h) => h.id === "DEM001"
+    );
+    assert.equal(dem.length, 1);
+    assert.match(dem[0].message, /USU_T999ZZZ/);
+  });
+
+  it("DEM001 silent quando FROM e JOIN estão no catálogo", () => {
+    const src =
+      'SQL_DefinirComando(vaJoin, "SELECT a.X FROM E070FIL a INNER JOIN E085HCL b ON a.CODEMP = b.CODEMP");';
+    const hits = analyzeLsp(src, { catalogTableNames: ["E070FIL", "E085HCL"] });
+    assert.ok(!hits.some((h) => h.id === "DEM001"));
+  });
+
+  it("DEM001 só na tabela do JOIN ausente", () => {
+    const src =
+      'vaSql = "SELECT a.X FROM E070FIL a INNER JOIN E085HCL b ON a.CODEMP = b.CODEMP";';
+    const dem = analyzeLsp(src, { catalogTableNames: ["E070FIL"] }).filter(
+      (h) => h.id === "DEM001"
+    );
+    assert.equal(dem.length, 1);
+    assert.match(dem[0].message, /E085HCL/);
+  });
 });

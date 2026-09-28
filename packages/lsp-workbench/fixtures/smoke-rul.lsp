@@ -26,8 +26,8 @@ Se (EstaNulo(vaTexto, vnNulo) = 0) {
 @ RUL004 — QF → DataHora(vnDataHora); FormatarData(vnDataHora, …) @
 FormatarData(vdData, "dd/MM/yyyy", vaSaida);
 
-@ RUL005 — QF → vnCampo = Grid.Codigo; IntParaAlfa(vnCampo, …) @
-IntParaAlfa(Grid.Codigo, vaSaida);
+@ RUL005 — 1º parâmetro não é Campo/Variável. QF → vnCampo = Grid.Codigo; AlfaParaDecimal(vnCampo, vaSaida); @
+AlfaParaDecimal(Grid.Codigo, vaSaida);
 
 @ RUL006 — QF → vaMsg = …; Mensagem(Retorna, vaMsg); @
 Mensagem(Retorna, "x" + vaTexto);

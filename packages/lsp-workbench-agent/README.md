@@ -2,7 +2,7 @@
 
 Plugin Cursor (Agent) do **LSP Workbench**: rules, skills e commands para a [Linguagem Senior de Programação](https://documentacao.senior.com.br/tecnologia).
 
-Complementa a extensão **LSP Workbench** (IDE / Marketplace) **≥ 0.2.4**. Escopo: sintaxe, padrões e geradores — sem dicionário Oracle embutido (use catálogo local / `@lsp-banco`).
+Complementa a extensão **LSP Workbench** (IDE / Marketplace) **≥ 0.2.13**. Escopo: sintaxe, padrões e geradores — sem dicionário Oracle embutido (use catálogo local / `@lsp-banco`).
 
 Versão do agent: ver [CHANGELOG.md](CHANGELOG.md) · IDs estáticos: [docs/ids-estaticos.md](docs/ids-estaticos.md).
 
@@ -21,6 +21,7 @@ Versão do agent: ver [CHANGELOG.md](CHANGELOG.md) · IDs estáticos: [docs/ids-
 | `/importar-relatorio` | Import dump multi-trecho → árvore ADR-007 | Importar Relatório |
 | `/escopo-relatorio` | Explicar escopo do relatório | Mostrar Escopo |
 | `/copiar-regra-relatorio` | Juntar `.lsp` do evento / todos | Copiar / Visualizar Regras |
+| `/configurar-workspace` | Aponta o comando que grava `.cursor`, `.github` e `.vscode` | Configurar este Workspace |
 
 ## Skills (`lsp-<ação>`)
 

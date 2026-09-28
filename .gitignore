@@ -20,6 +20,9 @@ packages/lsp-workbench-demobile/
 # Catálogo completo (schema Senior) — só local; no git fica catalog.example.json
 docs/banco-senior-base/catalog.json
 
+# Cópia de rules/skills/commands gerada no prepublish do VSIX
+packages/lsp-workbench/scaffold/
+
 # Scratch / exports de cliente — não versionar na raiz
 /aulas.txt
 /lsp.md

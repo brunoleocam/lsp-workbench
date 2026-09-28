@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-24T14:34:53.001Z",
+  "generatedAt": "2026-09-25T19:14:33.100Z",
   "count": 208,
   "labels": [
     "AbrirCursor",
@@ -1246,9 +1246,9 @@
     },
     {
       "label": "SQL_BOF",
-      "detail": "SQL_BOF",
+      "detail": "SQL_BOF(Alfa Objeto);",
       "source": "cursores.md",
-      "insertText": "SQL_BOF($0);"
+      "insertText": "SQL_BOF(${1:Objeto});"
     },
     {
       "label": "SQL_Criar",
@@ -1294,9 +1294,9 @@
     },
     {
       "label": "SQL_EOF",
-      "detail": "SQL_EOF",
-      "source": "referencia-rapida.md",
-      "insertText": "SQL_EOF($0);"
+      "detail": "SQL_EOF(Alfa Objeto);",
+      "source": "cursores.md",
+      "insertText": "SQL_EOF(${1:Objeto});"
     },
     {
       "label": "SQL_FecharCursor",

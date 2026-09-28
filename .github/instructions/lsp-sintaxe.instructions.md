@@ -1,0 +1,33 @@
+---
+description: "Sintaxe e estruturas de controle LSP (variáveis, blocos, Se/Enquanto/Para, parênteses em condições)."
+applyTo: "**/*.{lsp,lspt}"
+---
+
+# LSP – Sintaxe e estruturas de controle
+
+## Declaração e nomenclatura
+- `Definir Alfa vaNome;` / `Numero vnX;` / `Data vdX;` / `Lista vlX;` / `Cursor Cur_X;`
+- WebService: `Definir caminho.pontuado wsNome;` (ex.: `Definir Pedido.Retorno wsPed;`) — não inventar tipo.
+- Vars de sistema (`CodEmp`, `CodFil`, …): só sozinhas; após `.` são campo (ex. `ws.Pedido.CodEmp`).
+- Prefixos: va (Alfa), vn (Numero), vd (Data), vl (Lista), Cur_ (Cursor).
+
+## Terminadores e estrutura
+- Ponto e vírgula `;` no final de cada comando. Case insensitive.
+- Comentários: `@ linha @` **só na mesma linha** (SYN011) ou `/* */`. Identação: 2 espaços.
+- **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
+
+## Múltiplas condições em Se/Enquanto
+Quando houver mais de uma condição (`e`/`ou`), **cada condição entre parênteses** — senão não compila.
+- Incorreto: `Se (a > 0 e b < 10) { ... }`
+- Correto: `Se ((a > 0) e (b < 10)) { ... }`. Mesma regra para `Enquanto`.
+
+## Loops
+- `Para (vnI = 1; vnI <= 10; vnI++) { ... }`; `Enquanto (condição) { ... }`; `Pare`; `Continue`.
+- **Pare:** só pode ser usado **dentro** de `Para` ou `Enquanto`; para interromper função ou fluxo (ex.: após validação/erro) use `Cancel(1);`.
+
+## Variáveis
+- Declarar variáveis no **início da regra** ou no **início da função**; não declarar dentro de blocos condicionais (evita erros de compilação).
+- Nome da variável: não pode ser igual a parâmetro de função nem a campo de lista; máx 100 caracteres; sem acentuação (consulte skill `lsp-linguagem` → `reference-sintaxe.md`).
+
+## Quebra de linha em strings longas
+Usar `\` no final da linha (coluna 80) para continuar na próxima. `"` aberta sem `\` no fim = SYN012. Alinhar e manter espaços consistentes.

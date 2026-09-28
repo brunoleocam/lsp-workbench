@@ -22,6 +22,9 @@ Status extensão: `ok` = implementado | `pendente`
 | SYN010 | Identificador/tipo solto (não compila) | linha = só `Nome` ou `Nome;` sem atribuição/chamada/comando | sim (remover; ou `Definir Tipo …` se for tipo) | ok | Senior: "falta valor, expressão ou comando" |
 | SYN011 | `@` só na mesma linha | abertura `@` sem fechar + fechamento `@` em outra linha | sim (converter para `/* … */`) | ok | comentarios, padroes |
 | SYN012 | String `"` fechada ou continuada com `\` | `"` aberta sem fechar e sem `\` no fim (continua na linha de baixo) | nao | ok | strings, inicio-rapido |
+| SYN013 | Marcador `<...>` de snippet ainda na chamada | argumento no formato `<Nome>` | nao | ok | snippets |
+| SYN014 | `ConverteMascara` tipo 5 (Alfa) | tipo `5` com origem diferente de `0` ou destino que não é Alfa | nao | ok | ConverteMascara |
+| SYN015 | Máscara CPF/CGC em `ConverteMascara` | máscara fora de `999.999.999-99` / `99.999.999/9999-99` | nao | ok | ConverteMascara |
 
 ## RUL — Regras de ouro / limites
 
@@ -31,7 +34,7 @@ Status extensão: `ok` = implementado | `pendente`
 | RUL002 | Retorno por parâmetro (não `vn = TamanhoAlfa(`) | atribuição a out-param funcs | sim | ok | limitacoes, erros-comuns |
 | RUL003 | `EstaNulo` fora da condição `Se` | `Se (EstaNulo(` | sim | ok | erros-comuns, validacao |
 | RUL004 | `FormatarData` 1º arg Numero (não `vd*`) | `FormatarData(vd` | sim | ok | datas, erros-comuns |
-| RUL005 | Não passar `Obj.Campo` direto em args de função | arg `\w+(\.\w+)+` em call | sim | ok | limitacoes, avisos |
+| RUL005 | Não passar `Obj.Campo` em parâmetro cuja doc não diz Campo/Variável | arg `\w+(\.\w+)+` nas funções da lista, salvo descrição Campo/Variável | sim | ok | doc Senior (IntParaAlfa e afins) |
 | RUL006 | Sem concat/`+` dentro de argumentos | arg com `+` | sim | ok | limitacoes, lembrete-ouro |
 | RUL007 | `Retorna;`/`Retorne;` → `Cancel(1);` | `\bRetorn[ae]\s*;` (exceto `Mensagem(Retorna`) | sim | ok | avisos, cancel |
 | RUL008 | Prefixo alinhado ao tipo (`Definir Alfa` → `va`) | ver SYN006 (mesmo check) | sim (renomear **ou** mudar tipo) | ok | variaveis |

@@ -12,10 +12,7 @@ Organização (funções, blocos, literais), comentários úteis e **relatório*
 ## Passos
 
 1. Entender a responsabilidade do trecho/arquivo.
-2. Mecânicos (PDR-006):
-   - `node scripts/refactor-lsp.mjs <arquivo> --kind braces --write`
-   - `node scripts/refactor-lsp.mjs <arquivo> --kind concat --write`
-3. Demais transformações de **@lsp-refatorar**.
-4. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; `Cancel(1)`.
-5. Layout: `node scripts/format-lsp.mjs <arquivo> --write`.
-6. Relatório da skill; ao final **`/compilar-lsp`**.
+2. Aplicar as transformações de **@lsp-refatorar** (`Inicio`/`Fim` → `{ }`, `\` → `+`, extrair função, envolver bloco).
+3. Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`; params só `Numero`; retorno por parâmetro; `Cancel(1)`.
+4. Layout: **Format Document** da extensão.
+5. Relatório da skill; ao final **`/compilar-lsp`**.

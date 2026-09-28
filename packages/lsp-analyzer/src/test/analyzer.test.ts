@@ -131,4 +131,77 @@ describe("analyzeLsp parity", () => {
     const { diagnostics } = analyze("Inicio\nvnX = 1;\nFim;");
     assert.ok(diagnostics.some((d) => d.id === "ANL004"));
   });
+
+  it("SYN013 só em ConverteMascara ainda com marcador", () => {
+    const placeholder =
+      "ConverteMascara(<Tipo_Dado>, <Valor_Origem>, <Alfa_Origem/Destino>, <Mascara>);\n";
+    const placeholderHits = analyzeLsp(placeholder).filter((h) => h.id === "SYN013");
+    assert.equal(placeholderHits.length, 4);
+    assert.match(placeholderHits[0]?.message ?? "", /99\.999\.999\/9999-99/);
+
+    const typedNames =
+      "ConverteMascara(Numero Tipo_dado, Numero Valor_Origem, Alfa Alfa_Origem, Alfa Mascara);\n";
+    assert.equal(analyzeLsp(typedNames).filter((h) => h.id === "SYN013").length, 4);
+
+    const withDefinir =
+      "Definir Alfa vaDoc;\nConverteMascara(<Tipo_Dado>, <Valor_Origem>, <Alfa_Origem/Destino>, <Mascara>);\n";
+    const sem = analyzeLsp(withDefinir).filter((h) => h.id === "SEM001");
+    assert.equal(
+      sem.filter((h) => /Tipo_Dado|Valor_Origem|Alfa_Origem|Destino|Mascara/i.test(h.message)).length,
+      0
+    );
+    const comparado = "Definir Alfa vaDoc;\nSe (vaDoc < vaLimite) {\n  vaLimite = vaDoc;\n}\n";
+    assert.ok(analyzeLsp(comparado).some((h) => h.id === "SEM001" && /vaLimite/i.test(h.message)));
+
+    const filled = 'ConverteMascara (1,R030Fil.NumCgc,VInscrStr,"99.999.999/9999-99");\n';
+    assert.equal(analyzeLsp(filled).filter((h) => h.id === "SYN013").length, 0);
+    const cpf = 'ConverteMascara(1, R030Fil.NumCgc, VInscrStr, "999.999.999-99");\n';
+    assert.equal(analyzeLsp(cpf).filter((h) => h.id === "SYN015").length, 0);
+
+    const outra = "Definir Alfa vaCur;\nSQL_Criar(<vaCur>);\n";
+    const outras = analyzeLsp(outra).filter((h) => h.id === "SEM001" || h.id === "SYN013");
+    assert.ok(outras.some((h) => h.id === "SYN013" && /SQL_Criar/.test(h.message)));
+    assert.equal(outras.filter((h) => h.id === "SEM001" && /vaCur/i.test(h.message)).length, 0);
+  });
+
+  it("SYN014 tipo 5 exige 0 e destino Alfa; SYN015 cobra a máscara de CPF/CGC", () => {
+    const tipo5 = 'Definir Alfa vaDoc;\nConverteMascara(5, vnCgc, vaDoc, "999");\n';
+    const hits5 = analyzeLsp(tipo5);
+    assert.ok(hits5.some((h) => h.id === "SYN014" && /Valor_Origem é 0/.test(h.message)));
+    assert.equal(hits5.filter((h) => h.id === "SYN014" && /variável Alfa/.test(h.message)).length, 0);
+
+    const tipo5ok = 'Definir Alfa vaDoc;\nConverteMascara(5, 0, vaDoc, "@@@");\n';
+    assert.equal(analyzeLsp(tipo5ok).filter((h) => h.id === "SYN014").length, 0);
+
+    const destinoNumero = 'Definir Numero vnDoc;\nConverteMascara(5, 0, vnDoc, "@@@");\n';
+    assert.ok(analyzeLsp(destinoNumero).some((h) => h.id === "SYN014" && /variável Alfa/.test(h.message)));
+
+    const mascara = 'ConverteMascara(1, vnCgc, vaDoc, "999.999.999/9999-99");\n';
+    const hitsMask = analyzeLsp(mascara).filter((h) => h.id === "SYN015");
+    assert.equal(hitsMask.length, 1);
+    assert.match(hitsMask[0]?.message ?? "", /999\.999\.999-99/);
+    assert.match(hitsMask[0]?.message ?? "", /99\.999\.999\/9999-99/);
+  });
+
+  it("RUL005 aceita Objeto.Campo quando a doc do parâmetro diz Campo/Variável", () => {
+    const origem = analyzeLsp("IntParaAlfa(E900COP.NUMORP, vaNumOrpPai);\n");
+    assert.equal(origem.filter((h) => h.id === "RUL005").length, 0);
+
+    const ambos = analyzeLsp("IntParaAlfa(E900COP.NUMORP, E900COP.DESALF);\n");
+    assert.equal(ambos.filter((h) => h.id === "RUL005").length, 0);
+
+    const tamanho = analyzeLsp("TamanhoAlfa(E900COP.DESCRP, vnTam);\n");
+    assert.equal(tamanho.filter((h) => h.id === "RUL005").length, 0);
+  });
+
+  it("RUL005 ainda cobra variável intermediária quando o parâmetro não é Campo/Variável", () => {
+    const destino = analyzeLsp("AlfaParaDecimal(vaTexto, MinhaGrid.CampoDecimal);\n");
+    assert.ok(destino.some((h) => h.id === "RUL005"));
+
+    const retorno = analyzeLsp("TamanhoAlfa(vaTexto, MinhaGrid.Campo);\n");
+    assert.ok(retorno.some((h) => h.id === "RUL005"));
+
+    const mensagem = analyzeLsp("Mensagem(Erro, E900COP.OBS);\n");
+    assert.ok(mensagem.some((h) => h.id === "RUL005"));
+  });
 });

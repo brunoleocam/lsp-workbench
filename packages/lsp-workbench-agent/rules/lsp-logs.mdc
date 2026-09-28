@@ -3,7 +3,7 @@ description: Padrão de logs em LSP (vaMosLog, pasta logs/, formato com data/hor
 ---
 # Padrão de logs LSP
 
-Quando o código precisar de logs para depuração (ou o usuário solicitar), use sempre este padrão. Os arquivos de log devem ser gravados na **pasta `logs/` na raiz do projeto** (ex.: `C:\Dev\LSP - Senior\logs\`).
+Quando o código precisar de logs para depuração (ou o usuário solicitar), use sempre este padrão. Grave os arquivos na pasta `logs/` na raiz do projeto aberto.
 
 ## Variáveis obrigatórias
 
@@ -21,10 +21,9 @@ Para montar linhas com data/hora, use variáveis auxiliares (ex.: `vaLinhaFlags`
 
 ## Pasta e nome do arquivo
 
-- **Pasta padrão:** raiz do projeto + `logs\` (ex.: `C:\Dev\LSP - Senior\logs\`).
+- **Pasta padrão:** `logs\` na raiz do projeto aberto.
 - **Nome do arquivo:** `LOG_<NomeDaRegra>.txt` (ex.: `LOG_COT_API_Solistica.txt`).
-- Caminho completo: `vaCaminhoLog = "C:\\Dev\\LSP - Senior\\logs\\LOG_NomeRegra.txt";`  
-  (Ajuste o prefixo se o projeto estiver em outro disco/pasta; pode usar uma variável única, ex.: `vaPastaLogs = "C:\\Dev\\LSP - Senior\\logs"` e depois `vaCaminhoLog = vaPastaLogs + "\\LOG_NomeRegra.txt";`.)
+- Caminho: junte a raiz do projeto com `\logs\LOG_<NomeDaRegra>.txt`. Não use caminho de outra máquina.
 
 ## Formato da linha
 

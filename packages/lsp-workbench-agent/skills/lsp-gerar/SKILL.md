@@ -23,18 +23,13 @@ Garante que código novo ou alterado siga as rules (`lsp-nucleo`, `lsp-limites`,
 | Padrões SQL/cursor/HTTP | `@lsp-linguagem` → `reference-padroes.md` + rule `lsp-banco-http.mdc` |
 | Strings / datas / funções | rules `lsp-funcoes-strings-datas.mdc`, `lsp-listas.mdc` |
 | Exemplos / snippets | `@lsp-linguagem` → `examples.md`, `snippets.md`, pasta `exemplos/` |
-| Projeto de relatório | `/gerar-relatorio` + `docs/gerador-relatorios/` |
+| Projeto de relatório | `/gerar-relatorio` ou o comando **LSP Workbench: Gerar Projeto de Relatório** |
 
 **Regras de ouro:** Alfa+Alfa; parâmetros só `Numero`; retorno por parâmetro; `Cancel(1);` blocos `{ }`. Ver `lsp-nucleo.mdc`.
 
 ### 2. Schema de ERP (catálogo local — PDR-009)
 
-Este plugin **não** embute dicionário de tabelas. Ordem:
-
-1. **`@lsp-banco`** — `docs/banco-senior-base/` (README + `catalog.example.json`) e, se existir, overlay `docs/banco-senior/`.
-2. Setting da extensão: `lsp.catalog.path` (completion `Tabela.Campo` / DEM001).
-3. Gerar catálogo: `node scripts/catalog-from-r996-tsv.mjs` (ver `docs/banco-senior-base/consultar-dicionario.sql`).
-4. Sem evidência local → **não inventar** colunas/JOINs; pedir doc do cliente ou TSV R996.
+Este plugin **não** embute dicionário de tabelas. Siga **`@lsp-banco`**: leia o `catalog.json` resolvido pela extensão (`lsp.catalog.path` ou arquivo no projeto, se existir). Sem esse arquivo, não inventar colunas nem JOINs.
 
 **Funções builtins** (extensão ≥ 0.2.4): catálogo unificado plataforma + HCM/ERP; filtrar com `system` em `lsp.contexts` (`@lsp-contexto`). Não inventar assinaturas.
 

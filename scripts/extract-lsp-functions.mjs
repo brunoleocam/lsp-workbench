@@ -234,7 +234,7 @@ function snippetFromSyntax(syntaxLine, label) {
       .trim();
     if (!name || /^(Alfa|Numero|Data)$/i.test(name)) name = `p${i + 1}`;
     name = name.replace(/[^\wÀ-ú]/g, "") || `p${i + 1}`;
-    return `\${${i + 1}:${name}}`;
+    return `\${${i + 1}:<${name}>}`;
   });
   return {
     insertText: `${label}(${placeholders.join(", ")});`,
@@ -296,6 +296,122 @@ function findDescriptionAfter(text, from) {
     if (buf.join(" ").length > 280) break;
   }
   return buf.join(" ").slice(0, 400);
+}
+
+/**
+ * Seções que o Ctrl+Espaço precisa mostrar: parâmetros (com enums aninhados),
+ * códigos/algoritmos/retorno e observação que cita um código numérico.
+ * @param {string} text
+ * @param {number} from
+ */
+function findSupplementAfter(text, from) {
+  const slice = text.slice(from, from + 8000);
+  const lines = slice.split("\n");
+  const TITLE =
+    /^(parâmetros|parametros|algoritmos|códigos|codigos|retorno|valor de retorno|valores de retorno)\b/i;
+  /** @type {"skip" | "keep" | "observe"} */
+  let mode = "skip";
+  let inFence = false;
+  /** @type {string[]} */
+  const out = [];
+  /** @type {string[]} */
+  let observeBuf = [];
+
+  const flushObserve = () => {
+    const textObs = observeBuf.join(" ").replace(/\s+/g, " ").trim();
+    observeBuf = [];
+    if (!textObs) return;
+    if (!/tipo de dado|\bcódigo\b|\(\d+\)|`\d+`/i.test(textObs)) return;
+    if (out.length) out.push("");
+    out.push("**Observação**");
+    out.push(textObs.slice(0, 500));
+  };
+
+  for (const raw of lines) {
+    const trimmed = raw.trim();
+    if (/^```/.test(trimmed)) {
+      inFence = !inFence;
+      if (mode === "observe") flushObserve();
+      continue;
+    }
+    if (inFence) continue;
+    if (/^#{1,6}\s/.test(raw)) break;
+
+    const inlineObs = trimmed.match(/^\*\*(Observa[^*]*)\*\*:?\s+(\S.*)$/i);
+    if (inlineObs) {
+      if (mode === "observe") flushObserve();
+      const rest = inlineObs[2].trim();
+      if (/tipo de dado|\bcódigo\b|\(\d+\)|`\d+`|\b\d+\b/i.test(rest)) {
+        if (out.length) out.push("");
+        out.push("**Observação**");
+        out.push(rest.slice(0, 500));
+      }
+      mode = "skip";
+      continue;
+    }
+
+    const bold = trimmed.match(/^\*\*([^*]+)\*\*\s*$/);
+    if (bold) {
+      if (mode === "observe") flushObserve();
+      const title = bold[1].replace(/:$/, "").trim();
+      if (/^exemplo/i.test(title)) {
+        mode = "skip";
+        continue;
+      }
+      if (TITLE.test(title)) {
+        mode = "keep";
+        if (out.length) out.push("");
+        out.push(`**${title}**`);
+        continue;
+      }
+      if (/^observa/i.test(title)) {
+        mode = "observe";
+        continue;
+      }
+      mode = "skip";
+      continue;
+    }
+
+    if (mode === "observe") {
+      if (!trimmed) {
+        flushObserve();
+        mode = "skip";
+        continue;
+      }
+      observeBuf.push(trimmed);
+      continue;
+    }
+    if (mode !== "keep") continue;
+    if (!trimmed) {
+      if (out.length && out[out.length - 1] !== "") out.push("");
+      continue;
+    }
+    out.push(raw.replace(/\s+$/, ""));
+    if (out.join("\n").length > 1800) break;
+  }
+  if (mode === "observe") flushObserve();
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+/**
+ * @param {string} label
+ * @param {string} syn
+ * @param {string} desc
+ * @param {string} supplement
+ * @param {string} fname
+ */
+function buildDocumentation(label, syn, desc, supplement, fname) {
+  const parts = [`**${label}**`, ""];
+  if (syn) parts.push(`\`${syn}\``);
+  if (desc) parts.push("", desc);
+  if (supplement) parts.push("", supplement);
+  let body = parts.join("\n").replace(/\n{3,}/g, "\n\n");
+  const fonte = `\n\n_Fonte: ${fname}_`;
+  const limit = 2800 - fonte.length;
+  if (body.length > limit) {
+    body = body.slice(0, limit).replace(/\n[^\n]*$/, "");
+  }
+  return body + fonte;
 }
 
 /** @param {Map<string, ExtractedFn>} map */
@@ -378,6 +494,7 @@ function extractFromHeadings(map) {
       const after = m.index + m[0].length;
       const syntax = findSyntaxAfter(text, after);
       const desc = findDescriptionAfter(text, after);
+      const supplement = findSupplementAfter(text, after);
 
       for (const label of names) {
         if (!isValidFnName(label)) continue;
@@ -393,16 +510,7 @@ function extractFromHeadings(map) {
         if (!syn) syn = `${label}();`;
         const snip = snippetFromSyntax(syn, label);
         const detail = (syn.length <= 100 ? syn : desc || label).slice(0, 100);
-        const documentation = [
-          `**${label}**`,
-          "",
-          syn ? `\`${syn}\`` : "",
-          desc ? `\n${desc}` : "",
-          `\n\n_Fonte: ${fname}_`,
-        ]
-          .filter(Boolean)
-          .join("\n")
-          .slice(0, 1200);
+        const documentation = buildDocumentation(label, syn, desc, supplement, fname);
 
         upsert(map, {
           label,
@@ -460,6 +568,25 @@ function extractSqlFamily(map) {
     let m;
     while ((m = re.exec(text)) !== null) {
       const label = m[1];
+      const heading = text.match(
+        new RegExp(`^#{3,6}\\s+\\*{0,2}${label}\\*{0,2}\\s*$`, "m")
+      );
+      if (heading && heading.index != null) {
+        const after = heading.index + heading[0].length;
+        const syntax = findSyntaxAfter(text, after) || `${label}();`;
+        const desc = findDescriptionAfter(text, after);
+        const supplement = findSupplementAfter(text, after);
+        const snip = snippetFromSyntax(syntax, label);
+        upsert(map, {
+          label,
+          insertText: snip.insertText,
+          detail: (syntax.length <= 100 ? syntax : desc || label).slice(0, 100),
+          documentation: buildDocumentation(label, syntax, desc, supplement, fname),
+          isSnippet: snip.isSnippet,
+          source: fname,
+        });
+        continue;
+      }
       if (map.has(label.toLowerCase())) continue;
       upsert(map, {
         label,

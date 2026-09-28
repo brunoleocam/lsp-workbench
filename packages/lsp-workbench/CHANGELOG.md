@@ -1,5 +1,27 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.13 — 2026-09-28
+
+### Adicionado
+
+- Comando **LSP Workbench: Configurar este Workspace** grava `.cursor`, `.github` (Copilot) e as associações `*.lsp` / `*.lspt` em `.vscode/settings.json`
+- **Modo Ghost**: **Ativar Modo Ghost** e **Desativar Modo Ghost** ligam a sugestão inline em `senior-lsp`. No Cursor, também liberam ou bloqueiam o Tab de IA nessa linguagem
+- Hover em um argumento mostra a documentação daquele parâmetro (catálogo Senior e funções do projeto), com enums e seções
+- Snippet `ConverteMascara`, com tipo de dado e máscaras de CPF/CGC
+- Documentação de parâmetros nos snippets nativos (`SQL_*`, `Mensagem`, `EstaNulo`, `FormatarData` e outros), usada no hover e na ajuda de parâmetros
+
+### Corrigido
+
+- **RUL005**: `Objeto.Campo` passa quando a documentação do parâmetro diz Campo/Variável. Menção só a tamanho ou posição não libera o parâmetro
+- **SYN013**: marcador `<...>` de snippet ainda presente na chamada
+- **SYN014** / **SYN015**: `ConverteMascara` no tipo 5 (Alfa) e máscara de CPF/CGC
+- **DEM001**: coluna (`USU_*` em SELECT, WHERE, ORDER BY ou `alias.campo`) deixa de ser tratada como tabela; o alerta fica na tabela ausente do FROM/JOIN
+- A setting `lsp.demobile.catalogPath` saiu do manifesto. Se a chave antiga ainda estiver no settings, o catálogo continua sendo lido
+
+### Alterado
+
+- Catálogos de funções HCM e ERP regenerados com parâmetros e texto da documentação Senior
+
 ## 0.2.12 — 2026-09-25
 
 ### Corrigido
@@ -22,7 +44,7 @@
 
 ### Corrigido
 
-- Ctrl+Espaço de tabelas usa o `catalog.json` da extensão Demobile quando `lsp.catalog.path` está vazio ou aponta para um arquivo que não existe
+- Ctrl+Espaço de tabelas usa o `catalog.json` já disponível na instalação quando `lsp.catalog.path` está vazio ou aponta para um arquivo que não existe
 
 ## 0.2.8 — 2026-09-24
 

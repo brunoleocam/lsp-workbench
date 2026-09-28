@@ -63,7 +63,7 @@ Análise **dinâmica em prosa** (não substitui `/compilar-lsp`). Objetivo: o le
 ## Regras
 
 - Seguir a ordem do código Senior: `Definir` no início; depois fluxo; loops de cursor até `FecharCursor`.
-- Em projeto de relatório: situar o arquivo no ciclo (Pré-Seleção, Antes de Imprimir, etc.) — ver `docs/gerador-relatorios/`.
+- Em projeto de relatório: situar o arquivo no ciclo (Pré-Seleção, Antes de Imprimir, etc.) pelo nome do arquivo e pelo `relatorio.json` da pasta.
 - Funções só definidas noutro arquivo do escopo: nomear o arquivo se conhecido (FUN009); senão marcar como “externa / não lida”.
 - Após depurar, **não** reescrever o código salvo se o usuário só pediu explicação. Se pedir correção, aí sim editar + sugerir `/compilar-lsp`.
 

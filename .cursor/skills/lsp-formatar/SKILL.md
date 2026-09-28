@@ -7,16 +7,9 @@ description: Formata código LSP (indentação, espaços, quebras, SQL embutido)
 
 Aplica layout canônico ao arquivo/seleção. **Não** altera lógica, nomes nem estrutura de controle (isso é `@lsp-refatorar`).
 
-## Preferência determinística (PDR-006)
+## Preferência
 
-Na raiz do monorepo, **antes** de formatar à mão com LLM:
-
-```powershell
-cd packages\lsp-analyzer; npm run compile
-node ..\..\scripts\format-lsp.mjs <arquivo.lsp> --write
-```
-
-O script usa `@lsp-workbench/analyzer` (`format`) — mesmo motor da extensão. Só use o checklist abaixo se o script não estiver disponível ou o usuário pedir ajuste fino (SQL embutido, parâmetros).
+Use **Format Document** da extensão LSP Workbench. O checklist abaixo vale quando o formatador não estiver disponível ou o usuário pedir ajuste fino (SQL embutido, parâmetros).
 
 ## Contrato
 
@@ -55,7 +48,7 @@ Dialeto: genérico SQL; se o usuário citar Oracle/SQL Server, preferir keywords
 
 ## O que NÃO fazer
 
-- Trocar `Inicio`/`Fim` por `{ }` (usar `@lsp-refatorar` / `scripts/refactor-lsp.mjs --kind braces`)
+- Trocar `Inicio`/`Fim` por `{ }` (usar `@lsp-refatorar`)
 - Renomear variáveis
 - Extrair funções
 - “Corrigir” lógica ou tipos

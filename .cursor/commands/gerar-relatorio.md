@@ -21,6 +21,6 @@ Preferir o comando da extensão **LSP Workbench: Gerar Projeto de Relatório** s
 
 Para importar um dump “Visualizar Todas as Regras”: **LSP Workbench: Importar Relatório** / `/importar-relatorio`.
 
-Schemas: `docs/gerador-relatorios/schema/`. **Não** gerar layout visual nem `.GER`.
+**Não** gerar layout visual nem `.GER`.
 
 Próximos passos: **`@lsp-contexto`**, editar Pré-Seleção, **`/compilar-lsp`** na pasta do relatório.

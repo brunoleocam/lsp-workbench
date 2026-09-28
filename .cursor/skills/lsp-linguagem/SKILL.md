@@ -39,7 +39,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 3. **Retorno** — por parâmetro: `TamanhoAlfa(vaTexto, vnTam);` — não `vn = TamanhoAlfa(va)`
 4. **Concatenação** — só `Alfa + Alfa`; `IntParaAlfa` antes; nunca concatenar dentro de argumento
 5. **Condições compostas** — cada parte entre parênteses: `Se ((a > 0) e (b < 10))`
-6. **Campos com ponto** — `Grid.Campo` / `Objeto.Campo` → variável intermediária
+6. **Campos com ponto** — `Objeto.Campo` é válido se a doc do parâmetro diz Campo/Variável (ex.: `IntParaAlfa(E900COP.NUMORP, vaNum);`). Destino só “variável” → intermediária antes do grid
 7. **`FormatarData`** — só `Numero`; obter com `DataHora(vn)` antes
 8. **`EstaNulo`** — `EstaNulo(va, vnNulo);` depois `Se (vnNulo = 0)`
 9. **`ExecSQLEx`** — `0` = sucesso, `1` = erro
@@ -87,5 +87,5 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 ## Docs
 
 - [Senior – tecnologia](https://documentacao.senior.com.br/tecnologia)
-- IDs estáticos no plugin: `docs/ids-estaticos.md`
-- SQL cursores (monorepo): `docs/lsp/sql.md` · [funções oficiais](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm)
+- IDs: skill `@lsp-compilar` e o painel Problems
+- SQL cursores: [funções oficiais](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm)

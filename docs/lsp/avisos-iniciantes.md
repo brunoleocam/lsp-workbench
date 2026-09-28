@@ -81,41 +81,28 @@ Se (vnTamanho < 3) {
 Mensagem(Retorna, "Dado validado com sucesso!");
 ```
 
-### **Regra #6: Campos de Objetos/Grids Não Podem Ser Passados Diretamente para Funções** 🚨
+### **Regra #6: Campo com ponto segue a descrição do parâmetro**
 
-**⚠️ REGRA CRÍTICA:** **NUNCA passe campos de objetos/grids com notação de ponto (ex: `Objeto.Campo.Valor`) diretamente como parâmetros de funções no Senior. Sempre atribua a uma variável intermediária primeiro.**
+Passe `Tabela.Campo` ou `Objeto.Campo` quando a descrição **daquele parâmetro** diz **Campo/Variável** (também “Campo ou Variável” ou “Campo, Valor ou Variável”). A mesma regra vale para qualquer função padrão, não só `IntParaAlfa`. Alfa, Numero e Data entram nesse caso.
 
 ```lsp
-@ ❌ INCORRETO - NÃO FUNCIONA @
-DecimalParaAlfa(COT_API_Solistica.Produtos.PesBru, vaPesBruLog);
-IntParaAlfa(vlPedidos.NumPed, vaNumPedLog);
-TamanhoAlfa(vlPedidos.CepCli, vnTamanho);
-
-@ ✅ CORRETO - SEMPRE FUNCIONA @
-@ Atribuir a variáveis intermediárias primeiro @
-Definir Numero vnPesBruLog;
-Definir Numero vnNumPedLog;
-Definir Alfa vaCepCliTemp;
-Definir Numero vnTamanho;
-
-vnPesBruLog = COT_API_Solistica.Produtos.PesBru;
-DecimalParaAlfa(vnPesBruLog, vaPesBruLog);
-
-vnNumPedLog = vlPedidos.NumPed;
-IntParaAlfa(vnNumPedLog, vaNumPedLog);
-
-vaCepCliTemp = vlPedidos.CepCli;
-TamanhoAlfa(vaCepCliTemp, vnTamanho);
+@ CORRETO — doc Senior: Campo/Variável @
+IntParaAlfa(E900COP.NUMORP, vaNumOrpPai);
+TamanhoAlfa(E085Cli.NomCli, vnTam);
 ```
 
-**Explicação:** Em LSP, campos de objetos/grids (com notação de ponto) **NÃO PODEM** ser passados diretamente como parâmetros de funções. O Senior não suporta essa sintaxe. Sempre é necessário atribuir o valor a uma variável intermediária primeiro, e então passar essa variável para a função.
+Use variável intermediária só quando a descrição não é Campo/Variável (em geral o retorno, “variável que receberá”).
 
-**Regra geral:** 
-- ❌ **NUNCA:** `Funcao(Objeto.Campo.Valor, ...)`
-- ✅ **SEMPRE:** `vnValor = Objeto.Campo.Valor; Funcao(vnValor, ...)`
+```lsp
+@ INCORRETO — destino não é Campo/Variável @
+AlfaParaDecimal(vaTexto, MinhaGrid.CampoDecimal);
 
-**Aplica-se a:**
-- Campos de grids (`wsCOT_API_Solistica.Produtos.PesBru`)
-- Campos de listas dinâmicas (`vlPedidos.NumPed`)
-- Campos de objetos (`COT_API_Solistica.Produtos.CepDes`)
-- Qualquer campo acessado com notação de ponto (`.`)
+@ CORRETO @
+Definir Numero vnValor;
+AlfaParaDecimal(vaTexto, vnValor);
+MinhaGrid.CampoDecimal = vnValor;
+```
+
+Atribuição e comparação diretas continuam válidas: `vlPedidos.NumPed = vnValor;` e `Se (vlPedidos.NumPed = 10)`.
+
+`UltimoDia` grava o resultado na própria variável e não aceita campo de tabela. Use `vnData = E120Ped.DatEmi; UltimoDia(vnData);`.

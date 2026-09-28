@@ -1,0 +1,30 @@
+---
+description: "Código limpo, arquitetura limpa e SOLID em LSP. Use ao escrever ou refatorar código LSP."
+applyTo: "**/*.lsp"
+---
+
+# Boas práticas LSP (código limpo, arquitetura, SOLID)
+
+## Declarações no topo do arquivo
+
+Ordem do bloco inicial `Definir`:
+
+1. Variáveis primeiro, depois funções (`Definir Funcao`).
+2. Tipos nesta ordem: **Numero → Alfa → Data → Lista → Tabela → Grid → Cursor → Funcao**.
+
+Inserções automáticas (SEM001, FUN007–008, import) devem respeitar essa ordem (`definir-insert`). Detalhe: `docs/lsp/variaveis.md`.
+
+## Código limpo
+- Funções curtas e com um propósito; nomes claros (va/vn/vd/vl); evitar duplicação extraindo funções reutilizáveis; comentários só onde agregam.
+
+## Arquitetura limpa
+- Organizar em camadas lógicas (ex.: regras de negócio vs. acesso a dados vs. chamadas HTTP); funções de orquestração que chamam funções menores; evitar regras gigantes em um único bloco.
+
+## SOLID em LSP
+- **SRP:** uma função = uma responsabilidade.
+- Preferir funções com parâmetros Numero e variáveis globais controladas a funções que fazem tudo.
+- Extrair validação, formatação e chamadas de API em funções separadas quando possível.
+
+## Testes
+- Documentar cenários de teste (entrada/saída esperada) para funções críticas.
+- Ao integrar APIs REST/SOAP, usar **Postman MCP** (se configurado) para executar e validar requisições em vez de apenas descrever manualmente.

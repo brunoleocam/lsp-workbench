@@ -11,14 +11,14 @@ import {
 } from "../../domain/local-catalog";
 import { loadReportAnalyzeOpts } from "../../domain/report-project-loader";
 
-/** Overlay do projeto, antes do catálogo embutido na extensão Demobile. */
+/** Overlay do projeto, antes de um catálogo já instalado junto ao editor. */
 const PROJECT_CATALOG_CANDIDATES = [
   path.join("docs", "banco-senior", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", ".generated", "catalog.json"),
   path.join("docs", "banco-senior-base", "catalog.json"),
 ];
 
-/** Demo / F5 — só se não houver catálogo de cliente nem extensão Demobile. */
+/** Demo / F5 — só se não houver catálogo de cliente nem catálogo já instalado. */
 const EXAMPLE_CATALOG_CANDIDATES = [
   path.join("docs", "banco-senior-base", "catalog.example.json"),
 ];
@@ -45,7 +45,7 @@ function findRelativeCatalog(startDir: string, relatives: string[], maxLevels = 
   return undefined;
 }
 
-/** Catálogo que vai dentro do VSIX `demobile.lsp-workbench-demobile`. */
+/** Catálogo que acompanha outra instalação local, quando presente. */
 function demobileBundledCatalog(): string | undefined {
   const ext = vscode.extensions.getExtension("demobile.lsp-workbench-demobile");
   if (!ext) return undefined;
@@ -55,7 +55,7 @@ function demobileBundledCatalog(): string | undefined {
 
 /**
  * Resolve path absoluto do catálogo local (PDR-009).
- * Preferência: `lsp.catalog.path`; fallback deprecado: `lsp.demobile.catalogPath`.
+ * Preferência: `lsp.catalog.path`. Ainda lê a chave antiga de catálogo, se já estiver salva no settings.
  */
 export function resolveLocalCatalogPath(): string | undefined {
   const cfg = vscode.workspace.getConfiguration("lsp");

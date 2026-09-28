@@ -2,7 +2,7 @@
   "name": "lsp-workbench",
   "displayName": "LSP Workbench",
   "description": "Linguagem Senior de Programação (LSP): syntax highlighting, snippets, autocomplete, hover, formatação e validação para Senior Sistemas / Sapiens / HCM.",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "publisher": "brunoleocam",
   "icon": "icon.png",
   "license": "MIT",
@@ -57,7 +57,10 @@
     "onCommand:lspWorkbench.exportarContextoPara",
     "onCommand:lspWorkbench.mostrarEscopoRelatorio",
     "onCommand:lspWorkbench.exportarRelatorioMultiTrecho",
-    "onCommand:lspWorkbench.importarRelatorio"
+    "onCommand:lspWorkbench.importarRelatorio",
+    "onCommand:lspWorkbench.configureWorkspace",
+    "onCommand:lspWorkbench.enableGhostMode",
+    "onCommand:lspWorkbench.disableGhostMode"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -288,16 +291,22 @@
           "type": "string",
           "default": "",
           "description": "Path do catálogo local de tabelas (JSON). Vazio = tenta docs/banco-senior/.generated/catalog.json e depois docs/banco-senior-base/.generated/catalog.json (PDR-009). Ausente = completion de tabelas no-op."
-        },
-        "lsp.demobile.catalogPath": {
-          "type": "string",
-          "default": "",
-          "description": "Deprecated: use lsp.catalog.path.",
-          "deprecationMessage": "Use lsp.catalog.path instead."
         }
       }
     },
     "commands": [
+      {
+        "command": "lspWorkbench.configureWorkspace",
+        "title": "LSP Workbench: Configurar este Workspace"
+      },
+      {
+        "command": "lspWorkbench.enableGhostMode",
+        "title": "LSP Workbench: Ativar Modo Ghost"
+      },
+      {
+        "command": "lspWorkbench.disableGhostMode",
+        "title": "LSP Workbench: Desativar Modo Ghost"
+      },
       {
         "command": "lspWorkbench.createContext",
         "title": "LSP Workbench: Criar Contexto"
@@ -364,7 +373,7 @@
     "pretest": "npm run extract-functions && npm run generate-system-functions",
     "test": "npm run compile && node --test out/test/*.test.js",
     "compile:analyzer": "npm run compile --prefix ../lsp-analyzer",
-    "vscode:prepublish": "npm run compile:analyzer && npm run extract-functions && npm run generate-system-functions && npm run compile",
+    "vscode:prepublish": "node ../../scripts/prepare-agent-scaffold.mjs && npm run compile:analyzer && npm run extract-functions && npm run generate-system-functions && npm run compile",
     "package:vsix": "node ../../scripts/package-extension.mjs"
   },
   "dependencies": {

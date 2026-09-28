@@ -5,6 +5,11 @@ import path from "node:path";
 import { LSP_FUNCTION_CATALOG, functionsMatchingPrefix } from "../function-catalog";
 import { OVERRIDE_EXTRA_LABELS } from "../function-catalog.overrides";
 import { EXTRACTED_FUNCTION_LABELS } from "../function-catalog.generated";
+import {
+  formatParamHover,
+  orderedCatalogParams,
+  snippetParamNames,
+} from "../catalog-param-docs";
 
 const fixturePath = path.join(__dirname, "..", "..", "fixtures", "extracted-functions.json");
 
@@ -66,6 +71,80 @@ describe("function-catalog coverage", () => {
       LSP_FUNCTION_CATALOG.length >= 180,
       `catálogo pequeno demais: ${LSP_FUNCTION_CATALOG.length}`
     );
+  });
+
+  it("ConverteMascara documenta o enum de tipoDado", () => {
+    const e = LSP_FUNCTION_CATALOG.find((x) => x.label === "ConverteMascara");
+    assert.ok(e);
+    assert.match(e.documentation, /`1`: Número/);
+    assert.match(e.documentation, /`2`: Dinheiro/);
+    assert.match(e.documentation, /`3`: Data/);
+    assert.match(e.documentation, /`4`: Hora/);
+    assert.match(e.documentation, /`5`: Alfa/);
+    assert.match(e.documentation, /tipo de dado ser 5/);
+    assert.match(e.documentation, /Caso seja um CPF/);
+    assert.match(e.documentation, /999\.999\.999-99/);
+    assert.match(e.documentation, /99\.999\.999\/9999-99/);
+    assert.match(e.documentation, /R030Fil\.TipIns = 3/);
+    assert.match(e.insertText, /\$\{1:<Tipo_Dado>\}/);
+  });
+
+  it("ConverteMascara mostra Numero no helper e não passa o enum ao Alfa", () => {
+    const e = LSP_FUNCTION_CATALOG.find((x) => x.label === "ConverteMascara");
+    assert.ok(e);
+    assert.match(e.insertText, /\$\{1:<Tipo_Dado>\}/);
+    assert.match(e.insertText, /\$\{3:<Alfa_Origem\/Destino>\}/);
+    assert.doesNotMatch(e.insertText, /Numero Tipo_dado/);
+    const ordered = orderedCatalogParams(
+      e.documentation,
+      snippetParamNames(e.insertText),
+      e.params
+    );
+    assert.equal(ordered[0]?.tipo, "Numero");
+    assert.match(ordered[0]?.documentation ?? "", /Número/);
+    assert.equal(ordered[2]?.tipo, "Alfa");
+    assert.doesNotMatch(ordered[2]?.documentation ?? "", /Número/);
+    assert.match(formatParamHover(e.label, ordered[0]!), /\(Numero\)/);
+  });
+
+  it("AdicionaComponenteModelo mostra tipo e descrição no snippet e no helper", () => {
+    const e = LSP_FUNCTION_CATALOG.find((x) => x.label === "AdicionaComponenteModelo");
+    assert.ok(e);
+    assert.match(e.insertText, /\$\{1:<CodMod>\}/);
+    assert.match(e.documentation, /\(Alfa\) — Código do modelo/);
+    const ordered = orderedCatalogParams(
+      e.documentation,
+      snippetParamNames(e.insertText),
+      e.params
+    );
+    const hover = formatParamHover(e.label, ordered[0]!);
+    assert.match(hover, /\(Alfa\)/);
+    assert.match(hover, /Código do modelo/);
+  });
+
+  it("nenhum snippet grava Numero/Alfa como se fosse código", () => {
+    const bad = LSP_FUNCTION_CATALOG.filter((e) =>
+      /\$\{\d+:(?:Numero|Alfa|Data|Lista)\s/.test(e.insertText)
+    );
+    assert.deepEqual(
+      bad.map((e) => e.label),
+      []
+    );
+  });
+
+  it("outras funções com código numérico entram no detalhe", () => {
+    const doc = (label: string) => {
+      const e = LSP_FUNCTION_CATALOG.find((x) => x.label === label);
+      assert.ok(e, label);
+      return e.documentation;
+    };
+    assert.match(doc("GeraHash"), /SHA-256/);
+    assert.match(doc("PegarTipoVar"), /tipo Alfa/);
+    assert.match(doc("RetDiaSemana"), /Domingo/);
+    assert.match(doc("AnoBissexto"), /não for bissexto/);
+    assert.match(doc("ConverteCodificacaoString"), /não suportados/);
+    assert.match(doc("SQL_BOF"), /posição BOF/);
+    assert.match(doc("SQL_EOF"), /EOF/);
   });
 
   it("catálogo unificado inclui HCM + ERP (máxima cobertura)", () => {

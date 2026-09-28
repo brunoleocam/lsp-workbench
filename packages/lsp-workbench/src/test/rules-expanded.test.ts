@@ -636,6 +636,25 @@ describe("analyzeLsp expanded", () => {
     assert.equal(hits.some((h) => h.id === "SYN001" && h.line === 1), false);
   });
 
+  it("SYN012 ignora string dentro de comentário de bloco multilinha", () => {
+    const src = [
+      '/*vSqlSer =  "SELECT SUM(E420ISO.QTDABE) QTDABERTA, MIN(DATENT) AS DATA   \\',
+      "                  FROM E420ISO                                                  \\",
+      "                  WHERE CODEMP = :vnCodEmp                                      \\",
+      "                  AND CODSER = :vaCodSer                                        \\",
+      "                  AND SITISO IN (1,2)                                           \\",
+      '                  GROUP BY E420ISO.QTDABE";*/',
+      "Definir Numero vnX;",
+    ].join("\n");
+    const hits = analyzeLsp(src);
+    assert.equal(hits.some((h) => h.id === "SYN012"), false);
+  });
+
+  it("SYN008 ignora chave dentro de comentário de bloco multilinha", () => {
+    const hits = analyzeLsp("/*\n{\n*/\nDefinir Numero vnX;\n");
+    assert.equal(hits.some((h) => h.id === "SYN008"), false);
+  });
+
   it("SYN010 alerta numero; solto (erro Senior)", () => {
     const hits = analyzeLsp("Definir Numero vnA;\nnumero;\n");
     assert.ok(hits.some((h) => h.id === "SYN010"));

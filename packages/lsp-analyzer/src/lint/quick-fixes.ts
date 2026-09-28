@@ -1,4 +1,5 @@
 /** Transformações puras usadas por Quick Fix (testáveis sem vscode). */
+import { catalogParamAcceptsField } from "./function-catalog";
 import { OUT_PARAM_FUNCS, RESERVED_WORDS } from "./rule-catalog";
 import { applySql010Fix } from "./sql-senior2-functions";
 
@@ -68,6 +69,7 @@ export function applyRul005Fix(line: string): string {
   const indent = m[1];
   const fn = m[2];
   const field = m[3];
+  if (catalogParamAcceptsField(fn, 0)) return line;
   const mid = `vnCampo`;
   const replaced = line.replace(field, mid);
   return `${indent}${mid} = ${field};\n${replaced}`;

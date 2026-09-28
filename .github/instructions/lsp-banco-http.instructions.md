@@ -1,0 +1,28 @@
+---
+description: "Banco de dados e HTTP em LSP (cursores SQL, SQL dinâmico, requisições HTTP, criptografia, arquivos)."
+applyTo: "**/*.lsp"
+---
+
+# LSP – Banco de dados e HTTP
+
+## Catálogo (`catalog.json`)
+
+Para criar SQL ou consultar tabela, coluna, chave ou enum, leia o `catalog.json` que a extensão LSP Workbench resolve. Ordem:
+
+1. `lsp.catalog.path` em `.vscode/settings.json`, se o arquivo existir.
+2. No projeto, se existir: `docs/banco-senior/.generated/catalog.json`, depois `docs/banco-senior-base/.generated/catalog.json`, depois `docs/banco-senior-base/catalog.json`.
+
+Não invente tabela nem campo. Se nenhum `catalog.json` existir, avise. Não procure pastas `docs/` de outro repositório nem scripts de geração de catálogo.
+
+## Cursor SQL
+- `Definir Cursor Cur_X;`; `Cur_X.SQL "SELECT ... WHERE COL = :vnParam";`; `Cur_X.AbrirCursor();`; `Se (Cur_X.Achou) { ... }`; `Cur_X.FecharCursor();`. Strings longas no SQL: quebra com `\`.
+
+## SQL dinâmico
+- `SQL_Criar`; `SQL_DefinirComando`; `SQL_DefinirInteiro` (e similares para parâmetros); `SQL_AbrirCursor`/`SQL_Executar`; `SQL_Proximo`; `SQL_RetornarAlfa`/`SQL_RetornarInteiro`; `SQL_FecharCursor`; `SQL_Destruir`.
+- **SQL_Retornar* em funções:** não usar variáveis de parâmetro (ex.: `pCodigo`, `pResultado`) diretamente em `SQL_RetornarInteiro`/`SQL_RetornarAlfa` — o Senior não retorna valor para parâmetros; usar variáveis locais e depois atribuir aos parâmetros (ex.: `SQL_RetornarInteiro(vaSQL, "CODIGO", vnCodigoTemp);` depois `pCodigo = vnCodigoTemp;`).
+
+## HTTP e APIs
+- `HttpObjeto(vaHTTP);`; `HttpGet(vaHTTP, vaURL, vaResposta);`; `HttpPost(vaHTTP, vaURL, vaDados);`; `ValorElementoJson(vaJson, "", "campo", vaValor);`.
+
+## Criptografia e arquivos
+- `GeraHash`; `Encriptar`/`Desencriptar`; `Base64Encode`/`Base64Decode`. Arquivos: `Abrir`; `Ler`/`Gravar`; `Fechar`; `LinhasArquivo`.

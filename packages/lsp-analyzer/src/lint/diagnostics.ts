@@ -23,7 +23,7 @@ import { parseFileSymbols } from "./document-symbols";
 import { findCustomCalls, localEligibleNames } from "./symbol-scope";
 import { collectGerDiagnostics } from "./ger-diagnostics";
 import type { ReportContext } from "./report-project";
-import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+import { catalogParamAcceptsField, LSP_FUNCTION_CATALOG } from "./function-catalog";
 import { SYSTEM_VAR_NAMES } from "./system-vars";
 import { maskCommentsAndStrings } from "./comment-mask";
 import { matchDefinirWebService } from "./webservice";
@@ -47,6 +47,109 @@ function isSeniorTableId(name: string): boolean {
   return /^(e|r)\d{3}[a-z0-9]*$/i.test(name) || /^usu_[a-z]/i.test(name);
 }
 
+const SQL_CLAUSE_WORD =
+  /^(WHERE|ON|SET|ORDER|GROUP|HAVING|UNION|JOIN|INNER|LEFT|RIGHT|FULL|CROSS|NATURAL|KEYED|SELECT|AND|OR|VALUES)$/i;
+
+/**
+ * Nomes em posição de tabela no SQL (FROM / JOIN / UPDATE / INSERT INTO / DELETE FROM).
+ * Coluna (SELECT, WHERE, ORDER BY, `alias.campo`) não entra.
+ */
+function findSqlTableRefs(sql: string): { name: string; index: number }[] {
+  const refs: { name: string; index: number }[] = [];
+  const intro =
+    /\b(?:(?:INNER|LEFT|RIGHT|FULL|CROSS|NATURAL|KEYED)\s+JOIN|JOIN|UPDATE|INSERT\s+INTO|DELETE\s+FROM|FROM)\b/gi;
+  let m: RegExpExecArray | null;
+  while ((m = intro.exec(sql)) !== null) {
+    let i = m.index + m[0].length;
+    for (;;) {
+      while (i < sql.length && /\s/.test(sql[i])) i++;
+      if (i >= sql.length || sql[i] === "(") break;
+      const id = /^[A-Za-z_][A-Za-z0-9_]*/.exec(sql.slice(i));
+      if (!id) break;
+      const token = id[0];
+      if (SQL_CLAUSE_WORD.test(token)) break;
+      if (isSeniorTableId(token)) {
+        refs.push({ name: token.toUpperCase(), index: i });
+      }
+      i += token.length;
+      const alias = /^\s+(?:AS\s+)?([A-Za-z_][A-Za-z0-9_]*)/i.exec(sql.slice(i));
+      if (alias && !SQL_CLAUSE_WORD.test(alias[1])) {
+        i += alias[0].length;
+      }
+      const comma = /^\s*,\s*/.exec(sql.slice(i));
+      if (!comma) break;
+      i += comma[0].length;
+    }
+  }
+  return refs;
+}
+
+type SqlLiteral = {
+  text: string;
+  /** Posição no fonte de cada caractere de `text`. */
+  spans: { line: number; col: number }[];
+};
+
+/** Literais `"..."` do LSP, juntando continuação com `\` no fim da linha. */
+function collectSqlLiterals(lines: string[]): SqlLiteral[] {
+  const result: SqlLiteral[] = [];
+  let text = "";
+  let spans: { line: number; col: number }[] = [];
+  let open = false;
+  let inBlock = false;
+
+  const flush = () => {
+    if (text && /\b(SELECT|INSERT|UPDATE|DELETE|FROM|JOIN)\b/i.test(text)) {
+      result.push({ text, spans });
+    }
+    text = "";
+    spans = [];
+  };
+
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (!open) {
+        if (inBlock) {
+          if (ch === "*" && line[i + 1] === "/") {
+            inBlock = false;
+            i++;
+          }
+          continue;
+        }
+        if (ch === "/" && line[i + 1] === "*") {
+          inBlock = true;
+          i++;
+          continue;
+        }
+        if (ch === '"') open = true;
+        continue;
+      }
+      if (ch === '"') {
+        open = false;
+        flush();
+        continue;
+      }
+      if (ch === "\\" && /^\s*$/.test(line.slice(i + 1))) {
+        text += " ";
+        spans.push({ line: li, col: i });
+        break;
+      }
+      if (ch === "\\" && i + 1 < line.length) {
+        text += line[i + 1];
+        spans.push({ line: li, col: i + 1 });
+        i++;
+        continue;
+      }
+      text += ch;
+      spans.push({ line: li, col: i });
+    }
+  }
+  if (open) flush();
+  return result;
+}
+
 export type DiagnosticHit = {
   id: string;
   message: string;
@@ -63,7 +166,9 @@ export type AnalyzeLspOptions = {
   scopedExternal?: Map<string, { fileName: string }>;
   /**
    * Nomes de tabela do catálogo local (JSON). Se presente, emite DEM001
-   * para identificadores Senior (prefixos E, R, USU_) ausentes do catálogo.
+   * para tabela Senior (E*, R*, USU_*) em posição de tabela no SQL
+   * (FROM / JOIN / UPDATE / INSERT INTO) ausente do catálogo.
+   * Coluna (SELECT, WHERE, ORDER BY) não dispara DEM001.
    */
   catalogTableNames?: ReadonlySet<string> | readonly string[];
   /**
@@ -115,15 +220,30 @@ function nextSignificantProbe(lines: string[], from: number): string | null {
 }
 
 /**
- * Se a linha termina dentro de uma string aberta.
+ * Estado ao fim da linha: string aberta e comentário de bloco.
  * `startInString` = continuação da linha anterior (após `\`).
- * `\` no fim (só espaços depois) = continuação LSP — mantém string aberta.
+ * `startInBlock` = a linha anterior ainda está dentro de um bloco.
+ * `\` no fim (só espaços depois), fora de comentário = continuação LSP.
  */
-function lineEndsInsideString(line: string, startInString: boolean): boolean {
+function scanLineContext(
+  line: string,
+  startInString: boolean,
+  startInBlock: boolean
+): { inString: boolean; inBlock: boolean } {
   let inStr = startInString;
+  let inBlock = startInBlock;
   let i = 0;
   while (i < line.length) {
     const ch = line[i];
+    if (inBlock) {
+      if (ch === "*" && line[i + 1] === "/") {
+        inBlock = false;
+        i += 2;
+        continue;
+      }
+      i++;
+      continue;
+    }
     if (!inStr) {
       if (ch === "@") {
         i++;
@@ -132,14 +252,8 @@ function lineEndsInsideString(line: string, startInString: boolean): boolean {
         continue;
       }
       if (ch === "/" && line[i + 1] === "*") {
+        inBlock = true;
         i += 2;
-        while (
-          i < line.length - 1 &&
-          !(line[i] === "*" && line[i + 1] === "/")
-        ) {
-          i++;
-        }
-        i = Math.min(i + 2, line.length);
         continue;
       }
     }
@@ -151,14 +265,18 @@ function lineEndsInsideString(line: string, startInString: boolean): boolean {
     if (inStr && ch === "\\") {
       // Continuação de linha LSP: \ no fim (espaços opcionais depois)
       if (/^\\\s*$/.test(line.slice(i))) {
-        return true;
+        return { inString: true, inBlock: false };
       }
       i += 2;
       continue;
     }
     i++;
   }
-  return inStr;
+  return { inString: inStr, inBlock };
+}
+
+function lineEndsInsideString(line: string, startInString: boolean): boolean {
+  return scanLineContext(line, startInString, false).inString;
 }
 
 function lineHasTrailingContinuation(line: string): boolean {
@@ -314,6 +432,204 @@ function resolveAnalyzeOpts(
   return ignoreIdsOrOpts;
 }
 
+const CONVERTE_MASCARA_EXEMPLO =
+  'ConverteMascara (1,R030Fil.NumCgc,VInscrStr,"99.999.999/9999-99");';
+const MASCARA_CPF = "999.999.999-99";
+const MASCARA_CGC = "99.999.999/9999-99";
+
+function offsetToLineCol(source: string, offset: number): { line: number; col: number } {
+  let line = 0;
+  let lineStart = 0;
+  const end = Math.min(offset, source.length);
+  for (let i = 0; i < end; i++) {
+    if (source[i] === "\n") {
+      line++;
+      lineStart = i + 1;
+    }
+  }
+  return { line, col: offset - lineStart };
+}
+
+function findCallClose(text: string, openParen: number): number {
+  let depth = 0;
+  for (let i = openParen; i < text.length; i++) {
+    if (text[i] === "(") depth++;
+    else if (text[i] === ")") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+function splitCallArgs(inner: string): { text: string; start: number }[] {
+  const args: { text: string; start: number }[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < inner.length; i++) {
+    const ch = inner[i];
+    if (ch === "(") depth++;
+    else if (ch === ")" && depth > 0) depth--;
+    else if (ch === "," && depth === 0) {
+      args.push({ text: inner.slice(start, i), start });
+      start = i + 1;
+    }
+  }
+  if (inner.length > 0) args.push({ text: inner.slice(start), start });
+  return args;
+}
+
+function isSnippetPlaceholderArg(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  if (/^<[^>\n]+>$/.test(t)) return true;
+  const quoted = t.match(/^"([^"]*)"$/);
+  if (quoted && /^<[^>\n]+>$/.test(quoted[1] ?? "")) return true;
+  if (/^(?:Numero|Alfa|Data|Lista)\s+\S+$/i.test(t)) return true;
+  return false;
+}
+
+function pushAt(
+  hits: DiagnosticHit[],
+  id: string,
+  message: string,
+  source: string,
+  start: number,
+  end: number
+): void {
+  const pos = offsetToLineCol(source, start);
+  const endPos = offsetToLineCol(source, end);
+  push(hits, id, message, pos.line, "error", pos.col, pos.line === endPos.line ? endPos.col : undefined);
+}
+
+function stringLiteral(text: string): string | undefined {
+  const m = text.match(/^"([^"]*)"$/);
+  return m?.[1];
+}
+
+/** Máscara no formato de CPF/CGC que não é uma das duas oficiais. */
+function inscricaoMascaraErrada(mask: string): boolean {
+  if (mask === MASCARA_CPF || mask === MASCARA_CGC) return false;
+  if (!/^[9./-]+$/.test(mask)) return false;
+  if (mask.length < 11) return false;
+  return mask.includes(".") && (mask.includes("-") || mask.includes("/"));
+}
+
+const SNIPPET_CALL_SKIP = new Set([
+  "se",
+  "senao",
+  "enquanto",
+  "para",
+  "funcao",
+  "definir",
+  "inicio",
+  "fim",
+]);
+
+/**
+ * Marcador `<Nome>` (ou o formato antigo `Numero Nome`) em qualquer chamada.
+ * ConverteMascara também valida tipo 5 e as máscaras de CPF/CGC.
+ */
+function diagnoseConverteMascaraSnippet(
+  source: string,
+  hits: DiagnosticHit[],
+  definedTypes: Map<string, string>
+): void {
+  const masked = maskCommentsAndStrings(source);
+  const re = /\b([A-Za-z_]\w*)\b/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(masked)) !== null) {
+    const callee = match[1] ?? "";
+    if (SNIPPET_CALL_SKIP.has(callee.toLowerCase())) continue;
+    const before = masked.slice(Math.max(0, match.index - 24), match.index);
+    if (/\b(?:Definir\s+)?Funcao\s+$/i.test(before)) continue;
+    let i = match.index + callee.length;
+    while (i < masked.length && /[ \t\n]/.test(masked[i] ?? "")) i++;
+    if (masked[i] !== "(") continue;
+    const open = i;
+    let depth = 0;
+    let close = -1;
+    for (let j = open; j < masked.length; j++) {
+      if (masked[j] === "(") depth++;
+      else if (masked[j] === ")") {
+        depth--;
+        if (depth === 0) {
+          close = j;
+          break;
+        }
+      }
+    }
+    if (close < 0) {
+      re.lastIndex = open + 1;
+      continue;
+    }
+    const args = splitCallArgs(masked.slice(open + 1, close)).map((arg) => {
+      const raw = source.slice(open + 1 + arg.start, open + 1 + arg.start + arg.text.length);
+      const lead = raw.length - raw.trimStart().length;
+      const text = raw.trim();
+      const start = open + 1 + arg.start + lead;
+      return { text, start, end: start + text.length, placeholder: isSnippetPlaceholderArg(text) };
+    });
+    const markerMessage =
+      callee.toLowerCase() === "convertemascara"
+        ? `ConverteMascara ainda está com o marcador do snippet. Preencha os parâmetros. Ex.: ${CONVERTE_MASCARA_EXEMPLO}`
+        : `${callee} ainda está com o marcador do snippet. Substitua <...> pelo valor.`;
+    for (const arg of args) {
+      if (!arg.placeholder) continue;
+      pushAt(hits, "SYN013", markerMessage, source, arg.start, arg.end);
+    }
+    if (callee.toLowerCase() !== "convertemascara") {
+      re.lastIndex = close + 1;
+      continue;
+    }
+    const tipo = args[0];
+    const origem = args[1];
+    const destino = args[2];
+    const mascara = args[3];
+    if (tipo && !tipo.placeholder && tipo.text === "5") {
+      if (origem && !origem.placeholder && origem.text !== "0") {
+        pushAt(
+          hits,
+          "SYN014",
+          "No tipo 5 (Alfa), Valor_Origem é 0. Alfa_Origem/Destino entra com o Alfa original e recebe o resultado.",
+          source,
+          origem.start,
+          origem.end
+        );
+      }
+      if (destino && !destino.placeholder) {
+        const ident = destino.text.match(/^([A-Za-z_]\w*)$/)?.[1]?.toLowerCase();
+        const tipoDestino = ident ? definedTypes.get(ident) : undefined;
+        const literal = /^(\d+|"[^"]*")$/.test(destino.text);
+        if (literal || (tipoDestino && tipoDestino !== "alfa")) {
+          pushAt(
+            hits,
+            "SYN014",
+            "No tipo 5 (Alfa), Alfa_Origem/Destino deve ser uma variável Alfa: entra com o valor original e sai com o resultado.",
+            source,
+            destino.start,
+            destino.end
+          );
+        }
+      }
+    }
+    if (mascara && !mascara.placeholder) {
+      const mask = stringLiteral(mascara.text);
+      if (mask && inscricaoMascaraErrada(mask)) {
+        pushAt(
+          hits,
+          "SYN015",
+          `CPF usa a máscara ${MASCARA_CPF}. CGC usa a máscara ${MASCARA_CGC}.`,
+          source,
+          mascara.start,
+          mascara.end
+        );
+      }
+    }
+    re.lastIndex = close + 1;
+  }
+}
+
 /** Diagnósticos estáticos (docs/product/regras-estaticas-lsp.md). */
 export function analyzeLsp(
   source: string,
@@ -407,12 +723,13 @@ export function analyzeLsp(
   {
     const synLines = full.split("\n");
     let inStr = false;
+    let inBlock = false;
     let openLine = -1;
     for (let i = 0; i < synLines.length; i++) {
       const raw = synLines[i];
       const trimmed = raw.trim();
       if (!trimmed) {
-        if (inStr) {
+        if (inStr && !inBlock) {
           push(
             hits,
             "SYN012",
@@ -426,7 +743,9 @@ export function analyzeLsp(
         continue;
       }
       const wasIn = inStr;
-      const endsIn = lineEndsInsideString(raw, wasIn);
+      const state = scanLineContext(raw, wasIn, inBlock);
+      inBlock = state.inBlock;
+      const endsIn = state.inString;
       const cont = lineHasTrailingContinuation(raw);
       if (!wasIn && !endsIn) continue;
       if (endsIn) {
@@ -461,12 +780,11 @@ export function analyzeLsp(
   }
 
   {
-    const synLines = full.split("\n");
     let braces = 0;
     let badLine = -1;
     let lastCloseLine = -1;
-    for (let i = 0; i < synLines.length; i++) {
-      for (const ch of stripStringsAndComments(synLines[i])) {
+    for (let i = 0; i < maskedLines.length; i++) {
+      for (const ch of maskedLines[i]) {
         if (ch === "{") braces++;
         if (ch === "}") {
           braces--;
@@ -1144,11 +1462,18 @@ export function analyzeLsp(
     // Linha Definir <caminho.ws> <instancia> — só a instância conta (já em `defined`).
     if (!matchDefinirWebService(trimmed)) {
       const scan = maskedLines[i] ?? "";
+      const snippetPlaceholders: { start: number; end: number }[] = [];
+      for (const ph of scan.matchAll(
+        /<\s*[A-Za-z_][A-Za-z0-9_]*(?:\s*\/\s*[A-Za-z_][A-Za-z0-9_]*)*\s*>/g
+      )) {
+        snippetPlaceholders.push({ start: ph.index ?? 0, end: (ph.index ?? 0) + ph[0].length });
+      }
       for (const m of scan.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\b/g)) {
         const display = m[1];
         const key = display.toLowerCase();
         if (usedPrefixed.has(key)) continue;
         const idx = m.index!;
+        if (snippetPlaceholders.some((span) => idx >= span.start && idx < span.end)) continue;
         if (idx > 0 && scan[idx - 1] === ".") continue;
         const after = scan.slice(idx + display.length);
         if (/^\s*\(/.test(after)) continue;
@@ -1237,24 +1562,35 @@ export function analyzeLsp(
       );
     }
 
-    // RUL005 Obj.Campo as arg — heurística: Func( ... Xxx.Yyy ... )
-    const callArgDot = /\b[A-Za-z_]\w*\s*\([^;]*\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w+){1,}[^;]*\)/;
-    if (callArgDot.test(code) && !/^\s*[A-Za-z_]\w*(?:\.[A-Za-z_]\w+)+\s*=/.test(trimmed)) {
-      if (
-        /\b(IntParaAlfa|AlfaParaInt|AlfaParaDecimal|DecimalParaAlfa|TamanhoAlfa|FormatarData|Mensagem|SubstAlfa|CopiarAlfa)\s*\(/i.test(
-          code
-        )
-      ) {
-        const tok = findTokenRange(raw, /\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w+)+/);
-        push(
-          hits,
-          "RUL005",
-          "Não passe Objeto.Campo diretamente em parâmetro — use variável intermediária.",
-          i,
-          "error",
-          tok?.start,
-          tok?.end
-        );
+    // RUL005: Obj.Campo em função da lista, salvo parâmetro documentado como Campo/Variável.
+    if (!/^\s*[A-Za-z_]\w*(?:\.[A-Za-z_]\w+)+\s*=/.test(trimmed)) {
+      const rul005Call =
+        /\b(IntParaAlfa|AlfaParaInt|AlfaParaDecimal|DecimalParaAlfa|TamanhoAlfa|FormatarData|Mensagem|SubstAlfa|CopiarAlfa)\s*\(/gi;
+      let call: RegExpExecArray | null;
+      while ((call = rul005Call.exec(code)) !== null) {
+        const fn = call[1] ?? "";
+        const open = call.index + call[0].length - 1;
+        const close = findCallClose(code, open);
+        if (close < 0) continue;
+        const args = splitCallArgs(code.slice(open + 1, close));
+        for (let argIndex = 0; argIndex < args.length; argIndex++) {
+          const field = args[argIndex]?.text.match(/\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w+)+\b/);
+          if (!field?.[0]) continue;
+          if (catalogParamAcceptsField(fn, argIndex)) continue;
+          const tok = findTokenRange(
+            raw,
+            new RegExp(String.raw`\b${field[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\b`)
+          );
+          push(
+            hits,
+            "RUL005",
+            "Não passe Objeto.Campo diretamente em parâmetro — use variável intermediária.",
+            i,
+            "error",
+            tok?.start,
+            tok?.end
+          );
+        }
       }
     }
 
@@ -1682,6 +2018,8 @@ export function analyzeLsp(
     }
   }
 
+  diagnoseConverteMascaraSnippet(normalized, hits, definedTypes);
+
   // Opção 2 (PDR-005): merge ANL* do analyzer puro (sem duplicar RUL007 / SYN003 / SYN008).
   const hasRul007 = hits.some((h) => h.id === "RUL007");
   const hasSyn003 = hits.some((h) => h.id === "SYN003");
@@ -1713,34 +2051,29 @@ export function analyzeLsp(
     }
   }
 
-  // DEM001 — tabela Senior citada mas ausente do catálogo local
+  // DEM001 — tabela Senior em FROM/JOIN/UPDATE/INSERT ausente do catálogo local
   const catalogNames = opts.catalogTableNames ?? opts.demobileTableNames;
   if (catalogNames) {
     const known = new Set(
       [...catalogNames].map((n) => String(n).toUpperCase())
     );
-    const TABLE_ID = /\b((?:E|R)\d{3}[A-Z0-9]+|USU_[A-Z][A-Z0-9_]*)\b/gi;
     const reported = new Set<string>();
-    for (let i = 0; i < lines.length; i++) {
-      const stripped = stripStringsAndComments(lines[i]);
-      // Também vasculha literais SQL (strings) — strip remove conteúdo; re-scan raw para strings
-      const raw = lines[i];
-      const scan = `${stripped} ${raw}`;
-      for (const m of scan.matchAll(TABLE_ID)) {
-        const name = m[1].toUpperCase();
-        const key = `${i}:${name}`;
+    for (const lit of collectSqlLiterals(lines)) {
+      for (const ref of findSqlTableRefs(lit.text)) {
+        if (known.has(ref.name)) continue;
+        const span = lit.spans[ref.index];
+        if (!span) continue;
+        const key = `${span.line}:${ref.name}:${span.col}`;
         if (reported.has(key)) continue;
-        if (known.has(name)) continue;
         reported.add(key);
-        const col = raw.toUpperCase().indexOf(name);
         push(
           hits,
           "DEM001",
-          `Tabela ${name} não encontrada no catálogo local`,
-          i,
+          `Tabela ${ref.name} não encontrada no catálogo local`,
+          span.line,
           "warning",
-          col >= 0 ? col : undefined,
-          col >= 0 ? col + name.length : undefined
+          span.col,
+          span.col + ref.name.length
         );
       }
     }

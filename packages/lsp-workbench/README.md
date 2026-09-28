@@ -14,6 +14,7 @@ Abra um arquivo `.lsp` ou `.lspt` e a extensão ativa automaticamente a linguage
 |---------|-----------|
 | **Syntax highlighting** | Cores para palavras-chave, funções, variáveis e literais |
 | **Autocompletar** | Funções nativas (~200), variáveis, membros de Cursor/Lista e campos |
+| **Modo Ghost** | Sugestão inline opcional na linguagem LSP, para auxiliar na programação |
 | **Hover** | Documentação ao passar o mouse em funções |
 | **Ajuda de parâmetros** | Signature help ao digitar argumentos entre `(` `)` |
 | **Diagnósticos** | Validação sintática e de regras (erros/avisos na edição) |
@@ -78,6 +79,25 @@ Sugestões ao digitar ou com **Ctrl+Espaço**:
 
 Dica: em `[senior-lsp]` a extensão já desliga sugestões genéricas de “palavras do arquivo” para priorizar o completion LSP.
 
+#### Modo Ghost
+
+O LSP Workbench suporta o **Modo Ghost** para auxiliar na programação em arquivos `.lsp` e `.lspt`. Com o modo ligado, o editor pode mostrar sugestões em texto fantasma enquanto você digita; **Tab** aceita a sugestão. A lista do Ctrl+Espaço continua disponível.
+
+O modo é opcional e começa **desligado**.
+
+| Comando | Efeito |
+|---------|--------|
+| **LSP Workbench: Ativar Modo Ghost** | Liga `editor.inlineSuggest.enabled` em `[senior-lsp]` |
+| **LSP Workbench: Desativar Modo Ghost** | Desliga a sugestão inline nessa linguagem |
+
+No Cursor, ativar também libera o Tab de IA para `senior-lsp` (remove a linguagem de `cursor.cpp.disabledLanguages`, se essa lista já existir). Desativar volta a incluí-la.
+
+Se o projeto já gravou essas chaves em `.vscode/settings.json`, o comando atualiza esse arquivo. Sem essa fixação, a preferência fica nas configurações de usuário.
+
+#### Configurar este workspace
+
+**LSP Workbench: Configurar este Workspace** grava no projeto as rules, skills e commands do Agent (`.cursor` e `.github`, para o Copilot) e associa `*.lsp` / `*.lspt` em `.vscode/settings.json`.
+
 #### Membros de Lista / Cursor
 
 Após digitar `.` em uma variável `Lista` ou `Cursor`, o suggest lista membros válidos:
@@ -88,7 +108,7 @@ Após digitar `.` em uma variável `Lista` ou `Cursor`, o suggest lista membros 
 
 ### Hover (documentação)
 
-Passe o mouse sobre uma função (nativa ou do projeto) para ver resumo e detalhes.
+Passe o mouse sobre o nome de uma função (nativa ou do projeto) para ver o resumo. Sobre um argumento, o hover mostra a documentação daquele parâmetro.
 
 ![Hover](https://raw.githubusercontent.com/brunoleocam/lsp-workbench/main/packages/lsp-workbench/media/03-hover.png)
 
@@ -367,6 +387,8 @@ Default: diagnósticos **in-process** (`lsp.server.enabled` = `false`). Para o L
 | Ação | Atalho típico (Windows) |
 |------|-------------------------|
 | Completar | Ctrl+Espaço |
+| Modo Ghost | Ctrl+Shift+P → `Modo Ghost` |
+| Configurar workspace | Ctrl+Shift+P → `Configurar este Workspace` |
 | Quick Fix | Ctrl+. |
 | Format Document | Shift+Alt+F |
 | Go to Definition | F12 |

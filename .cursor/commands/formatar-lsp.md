@@ -11,11 +11,6 @@ Layout via **analyzer** (preferencial) ou checklist. **Não** alterar lógica ne
 
 ## Passos
 
-1. Na raiz do monorepo:
-   ```powershell
-   node scripts/format-lsp.mjs <arquivo.lsp> --write
-   ```
-2. Se não puder rodar o script, aplicar **@lsp-formatar** manualmente.
-3. Se houver `Inicio`/`Fim`, informar `/refatorar-lsp` ou:
-   `node scripts/refactor-lsp.mjs <arquivo> --kind braces --write`
-4. Resumir o que mudou.
+1. Use **Format Document** da extensão LSP Workbench.
+2. Se houver `Inicio`/`Fim`, use `/refatorar-lsp`.
+3. Resumir o que mudou.

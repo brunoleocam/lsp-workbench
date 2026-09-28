@@ -9,7 +9,7 @@
 | **Parâmetros** | Não aceita operações dentro de parâmetros | Faça operações antes, passe resultado |
 | **Retorno** | Funções usam parâmetros de retorno | Use variável de retorno, não `=` |
 | **Grids** | Conversões diretas falham | Use variável intermediária |
-| **Campos com Ponto** | Não pode passar `Objeto.Campo.Valor` diretamente para funções | Atribua a variável intermediária primeiro |
+| **Campos com Ponto** | Parâmetro que não é Campo/Variável não aceita `Objeto.Campo` | Se a doc diz Campo/Variável, passe o campo; senão use variável intermediária |
 | **Nomenclatura** | Nomes devem seguir padrão | Use prefixos: va, vn, vd |
 
 ---
@@ -100,65 +100,34 @@ Mensagem(Retorna, vaXMLCompleto);   @ XML grande @
 Mensagem(Retorna, vaLogCompleto);   @ Log extenso @
 ```
 
-### **LIMITAÇÃO CRÍTICA: Campos de Objetos/Grids em Parâmetros de Funções** 🚨
+### **Campos com ponto em parâmetros**
 
-**⚠️ REGRA ABSOLUTA:** **NUNCA passe campos de objetos/grids com notação de ponto (ex: `Objeto.Campo.Valor`) diretamente como parâmetros de funções no Senior. Isso NÃO FUNCIONA e causará erros.**
+Função padrão da Senior aceita `Tabela.Campo` ou `Objeto.Campo` quando a descrição **daquele parâmetro** diz **Campo/Variável** (também “Campo ou Variável” ou “Campo, Valor ou Variável”). Vale para Alfa, Numero ou Data. A regra é a do parâmetro, não o nome da função: `IntParaAlfa`, `TamanhoAlfa`, `Concatena`, `DataExtenso`, `DesMontaData`, `QuebraTexto` e as demais do catálogo seguem o mesmo critério.
 
-#### **Exemplos INCORRETOS:**
+Na [IntParaAlfa](https://documentacao.senior.com.br/tecnologia/5.10.4/lsp/funcoes/gerais/intparaalfa.htm), origem e destino são Campo/Variável.
 
 ```lsp
-@ ❌ ERRO: Campo de grid passado diretamente @
-DecimalParaAlfa(COT_API_Solistica.Produtos.PesBru, vaPesBruLog);
-IntParaAlfa(vlPedidos.NumPed, vaNumPedLog);
-TamanhoAlfa(vlPedidos.CepCli, vnTamanho);
-AlfaParaDecimal(vaTexto, MinhaGrid.CampoDecimal);
-
-@ ❌ ERRO: Campo de objeto passado diretamente @
-DecimalParaAlfa(wsCOT_API_Correios.Produtos.PreCot, vaPrecoLog);
-IntParaAlfa(vlMedPed.AltPro, vaAlturaLog);
+@ CORRETO — a doc do parâmetro diz Campo/Variável @
+IntParaAlfa(E900COP.NUMORP, vaNumOrpPai);
+TamanhoAlfa(E085Cli.NomCli, vnTam);
+Concatena(E085Cli.NomCli, " - ", E085Cli.ApeCli, vaResultado);
 ```
 
-#### **Forma CORRETA:**
+Quando a descrição fala só em variável de retorno (não é Campo/Variável), não passe o campo. Converta para uma variável e grave no grid em seguida.
 
 ```lsp
-@ ✅ CORRETO: Atribuir a variável intermediária primeiro @
-Definir Numero vnPesBruLog;
-Definir Numero vnNumPedLog;
-Definir Alfa vaCepCliTemp;
-Definir Numero vnTamanho;
-Definir Numero vnPrecoLog;
-Definir Numero vnAlturaLog;
+@ INCORRETO — destino de AlfaParaDecimal é variável de retorno @
+AlfaParaDecimal(vaTexto, MinhaGrid.CampoDecimal);
 
-@ Atribuir valores dos campos a variáveis @
-vnPesBruLog = COT_API_Solistica.Produtos.PesBru;
-DecimalParaAlfa(vnPesBruLog, vaPesBruLog);
-
-vnNumPedLog = vlPedidos.NumPed;
-IntParaAlfa(vnNumPedLog, vaNumPedLog);
-
-vaCepCliTemp = vlPedidos.CepCli;
-TamanhoAlfa(vaCepCliTemp, vnTamanho);
-
-@ Para atribuir a grid, também use variável intermediária @
+@ CORRETO @
 Definir Numero vnValor;
 AlfaParaDecimal(vaTexto, vnValor);
 MinhaGrid.CampoDecimal = vnValor;
 ```
 
-#### **Regra de Ouro:**
+Atribuição, comparação e leitura diretas continuam válidas: `vlPedidos.NumPed = vnValor;`, `Se (vlPedidos.NumPed = 10)` e `vaValor = vlPedidos.NumPed;`.
 
-**SEMPRE atribua campos de objetos/grids a variáveis intermediárias ANTES de usar em funções ou atribuições!**
-
-**Aplica-se a:**
-- ✅ Campos de grids: `wsCOT_API_Solistica.Produtos.PesBru`
-- ✅ Campos de listas dinâmicas: `vlPedidos.NumPed`
-- ✅ Campos de objetos: `COT_API_Solistica.Produtos.CepDes`
-- ✅ Qualquer campo acessado com notação de ponto (`.`)
-
-**NÃO se aplica a:**
-- ❌ Atribuições diretas: `vlPedidos.NumPed = vnValor;` (isso funciona)
-- ❌ Comparações diretas: `Se (vlPedidos.NumPed = 10)` (isso funciona)
-- ❌ Leitura direta: `vaValor = vlPedidos.NumPed;` (isso funciona)
+`UltimoDia` devolve o resultado na própria variável. A documentação diz que não pode ser campo de tabela: copie para uma variável e chame `UltimoDia(vnData);`.
 
 ### **LIMITAÇÃO CRÍTICA: Variáveis de Parâmetro em SQL_Retornar**
 
@@ -293,43 +262,18 @@ vnTem = Lst.Proximo();
 | **Conversão** | `AlfaParaDecimal`, `AlfaParaInt`, `AlfaParaData`, `IntParaAlfa` |
 | **Manipulação Dinâmica** | `PegarTipoVar`, `PegarValorVarAlf`, `PegarValorVarNum` |
 
-### **Atribuição Direta em Grids/Tabelas**
+### **Destino de conversão que não é Campo/Variável**
 
-- **Funções de conversão NÃO podem atribuir diretamente para campos de grids ou tabelas**
-
-#### **Operações NÃO Permitidas:**
-
-- **Atribuição direta** em campos de grid/tabela
-- **Conversões diretas** para propriedades de objetos
-- **Funções de cast** diretamente em campos estruturados
-
-#### **Exemplos INCORRETOS:**
+Se a descrição do parâmetro de destino é só “variável que receberá” (não Campo/Variável), não grave o resultado direto no grid. Converta para uma variável e atribua depois.
 
 ```lsp
-@ ERRO: Atribuição direta em grid @
+@ INCORRETO @
 AlfaParaDecimal(vaTexto, MinhaGrid.CampoDecimal);
-AlfaParaInt(vaTexto, MinhaTabela.CampoInteiro);
-AlfaParaData(vaTexto, MinhaGrid.CampoData);
-```
 
-#### **Forma CORRETA:**
-
-```lsp
-@ CORRETO: Usar variável intermediária @
+@ CORRETO @
 Definir Numero vnValorDecimal;
-Definir Numero vnValorInteiro;
-Definir Data vdDataConvertida;
-
 AlfaParaDecimal(vaTexto, vnValorDecimal);
 MinhaGrid.CampoDecimal = vnValorDecimal;
-
-AlfaParaInt(vaTexto, vnValorInteiro);
-MinhaTabela.CampoInteiro = vnValorInteiro;
-
-AlfaParaData(vaTexto, vdDataConvertida);
-MinhaGrid.CampoData = vdDataConvertida;
 ```
 
-#### **Regra de Ouro para Grids:**
-
-**Sempre use variável intermediária para conversões em grids/tabelas!**
+`IntParaAlfa` e `AlfaParaInt`, na documentação Senior, descrevem o destino como Campo/Variável: o campo pode receber o resultado.

@@ -119,6 +119,129 @@ function buildEntries(system, labelToDesc) {
   });
 }
 
+/** Tabela oficial: Tipo_dado e Valor_Origem são Numero; destino e máscara são Alfa. */
+const CONVERTE_MASCARA_PARAMS = [
+  {
+    name: "Tipo_dado",
+    tipo: "Numero",
+    description: "Código que determina o tipo do Valor_Origem",
+  },
+  {
+    name: "Valor_Origem",
+    tipo: "Numero",
+    description: "Campo/Variável/Valor a ser convertido",
+  },
+  {
+    name: "Alfa_Origem/Destino",
+    tipo: "Alfa",
+    description: "Variável que receberá o resultado da conversão",
+  },
+  {
+    name: "Mascara",
+    tipo: "Alfa",
+    description: "Formato com que o resultado da conversão deverá ser apresentado",
+  },
+];
+
+function canonicalTipo(raw) {
+  const t = String(raw || "").trim();
+  if (!t) return "";
+  if (/^n[uú]mero$/i.test(t)) return "Numero";
+  if (/^alfanum[eé]rico$/i.test(t) || /^alfa$/i.test(t)) return "Alfa";
+  if (/^data$/i.test(t)) return "Data";
+  if (/^lista$/i.test(t)) return "Lista";
+  return t;
+}
+
+function paramsFromSyntax(syntax) {
+  const m = String(syntax || "").match(/\(([^)]*)\)/);
+  if (!m) return [];
+  /** @type {{ name: string, tipo: string, description: string }[]} */
+  const out = [];
+  for (const raw of m[1].split(",")) {
+    const tokens = raw.trim().split(/\s+/).filter(Boolean);
+    if (!tokens.length) continue;
+    let tipo = "";
+    let i = 0;
+    if (/^(Numero|Alfa|Data|Lista|Alfanum[eé]rico)$/i.test(tokens[0])) {
+      tipo = canonicalTipo(tokens[0]);
+      i = 1;
+      if (/^end$/i.test(tokens[i] || "")) i += 1;
+    }
+    const name = tokens.slice(i).join(" ").replace(/[;)]/g, "").trim();
+    if (!name) continue;
+    out.push({ name, tipo, description: "" });
+  }
+  return out;
+}
+
+function paramsLookUnparsed(params) {
+  if (!params.length) return false;
+  return params.every((p) => !p.tipo || p.tipo === "Alfa") && params.every((p) => !p.description);
+}
+
+/**
+ * Corrige tabela vazia/errada: sintaxe `Numero Nome` quando a página veio toda Alfa sem descrição.
+ * ConverteMascara usa a tabela oficial (a sintaxe não repete o tipo).
+ * @param {string} label
+ * @param {string} syntax
+ * @param {{ name?: string, tipo?: string, description?: string }[] | undefined} rawParams
+ */
+function repairParams(label, syntax, rawParams) {
+  if (label === "ConverteMascara") return CONVERTE_MASCARA_PARAMS.map((p) => ({ ...p }));
+  const cleaned = (rawParams || [])
+    .map((p) => ({
+      name: String(p.name || "").trim(),
+      tipo: canonicalTipo(p.tipo || ""),
+      description: String(p.description || "").trim(),
+    }))
+    .filter((p) => p.name);
+  const fromSyntax = paramsFromSyntax(syntax);
+  const syntaxHasTipo = fromSyntax.some((p) => p.tipo);
+  if (syntaxHasTipo && (paramsLookUnparsed(cleaned) || !cleaned.length)) {
+    if (cleaned.length === fromSyntax.length) {
+      return cleaned.map((p, i) => ({
+        name: p.name || fromSyntax[i].name,
+        tipo: fromSyntax[i].tipo || p.tipo,
+        description: p.description,
+      }));
+    }
+    return fromSyntax;
+  }
+  return cleaned;
+}
+
+function snippetFromParams(label, params) {
+  if (!params.length) return `${label}();`;
+  const slots = params.map((p, i) => {
+    const name = String(p.name || `p${i + 1}`).replace(/[}$<>]/g, "").trim() || `p${i + 1}`;
+    return `\${${i + 1}:<${name}>}`;
+  });
+  return `${label}(${slots.join(", ")});`;
+}
+
+function paramSection(params) {
+  const lines = params.map((p) => {
+    const tipo = p.tipo ? ` (${p.tipo})` : "";
+    const desc = p.description ? ` — ${p.description}` : "";
+    const marker = String(p.name).includes("<") ? p.name : `<${p.name}>`;
+    return `- \`${marker}\`${tipo}${desc}`;
+  });
+  return `**Parâmetros**\n${lines.join("\n")}`;
+}
+
+function upsertParamSection(doc, params) {
+  if (!params.length) return doc || "";
+  const block = paramSection(params);
+  const text = doc || "";
+  const re = /\*\*Parâmetros\*\*[ \t]*\r?\n(?:(?!\r?\n(?:\*\*|_Sistema:|_Fonte:))[\s\S])*/i;
+  if (re.test(text)) return text.replace(re, `${block}\n`);
+  const anchor = text.search(/\r?\n_(?:Sistema|Fonte):/);
+  if (anchor >= 0) return `${text.slice(0, anchor).trimEnd()}\n\n${block}${text.slice(anchor)}`;
+  if (!text.trim()) return block;
+  return `${text.trimEnd()}\n\n${block}`;
+}
+
 /** Prefer fixture entries already enriched (syntax/params/docs). */
 function buildEntriesFromFixture(system, fixture) {
   if (!fixture?.entries?.length) return null;
@@ -132,23 +255,19 @@ function buildEntriesFromFixture(system, fixture) {
     .map((e) => {
       const description = e.description || "";
       const detail = e.detail || `${system} · ${e.label}`;
-      const insertText = e.insertText || `${e.label}($0);`;
+      const params = repairParams(e.label, e.syntax || "", e.params);
+      const insertText = params.length
+        ? snippetFromParams(e.label, params)
+        : e.insertText || `${e.label}($0);`;
       let documentation = e.documentation;
       if (!documentation) {
         const docParts = [`**${e.label}**`, `\`${e.syntax || e.label + "(...);"}\``];
         if (description) docParts.push("", description);
-        if (e.params?.length) {
-          docParts.push("", "**Parâmetros**");
-          for (const p of e.params) {
-            docParts.push(
-              `- \`${p.name}\` (${p.tipo})${p.description ? ` — ${p.description}` : ""}`
-            );
-          }
-        }
         if (e.url) docParts.push("", `_Fonte: [doc Senior](${e.url})_`);
         docParts.push("", `_Sistema: ${system}_`);
         documentation = docParts.join("\n");
       }
+      documentation = upsertParamSection(documentation, params);
       return {
         label: e.label,
         insertText,
@@ -159,7 +278,7 @@ function buildEntriesFromFixture(system, fixture) {
         system,
         description,
         syntax: e.syntax,
-        params: e.params,
+        params: params.length ? params : undefined,
         url: e.url,
         enriched: e.enriched,
         source: e.source,
@@ -196,6 +315,9 @@ function emitTs(system, entries, outFile) {
     lines.push(`    kind: "function",`);
     lines.push(`    isSnippet: true,`);
     lines.push(`    system: ${JSON.stringify(system)},`);
+    if (e.params?.length) {
+      lines.push(`    params: ${JSON.stringify(e.params)},`);
+    }
     lines.push(`  },`);
   }
   lines.push(`];`);

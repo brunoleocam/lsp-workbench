@@ -2,7 +2,7 @@
 
 Cópia operacional para instalação Marketplace. No monorepo, a fonte canônica completa é `docs/product/regras-estaticas-lsp.md`.
 
-Compatível com extensão **LSP Workbench ≥ 0.2.4**.
+Compatível com extensão **LSP Workbench ≥ 0.2.13**.
 
 ## SYN
 
@@ -20,6 +20,9 @@ Compatível com extensão **LSP Workbench ≥ 0.2.4**.
 | SYN010 | Identificador/tipo solto inválido |
 | SYN011 | `@` comentário só na mesma linha (multi-linha → `/* */`) |
 | SYN012 | String `"` fechada ou continuada com `\` no fim da linha |
+| SYN013 | Marcador `<...>` de snippet ainda na chamada |
+| SYN014 | `ConverteMascara` tipo 5: origem `0` e destino Alfa |
+| SYN015 | `ConverteMascara`: máscara de CPF ou CGC |
 
 ## RUL (ouro)
 
@@ -29,7 +32,7 @@ Compatível com extensão **LSP Workbench ≥ 0.2.4**.
 | RUL002 | Retorno por parâmetro (`TamanhoAlfa(va, vn);`) |
 | RUL003 | `EstaNulo` em stmt separado, depois `Se` |
 | RUL004 | `FormatarData` só com `Numero` (`DataHora` antes) |
-| RUL005 | `Grid.Campo` / ponto → variável intermediária |
+| RUL005 | `Obj.Campo` só se a doc do parâmetro não diz Campo/Variável |
 | RUL006 | Não concatenar dentro de argumento de função |
 | RUL007 | Sem `Retorna`/`Retorne` → `Cancel(1);` |
 | RUL008 | Prefixo alinhado ao tipo |

@@ -1,5 +1,23 @@
 # Changelog — LSP Workbench Agent
 
+## 1.4.2 — 2026-09-28
+
+### Adicionado
+
+- Command `/configurar-workspace`, apontando para **LSP Workbench: Configurar este Workspace**
+- IDs **SYN013** (marcador de snippet), **SYN014** e **SYN015** (`ConverteMascara`)
+
+### Alterado
+
+- **RUL005**: `Objeto.Campo` só é erro quando a documentação do parâmetro não diz Campo/Variável
+- Skills e rules alinhadas à extensão **0.2.13**
+
+### Compatibilidade
+
+| Agent | Extensão IDE |
+|-------|----------------|
+| 1.4.2 | ≥ 0.2.13 |
+
 ## 1.4.1 — 2026-09-24
 
 ### Corrigido

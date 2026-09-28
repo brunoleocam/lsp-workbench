@@ -54,7 +54,9 @@ Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`** (e `.txt` se v
 
 - Coloração, snippets e semantic tokens
 - Autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
-- Hover, signature help, Go to Definition, Outline
+- Modo Ghost opcional: sugestão inline na linguagem LSP (**LSP Workbench: Ativar Modo Ghost** / **Desativar Modo Ghost**)
+- **LSP Workbench: Configurar este Workspace**: copia rules, skills e commands para `.cursor` e `.github` e associa `*.lsp` / `*.lspt`
+- Hover (função e parâmetro atual), signature help, Go to Definition, Outline
 - Diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
 - Formatação e refactors
 - Contextos multiarquivo e modo arquivo único

@@ -9,27 +9,22 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 
 > Nome antigo: `@lsp-validar` / `/validar-lsp` — use **`@lsp-compilar`** / **`/compilar-lsp`**.
 
-**IDs (plugin):** [`docs/ids-estaticos.md`](../../docs/ids-estaticos.md) — sempre disponível na instalação Marketplace.  
-**IDs (monorepo, canônico completo):** `docs/product/regras-estaticas-lsp.md`  
-**Docs de linguagem:** rules `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites` (+ `docs/lsp/` se o monorepo estiver aberto).  
+**IDs:** os checklists deste skill e o painel Problems da extensão.  
+**Docs de linguagem:** rules `lsp-nucleo`, `lsp-sintaxe`, `lsp-limites` e a skill `@lsp-linguagem`.  
 **Compat:** extensão LSP Workbench **≥ 0.2.4**.
 
 ## Fluxo
 
 1. Identificar escopo (arquivo / seleção / pasta / projeto de relatório)
-2. **Diagnósticos:** preferir Problems da extensão IDE (mesmos ANL*). Se o monorepo estiver aberto:
-   ```powershell
-   node scripts/analyze-lsp.mjs <arquivo-ou-pasta>
-   ```
-   Incluir toda linha `file:line: [ANL…]` no relatório. Sem monorepo: checklist SYN/RUL abaixo + Problems.
+2. **Diagnósticos:** painel Problems da extensão (mesmos ANL*). Use `node scripts/analyze-lsp.mjs` só se esse arquivo existir no workspace aberto.
 3. Aplicar checklists SYN / RUL / FUN / SEM / SQL abaixo (complementares ao analyzer)
 4. Se houver **projeto de relatório** (`relatorio.json` acima): checklist GER*
-5. Se houver **catálogo local** (`lsp.catalog.path` ou `docs/banco-senior-base/catalog.json` / overlay): checklist DEM001
+5. Se houver **`catalog.json`** (ver `@lsp-banco`): checklist DEM001
 6. Registrar: conforme | violação (ID, local, correção)
 7. Entregar relatório no formato final
 8. Se o usuário pedir, **aplicar** as correções e reexecutar o analyzer
 
-## Checklist ANL (analyzer — obrigatório via CLI)
+## Checklist ANL (analyzer — o mesmo do painel Problems)
 
 | ID | Regra | Correção típica |
 |----|-------|-----------------|
@@ -72,7 +67,7 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | RUL002 | `vn = TamanhoAlfa(va)` → `TamanhoAlfa(va, vn);` |
 | RUL003 | `Se (EstaNulo(...)=0)` → `EstaNulo(...); Se (vn=0)` |
 | RUL004 | `FormatarData(vd…)` → `DataHora(vn); FormatarData(vn,…)` |
-| RUL005 | passar `Grid.Campo` em arg → variável intermediária |
+| RUL005 | `Obj.Campo` em parâmetro cuja doc não diz Campo/Variável → variável intermediária |
 | RUL006 | `"x" + va` dentro de arg → montar Alfa antes |
 | RUL007 | `Retorna;` / `Retorne;` → `Cancel(1);` |
 | RUL008 | `Definir Alfa vnX` → prefixo alinhado ao tipo |
@@ -177,7 +172,7 @@ Preferir a extensão (Problems) quando o workspace estiver aberto com LSP Workbe
 
 | Extensão (Problems / QF) | Agent |
 |--------------------------|--------|
-| SYN/RUL/FUN/SEM/SQL/ANL | este skill + Problems (ou `analyze-lsp.mjs` no monorepo) |
+| SYN/RUL/FUN/SEM/SQL/ANL | este skill + Problems |
 | DEM001 | só com catálogo local de tabelas |
 | GER* | só em projeto `relatorio.json` |
 | Builtins HCM/ERP (0.2.4+) | completion filtrado por `system` no contexto |
@@ -185,6 +180,5 @@ Preferir a extensão (Problems) quando o workspace estiver aberto com LSP Workbe
 
 ## Referências
 
-- IDs no plugin: `docs/ids-estaticos.md`
-- Monorepo: `docs/product/regras-estaticas-lsp.md`, `packages/lsp-analyzer`, `packages/lsp-workbench`
+- IDs: checklists deste skill e Problems da extensão
 - `@lsp-linguagem` / `@lsp-revisar` / `/gerar-relatorio`

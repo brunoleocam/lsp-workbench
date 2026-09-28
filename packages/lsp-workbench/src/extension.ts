@@ -26,6 +26,8 @@ import {
   stopLanguageServer,
 } from "./language-client";
 import { getLocalCatalog } from "./adapters/vscode/local-catalog-loader";
+import { registerConfigureWorkspace } from "./configure-workspace";
+import { registerGhostModeCommands } from "./ghost-mode-commands";
 import { registerReportCommands } from "./report-commands";
 import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
 
@@ -54,6 +56,8 @@ export function activate(context: vscode.ExtensionContext): void {
   registerOutlineProvider(context);
   registerRefactorActions(context);
   registerReportCommands(context);
+  registerConfigureWorkspace(context);
+  registerGhostModeCommands(context);
 
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(SENIOR_LSP_LANGUAGE_ID, {
