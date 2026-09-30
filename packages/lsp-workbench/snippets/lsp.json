@@ -158,7 +158,7 @@
   "Mensagem": {
     "prefix": "Mensagem",
     "body": ["Mensagem(${1|Retorna,Erro,Advertencia|}, \"${2:texto}\");"],
-    "description": "Mensagem(Tipo, texto) — tipos documentados: Retorna, Erro, Advertencia"
+    "description": "Mensagem(Tipo, texto). Botões no texto: [&Sim,&Não] — retorno 0, 1, …"
   },
   "Cancel": {
     "prefix": "Cancel",

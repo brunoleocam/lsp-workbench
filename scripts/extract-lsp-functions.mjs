@@ -400,18 +400,232 @@ function findSupplementAfter(text, from) {
  * @param {string} supplement
  * @param {string} fname
  */
-function buildDocumentation(label, syn, desc, supplement, fname) {
+const DOC_LIMIT = 2800;
+
+/** @type {{ label: string, reason: string }[]} */
+const omittedTips = [];
+/** @type {{ label: string, marker: string }[]} */
+const officialTips = [];
+/** @type {{ label: string, tip: string }[]} */
+const attachedTips = [];
+
+const PRODUCT_DOC_FILES = [
+  path.join(REPO_ROOT, "packages", "lsp-analyzer", "src", "lint", "function-catalog.hcm.generated.ts"),
+  path.join(REPO_ROOT, "packages", "lsp-analyzer", "src", "lint", "function-catalog.erp.generated.ts"),
+];
+
+const DEDICATED_TIP_FILES = {
+  "mensagens.md": "Mensagem",
+  "cancel.md": "Cancel",
+  "entrada-valor.md": "EntradaValor",
+};
+
+/** @type {Map<string, string> | null} */
+let productDocs = null;
+
+function loadProductDocs() {
+  if (productDocs) return productDocs;
+  productDocs = new Map();
+  for (const file of PRODUCT_DOC_FILES) {
+    if (!fs.existsSync(file)) continue;
+    const text = fs.readFileSync(file, "utf8");
+    const labelRe = /label:\s*"([^"]+)"/g;
+    let m;
+    while ((m = labelRe.exec(text))) {
+      const docAt = text.indexOf("documentation:", m.index);
+      if (docAt < 0 || docAt > m.index + 8000) continue;
+      const q = text.indexOf('"', docAt + "documentation:".length);
+      if (q < 0) continue;
+      const parsed = readDoubleQuoted(text, q);
+      if (!parsed) continue;
+      const key = m[1].toLowerCase();
+      const prev = productDocs.get(key);
+      productDocs.set(key, prev ? `${prev}\n${parsed.value}` : parsed.value);
+    }
+  }
+  return productDocs;
+}
+
+/** @param {string} text @param {number} q index of opening `"` */
+function readDoubleQuoted(text, q) {
+  let s = "";
+  let i = q + 1;
+  while (i < text.length) {
+    if (text[i] === "\\") {
+      const n = text[i + 1] ?? "";
+      if (n === "n") s += "\n";
+      else if (n === "t") s += "\t";
+      else if (n === "r") s += "\r";
+      else s += n;
+      i += 2;
+      continue;
+    }
+    if (text[i] === '"') return { value: s, end: i + 1 };
+    s += text[i];
+    i++;
+  }
+  return null;
+}
+
+function sectionBody(text, from) {
+  const lines = text.slice(from).split("\n");
+  const out = [];
+  for (const line of lines) {
+    if (/^#{1,6}\s/.test(line)) break;
+    out.push(line);
+    if (out.join("\n").length > 6000) break;
+  }
+  return out.join("\n");
+}
+
+function truncateFence(body) {
+  const lines = body.replace(/\r/g, "").trim().split("\n").slice(0, 12);
+  let text = lines.join("\n");
+  if (text.length > 500) {
+    text = text.slice(0, 500).replace(/\n[^\n]*$/, "");
+  }
+  return text.trim();
+}
+
+/**
+ * Um aviso e um exemplo curto. Não leva o tutorial inteiro.
+ * @param {string} section
+ * @returns {string}
+ */
+export function findTipBlock(section) {
+  const hasMark = /⚠️|💡|não funciona|uso incorreto|\[&/i.test(section);
+  const hasExemplo = /^\s*(?:\*\*)?exemplo\b/im.test(section);
+  if (!hasMark && !hasExemplo) return "";
+
+  const lines = section.split("\n");
+  let warnAt = -1;
+  let warning = "";
+  for (let i = 0; i < lines.length; i++) {
+    const t = lines[i].trim();
+    if (!/⚠️|💡|não funciona|uso incorreto/i.test(t)) continue;
+    warning = t.replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
+    if (warning.length < 24) {
+      const next = lines.slice(i + 1).find((l) => {
+        const x = l.trim();
+        return x && !x.startsWith("```") && !x.startsWith("#") && !x.startsWith("|");
+      });
+      if (next) warning = `${warning} ${next.trim().replace(/\*\*/g, "")}`.replace(/\s+/g, " ");
+    }
+    warning = warning.slice(0, 280);
+    warnAt = i;
+    break;
+  }
+
+  const fences = [];
+  const fenceRe = /```(?:lsp)?\s*\n([\s\S]*?)```/gi;
+  let fm;
+  while ((fm = fenceRe.exec(section))) {
+    const line = section.slice(0, fm.index).split("\n").length - 1;
+    fences.push({ line, body: truncateFence(fm[1] ?? "") });
+  }
+  let exemploAt = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(?:\*\*)?exemplo\b/i.test(lines[i].trim())) {
+      exemploAt = i;
+      break;
+    }
+  }
+  const withButtons = fences.find((f) => /\[&/.test(f.body));
+  const afterWarn = fences.find((f) => warnAt >= 0 && f.line > warnAt && f.body);
+  const afterExemplo = fences.find((f) => exemploAt >= 0 && f.line > exemploAt && f.body);
+  const example = (afterWarn ?? afterExemplo ?? withButtons ?? fences[0])?.body ?? "";
+
+  if (!warning && !example) return "";
+  const parts = ["**Dica**", ""];
+  if (warning) parts.push(warning, "");
+  if (example) parts.push("```lsp", example, "```");
+  return parts.join("\n").trim();
+}
+
+/** Trechos que identificam a dica (botões, aviso, primeira linha de código). */
+export function tipMarkers(tip) {
+  /** @type {string[]} */
+  const markers = [];
+  for (const m of tip.matchAll(/\[&[^\]]+\]/g)) {
+    if (m[0]) markers.push(m[0]);
+  }
+  const flag = tip.match(/não funciona|uso incorreto/i);
+  if (flag?.[0]) markers.push(flag[0]);
+  const warnLine = tip.split("\n").find((l) => /⚠️|💡/.test(l));
+  if (warnLine) {
+    const clean = warnLine.replace(/[⚠️💡*`]/g, "").replace(/\s+/g, " ").trim();
+    if (clean.length >= 8) markers.push(clean.slice(0, 60));
+  }
+  if (!markers.length) {
+    const code = tip.split("\n").find((l) => {
+      const t = l.trim();
+      return t && !t.startsWith("```") && !t.startsWith("**") && !t.startsWith("@");
+    });
+    if (code) markers.push(code.trim().slice(0, 60));
+  }
+  return markers;
+}
+
+function normTip(s) {
+  return s.replace(/[`*]/g, "").toLowerCase();
+}
+
+/** @param {string} doc @param {string} tip */
+export function tipCoveredBy(doc, tip) {
+  const buttons = [...tip.matchAll(/\[&[^\]]+\]/g)].map((m) => m[0]);
+  const hay = doc.toLowerCase();
+  if (buttons.length) return buttons.every((b) => hay.includes(b.toLowerCase()));
+  const markers = tipMarkers(tip);
+  if (!markers.length) return doc.includes("**Dica**");
+  const nHay = normTip(doc);
+  return markers.every((m) => nHay.includes(normTip(m)));
+}
+
+function productHasTip(label, tip) {
+  const doc = loadProductDocs().get(label.toLowerCase()) ?? "";
+  if (!doc) return false;
+  return tipCoveredBy(doc, tip);
+}
+
+/**
+ * @param {string} label
+ * @param {string} syn
+ * @param {string} desc
+ * @param {string} supplement
+ * @param {string} fname
+ * @param {string} [tip]
+ */
+function buildDocumentation(label, syn, desc, supplement, fname, tip = "") {
   const parts = [`**${label}**`, ""];
   if (syn) parts.push(`\`${syn}\``);
   if (desc) parts.push("", desc);
   if (supplement) parts.push("", supplement);
   let body = parts.join("\n").replace(/\n{3,}/g, "\n\n");
   const fonte = `\n\n_Fonte: ${fname}_`;
-  const limit = 2800 - fonte.length;
+  const limit = DOC_LIMIT - fonte.length;
+  if (tip) {
+    if (productHasTip(label, tip)) {
+      const marker = tipMarkers(tip)[0] ?? "dica";
+      officialTips.push({ label, marker });
+    } else if (`${body}\n\n${tip}`.length <= limit) {
+      body = `${body}\n\n${tip}`;
+      attachedTips.push({ label, tip });
+    } else {
+      omittedTips.push({ label, reason: "não cabe (2800)" });
+    }
+  }
   if (body.length > limit) {
     body = body.slice(0, limit).replace(/\n[^\n]*$/, "");
   }
   return body + fonte;
+}
+
+export function tipAudit() {
+  return {
+    omitted: omittedTips.slice(),
+    official: officialTips.slice(),
+    attached: attachedTips.slice(),
+  };
 }
 
 /** @param {Map<string, ExtractedFn>} map */
@@ -495,6 +709,7 @@ function extractFromHeadings(map) {
       const syntax = findSyntaxAfter(text, after);
       const desc = findDescriptionAfter(text, after);
       const supplement = findSupplementAfter(text, after);
+      const tip = findTipBlock(sectionBody(text, after));
 
       for (const label of names) {
         if (!isValidFnName(label)) continue;
@@ -510,7 +725,7 @@ function extractFromHeadings(map) {
         if (!syn) syn = `${label}();`;
         const snip = snippetFromSyntax(syn, label);
         const detail = (syn.length <= 100 ? syn : desc || label).slice(0, 100);
-        const documentation = buildDocumentation(label, syn, desc, supplement, fname);
+        const documentation = buildDocumentation(label, syn, desc, supplement, fname, tip);
 
         upsert(map, {
           label,
@@ -576,12 +791,13 @@ function extractSqlFamily(map) {
         const syntax = findSyntaxAfter(text, after) || `${label}();`;
         const desc = findDescriptionAfter(text, after);
         const supplement = findSupplementAfter(text, after);
+        const tip = findTipBlock(sectionBody(text, after));
         const snip = snippetFromSyntax(syntax, label);
         upsert(map, {
           label,
           insertText: snip.insertText,
           detail: (syntax.length <= 100 ? syntax : desc || label).slice(0, 100),
-          documentation: buildDocumentation(label, syntax, desc, supplement, fname),
+          documentation: buildDocumentation(label, syntax, desc, supplement, fname, tip),
           isSnippet: snip.isSnippet,
           source: fname,
         });
@@ -600,7 +816,36 @@ function extractSqlFamily(map) {
   }
 }
 
+function applyDedicatedTips(map) {
+  for (const [fname, label] of Object.entries(DEDICATED_TIP_FILES)) {
+    const file = path.join(DOCS_LSP, fname);
+    if (!fs.existsSync(file)) continue;
+    const tip = findTipBlock(fs.readFileSync(file, "utf8"));
+    if (!tip) continue;
+    const entry = map.get(label.toLowerCase());
+    if (!entry || entry.documentation.includes("**Dica**")) continue;
+    if (productHasTip(label, tip)) {
+      if (!officialTips.some((o) => o.label === label)) {
+        officialTips.push({ label, marker: tipMarkers(tip)[0] ?? "dica" });
+      }
+      continue;
+    }
+    const fonte = `\n\n_Fonte: ${entry.source || fname}_`;
+    const base = entry.documentation.replace(/\n+_Fonte:[\s\S]*$/, "");
+    if (`${base}\n\n${tip}${fonte}`.length > DOC_LIMIT) {
+      omittedTips.push({ label, reason: "não cabe (2800)" });
+      continue;
+    }
+    entry.documentation = `${base}\n\n${tip}${fonte}`;
+    attachedTips.push({ label, tip });
+  }
+}
+
 export function extractAll() {
+  omittedTips.length = 0;
+  officialTips.length = 0;
+  attachedTips.length = 0;
+  productDocs = null;
   /** @type {Map<string, ExtractedFn>} */
   const map = new Map();
   extractFromGerais(map);
@@ -619,6 +864,8 @@ export function extractAll() {
       source: "cancel.md",
     });
   }
+
+  applyDedicatedTips(map);
 
   return [...map.values()].sort((a, b) => a.label.localeCompare(b.label));
 }

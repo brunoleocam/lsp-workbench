@@ -7,7 +7,7 @@ Monorepo **LSP Workbench**: extensão IDE + Agent Cursor + analyzer / language s
 - Cursor local: [`.cursor/README.md`](.cursor/README.md)
 - Produto: [`docs/product/`](docs/product/)
 - Arquitetura: [`docs/product/architecture/ARCHITECTURE.md`](docs/product/architecture/ARCHITECTURE.md)
-- Roadmap: [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) · [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) · [PDR-006](docs/product/pdr/PDR-006-agent-analyzer.md) · [PDR-008](docs/product/pdr/PDR-008-projeto-relatorio.md) · [PDR-010](docs/product/pdr/PDR-010-escopo-projeto-relatorio.md) · [ADR-006](docs/product/adr/ADR-006-roadmap-opcoes-1-2-3.md) · [ADR-007](docs/product/adr/ADR-007-formato-projeto-relatorio.md)
+- Roadmap: [PDR-004](docs/product/pdr/PDR-004-paridade-ux.md) · [PDR-005](docs/product/pdr/PDR-005-compiler-e-language-server.md) · [PDR-006](docs/product/pdr/PDR-006-agent-analyzer.md) · [PDR-008](docs/product/pdr/PDR-008-projeto-relatorio.md) · [PDR-010](docs/product/pdr/PDR-010-escopo-projeto-relatorio.md) · [PDR-011](docs/product/pdr/PDR-011-dicas-praticas-no-catalogo.md) · [ADR-006](docs/product/adr/ADR-006-roadmap-opcoes-1-2-3.md) · [ADR-007](docs/product/adr/ADR-007-formato-projeto-relatorio.md)
 
 ## Skills (`lsp-<ação>`)
 

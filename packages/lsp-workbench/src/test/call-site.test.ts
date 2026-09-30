@@ -1,7 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { callSiteAt, isDirectCallee } from "../call-site";
-import { formatParamHover, orderedCatalogParams, snippetParamNames } from "../catalog-param-docs";
+import {
+  formatParamHover,
+  orderedCatalogParams,
+  signatureOverview,
+  snippetParamNames,
+} from "../catalog-param-docs";
 import { LSP_FUNCTION_CATALOG } from "../function-catalog";
 
 function hoverOf(source: string, needle: string): string {
@@ -97,5 +102,14 @@ describe("hover de parâmetro no catálogo", () => {
     assert.match(hoverOf("RetDiaSemana(vnData, vnDia);", "vnDia"), /Domingo/);
     assert.match(hoverOf("Cancel(1);", "1"), /fórmula/);
     assert.match(hoverOf("Mensagem(Erro, vaMsg);", "Erro"), /Advertencia/);
+  });
+
+  it("Mensagem documenta botões no texto e na descrição", () => {
+    const entry = LSP_FUNCTION_CATALOG.find((e) => e.label === "Mensagem");
+    assert.ok(entry);
+    assert.match(entry.documentation, /\[&Sim,&Não\]/);
+    assert.match(signatureOverview(entry.documentation), /\[&Ok!!!\]/);
+    assert.match(hoverOf('Mensagem(Retorna, "Deseja Sair ? [&Sim,&Não]");', "Deseja"), /\[&Sim,&Não\]/);
+    assert.match(hoverOf('Mensagem(Retorna, "Deseja Sair ? [&Sim,&Não]");', "Deseja"), /\$Cancelar/);
   });
 });

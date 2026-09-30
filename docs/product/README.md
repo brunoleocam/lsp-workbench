@@ -19,6 +19,7 @@ Usuário final: [README.md](../../README.md) · **[Documentação para desenvolv
 | [../gerador-relatorios/](../gerador-relatorios/) | Modelo mental do Gerador de Relatórios Senior |
 | [pdr/PDR-008-projeto-relatorio.md](pdr/PDR-008-projeto-relatorio.md) | Projeto multi-arquivo de relatório no Workbench |
 | [pdr/PDR-010-escopo-projeto-relatorio.md](pdr/PDR-010-escopo-projeto-relatorio.md) | Escopo implícito de símbolos por pasta de relatório |
+| [pdr/PDR-011-dicas-praticas-no-catalogo.md](pdr/PDR-011-dicas-praticas-no-catalogo.md) | Dicas de `docs/lsp` no hover e na ajuda de parâmetros |
 | [pdr/PDR-009-catalogo-base-overlay.md](pdr/PDR-009-catalogo-base-overlay.md) | Catálogo Senior base (público) + overlay cliente |
 | [adr/ADR-007-formato-projeto-relatorio.md](adr/ADR-007-formato-projeto-relatorio.md) | Formato de pastas + JSON semântico |
 | [../banco-senior-base/](../banco-senior-base/) | Exemplo + SQL para catálogo local (sem dump no git) |

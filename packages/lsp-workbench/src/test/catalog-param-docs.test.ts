@@ -96,4 +96,16 @@ No caso de o tipo de dado ser 5 (Alfa), valorOrigem vai como 0.
     assert.match(hover, /\(Alfa\)/);
     assert.match(hover, /Código do modelo/);
   });
+
+  it("Dica gruda só no argumento citado", () => {
+    const md = `**Parâmetros**
+- \`texto\`: Origem
+- \`decimal\`: Destino
+**Dica**
+Não grave direto em \`decimal\`.
+`;
+    const params = orderedCatalogParams(md, ["texto", "decimal"]);
+    assert.doesNotMatch(params[0]?.documentation ?? "", /direto/);
+    assert.match(params[1]?.documentation ?? "", /direto/);
+  });
 });

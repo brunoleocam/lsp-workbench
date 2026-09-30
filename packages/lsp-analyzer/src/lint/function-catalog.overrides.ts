@@ -71,9 +71,41 @@ Senao
   {
     label: "Mensagem",
     insertText: "Mensagem(${1|Retorna,Erro,Advertencia|}, ${2:<vaTexto>});",
-    detail: "Mensagem(Tipo, Alfa) — exibir diálogo",
-    documentation:
-      "**Mensagem(Tipo, texto)**\n\n**Parâmetros**\n- `Tipo`: Tipo do diálogo (não é comando de saída)\n  - `Retorna`: informação\n  - `Erro`: erro\n  - `Advertencia`: aviso\n- `vaTexto` (Alfa) — Variável Alfa. Sem concatenar (`+`) no argumento\n\n```lsp\nvaMsg = \"Concluído\";\nMensagem(Retorna, vaMsg);\n```",
+    detail: "Mensagem(Tipo, Alfa) — diálogo; botões em [&…]",
+    documentation: `**Mensagem(Tipo, texto)**
+
+Exibe um diálogo. Com botões no texto, atribua o retorno: a ordem dos botões começa em 0.
+
+**Parâmetros**
+- \`Tipo\`: Tipo do diálogo (não é comando de saída)
+  - \`Retorna\`: informação; aceita botões entre colchetes
+  - \`Erro\`: erro
+  - \`Advertencia\`: aviso
+- \`vaTexto\` (Alfa) — Texto do diálogo. Sem concatenar (\`+\`) no argumento
+  - Botões entre colchetes, retorno a partir de 0: \`[&Ok]\` = 0; \`[&Sim,&Não]\` = 0 ou 1; \`[&Voltar,&Avançar, $Cancelar]\` = 0, 1 ou 2
+  - \`&\` marca a tecla de atalho
+  - \`vnRetorno = Mensagem(Retorna, vaTexto);\`
+
+**Botões**
+
+Entre colchetes, 1 ou mais rótulos. O retorno segue a sequência, iniciando em 0.
+
+\`\`\`lsp
+Definir Numero vnRetorno;
+
+vnRetorno = Mensagem(Retorna, "Processo Concluído [&Ok!!!]"); @ vnRetorno = 0 @
+
+vnRetorno = Mensagem(Retorna, "Deseja Sair ? [&Sim,&Não]"); @ 0 = Sim, 1 = Não @
+
+vnRetorno = Mensagem(Retorna, "Escolha uma opção ? [&Voltar,&Avançar, $Cancelar]"); @ 0 = Voltar, 1 = Avançar, 2 = Cancelar @
+\`\`\`
+
+\`\`\`lsp
+vaMsg = "Concluído";
+Mensagem(Retorna, vaMsg);
+\`\`\`
+
+Para o usuário digitar um valor, use \`EntradaValor\`.`,
     isSnippet: true,
   },
   {

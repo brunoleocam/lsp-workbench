@@ -208,6 +208,17 @@ export function orderedCatalogParams(
     appendParamDoc(ordered[0]!, `**Retorno**\n${retorno.body}`);
   }
 
+  const dica = sections.find((s) => /^dica$/i.test(s.title));
+  if (dica?.body) {
+    const mentioned = ordered.filter((p) => {
+      const name = p.name.replace(/^<|>$/g, "").trim();
+      if (name.length < 3) return false;
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`\\b${escaped}\\b`, "i").test(dica.body);
+    });
+    if (mentioned.length === 1) appendParamDoc(mentioned[0]!, `**Dica**\n${dica.body}`);
+  }
+
   applyStructured(ordered, structured, snippetNames);
   return ordered;
 }

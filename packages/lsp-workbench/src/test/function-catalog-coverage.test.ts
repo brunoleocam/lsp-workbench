@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { LSP_FUNCTION_CATALOG, functionsMatchingPrefix } from "../function-catalog";
-import { OVERRIDE_EXTRA_LABELS } from "../function-catalog.overrides";
+import { LSP_FUNCTION_CATALOG_OVERRIDES, OVERRIDE_EXTRA_LABELS } from "../function-catalog.overrides";
 import { EXTRACTED_FUNCTION_LABELS } from "../function-catalog.generated";
 import {
   formatParamHover,
   orderedCatalogParams,
+  signatureOverview,
   snippetParamNames,
 } from "../catalog-param-docs";
 
@@ -70,6 +71,18 @@ describe("function-catalog coverage", () => {
     assert.ok(
       LSP_FUNCTION_CATALOG.length >= 180,
       `catálogo pequeno demais: ${LSP_FUNCTION_CATALOG.length}`
+    );
+  });
+
+  it("AlfaParaDecimal traz a dica do extrator no hover", () => {
+    const e = LSP_FUNCTION_CATALOG.find((x) => x.label === "AlfaParaDecimal");
+    assert.ok(e);
+    assert.match(e.documentation, /\*\*Dica\*\*/);
+    assert.match(e.documentation, /intermediária/);
+    assert.match(signatureOverview(e.documentation), /\*\*Dica\*\*/);
+    assert.equal(
+      LSP_FUNCTION_CATALOG_OVERRIDES.some((o) => o.label === "AlfaParaDecimal"),
+      false
     );
   });
 

@@ -29,7 +29,8 @@ function mergeCatalog(): LspFunctionEntry[] {
     byLabel.set(key, angleEntry(withProductParams(e, byLabel.get(key))));
   }
   for (const e of LSP_FUNCTION_CATALOG_OVERRIDES) {
-    byLabel.set(e.label.toLowerCase(), e);
+    const key = e.label.toLowerCase();
+    byLabel.set(key, withPreservedTip(e, byLabel.get(key)));
   }
   return [...byLabel.values()].sort((a, b) => a.label.localeCompare(b.label));
 }
@@ -66,6 +67,65 @@ function angleBracketSnippet(insertText: string): string {
     if (!name) return `\${${n}:${trimmed}}`;
     return `\${${n}:<${name}>}`;
   });
+}
+
+/** Trechos que identificam a dica vinda de docs/lsp. */
+function tipMarkers(tip: string): string[] {
+  const markers: string[] = [];
+  for (const m of tip.matchAll(/\[&[^\]]+\]/g)) {
+    if (m[0]) markers.push(m[0]);
+  }
+  const flag = tip.match(/não funciona|uso incorreto/i);
+  if (flag?.[0]) markers.push(flag[0]);
+  const warnLine = tip.split("\n").find((l) => /⚠️|💡/.test(l));
+  if (warnLine) {
+    const clean = warnLine.replace(/[⚠️💡*`]/g, "").replace(/\s+/g, " ").trim();
+    if (clean.length >= 8) markers.push(clean.slice(0, 60));
+  }
+  if (!markers.length) {
+    const code = tip.split("\n").find((l) => {
+      const t = l.trim();
+      return t.length > 0 && !t.startsWith("```") && !t.startsWith("**") && !t.startsWith("@");
+    });
+    if (code) markers.push(code.trim().slice(0, 60));
+  }
+  return markers;
+}
+
+function generatedDica(documentation: string): string | undefined {
+  const idx = documentation.search(/^\*\*Dica\*\*\s*$/m);
+  if (idx < 0) return undefined;
+  return documentation
+    .slice(idx)
+    .replace(/\n+_Fonte:[\s\S]*$/, "")
+    .trim();
+}
+
+function normTip(s: string): string {
+  return s.replace(/[`*]/g, "").toLowerCase();
+}
+
+function tipCoveredBy(doc: string, tip: string): boolean {
+  const buttons = [...tip.matchAll(/\[&[^\]]+\]/g)].map((m) => m[0]);
+  const hay = doc.toLowerCase();
+  if (buttons.length) return buttons.every((b) => hay.includes(b.toLowerCase()));
+  const markers = tipMarkers(tip);
+  if (!markers.length) return doc.includes("**Dica**");
+  const nHay = normTip(doc);
+  return markers.every((m) => nHay.includes(normTip(m)));
+}
+
+/** O override substitui a entrada, mas não apaga **Dica** se o texto curto não tem os mesmos marcadores. */
+function withPreservedTip(
+  override: LspFunctionEntry,
+  generated: LspFunctionEntry | undefined
+): LspFunctionEntry {
+  if (!generated) return override;
+  const dica = generatedDica(generated.documentation ?? "");
+  if (!dica) return override;
+  if (tipCoveredBy(override.documentation ?? "", dica)) return override;
+  const documentation = `${(override.documentation ?? "").trim()}\n\n${dica}`;
+  return { ...override, documentation };
 }
 
 function angleEntry(entry: LspFunctionEntry): LspFunctionEntry {

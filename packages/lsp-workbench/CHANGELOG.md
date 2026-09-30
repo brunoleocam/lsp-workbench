@@ -9,6 +9,7 @@
 - Hover em um argumento mostra a documentação daquele parâmetro (catálogo Senior e funções do projeto), com enums e seções
 - Snippet `ConverteMascara`, com tipo de dado e máscaras de CPF/CGC
 - Documentação de parâmetros nos snippets nativos (`SQL_*`, `Mensagem`, `EstaNulo`, `FormatarData` e outros), usada no hover e na ajuda de parâmetros
+- Hover e ajuda de parâmetros passam a mostrar um bloco **Dica** (aviso e exemplo curto) extraído de `docs/lsp`, sem apagar o texto que o override já cobre
 
 ### Corrigido
 
