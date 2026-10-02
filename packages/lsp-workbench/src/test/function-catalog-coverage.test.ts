@@ -55,6 +55,18 @@ describe("function-catalog coverage", () => {
     assert.ok(has(/^Extenso/i), "Extenso*");
     assert.ok(labels.includes("AdicionaDadosGrade"));
     assert.ok(labels.includes("AlteraControle"));
+    for (const name of [
+      "AbrirTelaSGI",
+      "AbrirTelaSGICarregandoChave",
+      "AtribuirFocoComponenteSGI",
+      "AtualizarTabela",
+      "CompilaFormulario",
+      "FecharFormularioSGI",
+      "InserirValoresSGI",
+      "LimparValorCampoSGI",
+    ]) {
+      assert.ok(labels.includes(name), name);
+    }
   });
 
   it("Mens → Mensagem primeiro; Http → família Http*", () => {

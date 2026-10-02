@@ -56,6 +56,7 @@ Documentação da **Linguagem Senior de Programacao (LSP)** por tópico. Use `@d
 | [cancel.md](cancel.md) | Cancel |
 | [mensagens.md](mensagens.md) | Mensagens |
 | [interface-e-feedback-do-usuario.md](interface-e-feedback-do-usuario.md) | Interface / feedback |
+| [funcoes-sgi.md](funcoes-sgi.md) | Funções SGI |
 | [retorno-para-aplicacao.md](retorno-para-aplicacao.md) | Retorno para aplicacao |
 
 ## Banco, HTTP e integracoes

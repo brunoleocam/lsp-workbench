@@ -80,6 +80,7 @@
 ### **🎨 Interface do Usuário**
 
 - [Interface e Feedback do Usuário](#interface-e-feedback-do-usuário)
+- [Funções SGI](#funções-sgi)
 - [Mensagens](#mensagens)
 - [EntradaValor](#entradavalor)
 - [Cancel](#cancel)

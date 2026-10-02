@@ -1,8 +1,10 @@
 {
-  "generatedAt": "2026-09-30T19:32:30.857Z",
-  "count": 208,
+  "generatedAt": "2026-10-02T12:47:17.289Z",
+  "count": 216,
   "labels": [
     "AbrirCursor",
+    "AbrirTelaSGI",
+    "AbrirTelaSGICarregandoChave",
     "AdicionaDadosGrade",
     "AlfaParaData",
     "AlfaParaDecimal",
@@ -16,7 +18,9 @@
     "ArredondarValor",
     "ArredondaValorTipoAcerto",
     "AtivaLimpezaParamEnt",
+    "AtribuirFocoComponenteSGI",
     "AtualizaBarraProgresso",
+    "AtualizarTabela",
     "Base64Decode",
     "Base64Encode",
     "CalculaAlfa",
@@ -29,6 +33,7 @@
     "CarregarTextoArq",
     "CodData",
     "CodigoEspNivel",
+    "CompilaFormulario",
     "Concatena",
     "ConfiguraPontoGrafico",
     "ConverteCodificacaoString",
@@ -76,6 +81,7 @@
     "ExtensoMoeda",
     "ExtensoSemana",
     "FecharCursor",
+    "FecharFormularioSGI",
     "FinalizaBarraProgresso",
     "FinalizarTransacao",
     "Formatar",
@@ -108,6 +114,7 @@
     "InsClauSQLWhere",
     "InserirAlfa",
     "InserirStr",
+    "InserirValoresSGI",
     "InsEspAlinhDireita",
     "InsSQLWhereSimples",
     "IntParaAlfa",
@@ -121,6 +128,7 @@
     "LimpaGerTabAlf",
     "LimpaGerTabNum",
     "LimparParamsEntrada",
+    "LimparValorCampoSGI",
     "LinhasArquivo",
     "ListaItem",
     "ListaQuantidade",
@@ -219,6 +227,18 @@
       "insertText": "AbrirCursor($0);"
     },
     {
+      "label": "AbrirTelaSGI",
+      "detail": "AbrirTelaSGI(Alfa TelaNome);",
+      "source": "funcoes-sgi.md",
+      "insertText": "AbrirTelaSGI(${1:<TelaNome>});"
+    },
+    {
+      "label": "AbrirTelaSGICarregandoChave",
+      "detail": "AbrirTelaSGICarregandoChave(Alfa TelaNome, Alfa ParametrosChave, Alfa NomeComponente);",
+      "source": "funcoes-sgi.md",
+      "insertText": "AbrirTelaSGICarregandoChave(${1:<TelaNome>}, ${2:<ParametrosChave>}, ${3:<NomeComponente>});"
+    },
+    {
       "label": "AdicionaDadosGrade",
       "detail": "AdicionaDadosGrade(Alfa ControlName, Numero Linha, Numero Coluna, Alfa Texto);",
       "source": "funcoes-especificas-do-gerador-de-relatorios.md",
@@ -297,10 +317,22 @@
       "insertText": "AtivaLimpezaParamEnt();"
     },
     {
+      "label": "AtribuirFocoComponenteSGI",
+      "detail": "AtribuirFocoComponenteSGI(Alfa NomeComponente);",
+      "source": "funcoes-sgi.md",
+      "insertText": "AtribuirFocoComponenteSGI(${1:<NomeComponente>});"
+    },
+    {
       "label": "AtualizaBarraProgresso",
       "detail": "AtualizaBarraProgresso(<percentual>, <mensagem>);",
       "source": "interface-e-feedback-do-usuario.md",
       "insertText": "AtualizaBarraProgresso(${1:<percentual>}, ${2:<mensagem>});"
+    },
+    {
+      "label": "AtualizarTabela",
+      "detail": "AtualizarTabela(Alfa NomeTabela);",
+      "source": "funcoes-sgi.md",
+      "insertText": "AtualizarTabela(${1:<NomeTabela>});"
     },
     {
       "label": "Base64Decode",
@@ -373,6 +405,12 @@
       "detail": "CodigoEspNivel(Numero Nivel, Alfa End CodigoNivel);",
       "source": "funcoes-especificas-do-gerador-de-relatorios.md",
       "insertText": "CodigoEspNivel(${1:<Nivel>}, ${2:<CodigoNivel>});"
+    },
+    {
+      "label": "CompilaFormulario",
+      "detail": "CompilaFormulario(Alfa Formulario, Alfa End Status);",
+      "source": "funcoes-sgi.md",
+      "insertText": "CompilaFormulario(${1:<Formulario>}, ${2:<Status>});"
     },
     {
       "label": "Concatena",
@@ -657,6 +695,12 @@
       "insertText": "FecharCursor($0);"
     },
     {
+      "label": "FecharFormularioSGI",
+      "detail": "FecharFormularioSGI();",
+      "source": "funcoes-sgi.md",
+      "insertText": "FecharFormularioSGI();"
+    },
+    {
       "label": "FinalizaBarraProgresso",
       "detail": "FinalizaBarraProgresso();",
       "source": "interface-e-feedback-do-usuario.md",
@@ -849,6 +893,12 @@
       "insertText": "InserirStr(${1:<valor>}, ${2:<origem>}, ${3:<posicao>});"
     },
     {
+      "label": "InserirValoresSGI",
+      "detail": "InserirValoresSGI();",
+      "source": "funcoes-sgi.md",
+      "insertText": "InserirValoresSGI();"
+    },
+    {
       "label": "InsEspAlinhDireita",
       "detail": "InsEspAlinhDireita(Numero Valor);",
       "source": "funcoes-especificas-do-gerador-de-relatorios.md",
@@ -925,6 +975,12 @@
       "detail": "nomePorta.LimparParamsEntrada();",
       "source": "web-service.md",
       "insertText": "LimparParamsEntrada();"
+    },
+    {
+      "label": "LimparValorCampoSGI",
+      "detail": "LimparValorCampoSGI(Alfa NomeComponente);",
+      "source": "funcoes-sgi.md",
+      "insertText": "LimparValorCampoSGI(${1:<NomeComponente>});"
     },
     {
       "label": "LinhasArquivo",

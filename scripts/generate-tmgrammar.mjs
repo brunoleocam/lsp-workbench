@@ -446,6 +446,10 @@ const grammar = {
           name: "keyword.operator.arithmetic.lsp",
           match: "\\+|\\-|\\*",
         },
+        {
+          name: "punctuation.terminator.lsp",
+          match: ";",
+        },
       ],
     },
     "keywords-flow": {

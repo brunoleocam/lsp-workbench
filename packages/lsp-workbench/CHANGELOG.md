@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.15 — 2026-10-02
+
+### Adicionado
+
+- Funções SGI no catálogo da plataforma (completion, hover e highlight): `AbrirTelaSGI`, `AbrirTelaSGICarregandoChave`, `AtribuirFocoComponenteSGI`, `AtualizarTabela`, `CompilaFormulario`, `FecharFormularioSGI`, `InserirValoresSGI`, `LimparValorCampoSGI`
+
 ## 0.2.14 — 2026-09-30
 
 ### Adicionado

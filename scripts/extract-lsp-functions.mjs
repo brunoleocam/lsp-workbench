@@ -67,6 +67,7 @@ const HEADING_FILES = [
   "sql.md",
   "cursores.md",
   "interface-e-feedback-do-usuario.md",
+  "funcoes-sgi.md",
   "mensagens.md",
   "cancel.md",
   "entrada-valor.md",
