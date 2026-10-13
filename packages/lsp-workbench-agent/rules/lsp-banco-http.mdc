@@ -1,6 +1,6 @@
 ---
 description: Banco de dados e HTTP em LSP (cursores SQL, SQL dinâmico, requisições HTTP, criptografia, arquivos).
-globs: "**/*.{lsp,lspt}"
+globs: "**/*.lsp"
 alwaysApply: false
 ---
 # LSP – Banco de dados e HTTP
@@ -16,6 +16,7 @@ Não invente tabela nem campo. Se nenhum `catalog.json` existir, avise. Não pro
 
 ## Cursor SQL
 - `Definir Cursor Cur_X;`; `Cur_X.SQL "SELECT ... WHERE COL = :vnParam";`; `Cur_X.AbrirCursor();`; `Se (Cur_X.Achou) { ... }`; `Cur_X.FecharCursor();`. Strings longas no SQL: quebra com `\`.
+- **Fechar:** `FecharCursor` / `SQL_FecharCursor` só com o cursor aberto naquele caminho. Sem abrir, não compila. Não feche dentro de um `Se` e de novo depois do `Se` sem guarda — o caminho que entra fecha duas vezes. Se precisar fechar dentro do `Se`, marque um `Numero` de controle e só chame o `FecharCursor` de fora quando o cursor ainda estiver aberto.
 
 ## SQL dinâmico
 - `SQL_Criar`; `SQL_DefinirComando`; `SQL_DefinirInteiro` (e similares para parâmetros); `SQL_AbrirCursor`/`SQL_Executar`; `SQL_Proximo`; `SQL_RetornarAlfa`/`SQL_RetornarInteiro`; `SQL_FecharCursor`; `SQL_Destruir`.

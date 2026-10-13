@@ -10,10 +10,11 @@ alwaysApply: false
 - WebService: `Definir caminho.pontuado wsNome;` (ex.: `Definir Pedido.Retorno wsPed;`) — não inventar tipo.
 - Vars de sistema (`CodEmp`, `CodFil`, …): só sozinhas; após `.` são campo (ex. `ws.Pedido.CodEmp`).
 - Prefixos: va (Alfa), vn (Numero), vd (Data), vl (Lista), Cur_ (Cursor).
+- Depois do prefixo, nome descritivo por extenso em CamelCase. Variável que espelha campo de banco ou variável de sistema mantém o nome do campo (`vnCodEmp`, `vnCodFil`, `vaCodPro`); não expandir para `vnCodigoEmpresa`.
 
 ## Terminadores e estrutura
 - Ponto e vírgula `;` no final de cada comando. Case insensitive.
-- Comentários: `@ linha @` **só na mesma linha** (SYN011) ou `/* */`. Identação: 2 espaços.
+- Comentário de uma linha: abrir e fechar com `@` na mesma linha (`@ texto @`). `@` só na abertura fica incompleto. Várias linhas: `/* */` (SYN011). Identação: 2 espaços.
 - **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
 
 ## Múltiplas condições em Se/Enquanto

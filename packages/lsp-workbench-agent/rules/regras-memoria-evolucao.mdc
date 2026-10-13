@@ -1,0 +1,18 @@
+﻿---
+description: Quando uma regra for violada ou faltar norma, avisar e sugerir texto para Memory ou doc versionado.
+alwaysApply: true
+---
+# Memória e evolução de regras
+
+## Comportamento do agente
+
+- Se a resposta **violar** uma project rule de LSP/Senior ou **revelar lacuna** (comportamento repetido sem regra escrita): **informar o usuário** de forma objetiva.
+- Sugerir **1–3 linhas** de texto canônico para:
+  - **Cursor → Memories** (hábitos curtos), ou
+  - **[docs/lsp/evolucao-regras-lsp.md](../../docs/lsp/evolucao-regras-lsp.md)** (histórico versionado no pacote), ou
+  - edição pontual de um `.mdc` específico, quando for o caso.
+- **Não** afirmar que a regra já foi gravada; a persistência é sempre ação do usuário.
+
+## Frase-gatilho (usuário)
+
+- *"Adicionar na memória: [descrição da regra ou correção]"* — o agente deve redigir o trecho final e indicar **onde** colar (Memories vs `docs/lsp/evolucao-regras-lsp.md` vs arquivo de rule indicado).

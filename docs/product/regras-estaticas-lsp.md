@@ -70,7 +70,7 @@ Status extensão: `ok` = implementado | `pendente`
 |----|-------|----------|----|-----|-------|
 | SEM001 | Variável usada sem `Definir` (exceto `vn*` — Numero implícito = 0; instâncias `Definir caminho.ws Nome`; membros após `.`). Prefixo `va*`/`vd*`/… é boa prática, não filtro. Em relatório: `E*` da Entrada **e** `Definir` file-scope dos peers (`Inicializacao`, seções, `contextoExtra`) via `knownGlobals`; em escopo multiarquivo, peers do índice também | qualquer id (não keyword/builtin/função/tabela/`vn*`/WS) fora do set de Definir | sim (+ Ctrl+Espaço) | ok | erros-comuns, variaveis, PDR-008, web-service |
 | SEM002 | `Abrir`/`Fechar` pareados (arquivo) | alerta na linha do `Abrir` órfão | sim (Fechar / Completar) | ok | arquivos |
-| SEM003 | Cursor: `.AbrirCursor` ↔ `.FecharCursor` | alerta na linha do AbrirCursor órfão | sim (FecharCursor / Completar) | ok | cursores / lsp.md |
+| SEM003 | Cursor: `.AbrirCursor` sem `.FecharCursor` | alerta na linha do AbrirCursor órfão (contagem; fechar a mais não alerta) | sim (FecharCursor / Completar) | ok | cursores / lsp.md |
 | SEM004 | Lista: campo usado sem `AdicionarCampo` | `vl.Campo` ∉ set de AdicionarCampo | sim (inserir AdicionarCampo) | ok | listas |
 
 ## SQL
@@ -79,7 +79,7 @@ Status extensão: `ok` = implementado | `pendente`
 |----|-------|----------|----|-----|-------|
 | SQL001 | Preferir `:bind` a concat em SQL | alerta na linha do `+` | sim (→ `:variavel`) | ok | sql |
 | SQL002 | `SQL_Criar` ↔ `SQL_Destruir` | alerta na linha do `SQL_Criar` | sim (inserir Destruir) | ok | cursores, sql |
-| SQL003 | `SQL_AbrirCursor` ↔ `SQL_FecharCursor` | alerta na linha do Abrir | sim (inserir FecharCursor) | ok | cursores |
+| SQL003 | `SQL_AbrirCursor` sem `SQL_FecharCursor` | alerta na linha do Abrir (contagem; fechar a mais não alerta) | sim (inserir FecharCursor) | ok | cursores |
 | SQL004 | `SQL_Criar(x)`: `x` deve ser `Definir Alfa` | tipo ≠ alfa ou sem Definir | sim (Definir Alfa + renomear para `va*`) | ok | sql / lsp.md |
 | SQL005 | `SQL_AbrirCursor` após `SQL_DefinirComando` | Abrir sem DefinirComando prévio | sim (inserir DefinirComando) | ok | sql |
 | SQL006 | `SQL_UsarSQLSenior2` / `SQL_UsarAbrangencia` antes de DefinirComando | Usar* depois do comando | sim (mover Usar* antes) | ok | sql nativo / subquery |

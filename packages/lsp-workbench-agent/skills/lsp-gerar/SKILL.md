@@ -35,7 +35,7 @@ Este plugin **não** embute dicionário de tabelas. Siga **`@lsp-banco`**: leia 
 
 ### 3. Gerar ou editar
 
-Respeitar sintaxe e limitações. Preferir `{ }`, nomenclatura `va/vn/vd/vl/Cur_`.
+Respeitar sintaxe e limitações. Preferir `{ }`, nomenclatura `va/vn/vd/vl/Cur_` com nome por extenso. Campo de banco ou variável de sistema: `vnCodEmp`, `vnCodFil` (não `vnCodigoEmpresa`). Comentário `@` abre e fecha na mesma linha (`@ texto @`).
 
 ### 4. Antes de encerrar
 
@@ -53,3 +53,4 @@ Corrigir violações críticas (`lsp-validacao-obrigatoria.mdc`).
 - Concatenar dentro de argumento de função
 - `Retorna`; `Inicio`/`Fim;`; `ExecSQLEx` com sucesso/erro invertido
 - Inventar `E*`/`USU_*` sem catálogo/markdown local
+- `FecharCursor` / `SQL_FecharCursor` sem o cursor aberto, ou fechar dentro do `Se` e de novo depois do `Se` sem `Numero` de controle

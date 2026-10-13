@@ -1,0 +1,13 @@
+﻿---
+description: Veracidade das descrições de tabelas na documentação; usar apenas o dicionário canônico; em dúvida, perguntar.
+globs:
+  - "docs/senior/**"
+  - "docs/banco-senior/**"
+alwaysApply: false
+---
+# Veracidade da documentação (tabelas ERP)
+
+- Ao redigir ou alterar documentação em **docs/senior** (insights, fluxo-operacao, indice) e **docs/banco-senior** (dominios-fluxos, tabelas-principais, insights e resumos), **toda** menção a uma tabela do ERP (E* ou USU_*) deve usar a **mesma descrição** do dicionário canônico.
+- **Fonte canônica:** [docs/banco-senior/dicionario-dados/tabelas/](../../docs/banco-senior/dicionario-dados/tabelas/) – em cada arquivo `<TABELA>.md`, o título (linha 1, formato `# CODIGO – Descrição`) é a única descrição aceita para essa tabela nesses documentos. Usar **exatamente** o texto após " – ".
+- Se não tiver **100% de certeza** (ex.: não leu o arquivo do dicionário ou há conflito entre fontes), **perguntar ao usuário** em vez de inferir ou inventar. Nunca inventar descrições (ex.: "tabela de preço", "produto") sem conferir no dicionário.
+- Antes de escrever ou alterar uma frase que descreve uma tabela, abrir o arquivo correspondente em `docs/banco-senior/dicionario-dados/tabelas/<TABELA>.md` e usar o título ali definido.

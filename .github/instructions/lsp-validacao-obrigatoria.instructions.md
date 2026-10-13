@@ -18,7 +18,7 @@ applyTo: "**/*.lsp"
 ## Itens cr�ticos a validar
 
 - Par�metros de fun��o: apenas `Numero`; vari�veis globais para outros tipos.
-- **Campos com ponto:** permitido quando a doc do parâmetro diz Campo/Variável (ex.: `IntParaAlfa(E900COP.NUMORP, vaNum);`). Se a descrição fala só em variável de retorno, use intermediária antes de gravar em grid.
+- **Campos com ponto:** n�o passar `Objeto.Campo` ou `Grid.Campo` em par�metros; usar vari�vel intermedi�ria (ex.: `vnVal = Grid.Campo;` depois `IntParaAlfa(vnVal, vaStr);`).
 - Condi��es compostas: cada condi��o entre par�nteses `((a > 0) e (b < 10))`.
 - Convers�es em grids: sempre vari�vel intermedi�ria.
 - Concatena��o: apenas Alfa + Alfa; nunca em par�metros de fun��es.

@@ -9,8 +9,8 @@ applyTo: "**/*.lsp"
 - **Retorno:** sempre por parâmetro (ex.: `TamanhoAlfa(vaTexto, vnTamanho);`). Não usar como `vnTamanho = TamanhoAlfa(vaTexto)`.
 - **Nulos:** `EstaNulo(vaDado, vnEhNulo);` depois `Se (vnEhNulo = 0)` — não comparar a função na condição.
 - **FormatarData:** aceita apenas Numero; usar `DataHora(vnDataHora); FormatarData(vnDataHora, "dd/MM/yyyy", vaData)`.
-- **Campos com ponto:** permitido quando a doc do parâmetro diz Campo/Variável (ex.: `IntParaAlfa(E900COP.NUMORP, vaNum);`, também Alfa ou Data). Se a descrição fala só em variável de retorno, use intermediária antes de gravar em grid.
-- **Grids/tabelas:** destino de conversão que a doc trata só como variável (ex.: `AlfaParaDecimal`) passa por variável intermediária antes de gravar no grid.
+- **Campos com ponto (Grid/Lista/Objeto):** não passar `Objeto.Campo` ou `Grid.Campo` diretamente como parâmetro de funções; sempre atribuir a variável intermediária antes (ex.: `vnVal = Grid.Campo;` depois usar `vnVal` na função). Aplica-se a conversões e a qualquer função.
+- **Grids/tabelas:** conversão sempre com variável intermediária; não passar campo direto para função.
 - **Concatenação:** só Alfa + Alfa; converter número com `IntParaAlfa` antes.
 - **Cancel(1):** usar para interromper após erro; não existe `Retorna`.
 - **CopiarAlfa:** modifica a variável original; copiar para outra antes se precisar preservar.

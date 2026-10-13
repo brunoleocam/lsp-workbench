@@ -16,7 +16,7 @@ Definir Data vdNascimento;
    multi-linha */
 ```
 
-- `@ ... @` **só na mesma linha** (SYN011). Multi-linha → `/* */`.
+- `@ ... @` abre e fecha na mesma linha. `@` sem o segundo `@` fica incompleto. Multi-linha → `/* */` (SYN011).
 - Toda instrução termina com `;`.
 - String `"` aberta deve fechar na linha ou continuar com `\` (SYN012).
 
@@ -34,6 +34,10 @@ Não inventar tipo genérico; o caminho pontuado é o tipo.
 ## Variáveis de sistema
 
 `CodEmp`, `CodFil`, etc. só como identificador solto. Depois de `.` (ex. `ws.Pedido.CodEmp`) tratam-se como campo.
+
+## Nomenclatura
+
+Prefixo + nome descritivo por extenso (`vnCodigoPedido`). Variável que espelha campo de banco ou variável de sistema mantém o nome do campo: `vnCodEmp`, `vnCodFil`, `vaCodPro`. Não expandir para `vnCodigoEmpresa`.
 
 ## Condicional e laço
 

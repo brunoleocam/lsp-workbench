@@ -205,72 +205,202 @@ Para o usuário digitar um valor, use \`EntradaValor\`.`,
   },
   {
     label: "SQL_Criar",
-    insertText: "SQL_Criar(${1:<vaCur>});",
-    detail: "SQL_Criar(Alfa handle)",
+    insertText: "SQL_Criar(${1:<objeto>});",
+    detail: "SQL_Criar(Alfa End objeto)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle `Definir Alfa`\n\nOrdem: Criar → Usar* → DefinirComando → Abrir → Fechar → Destruir. Para o pipeline completo, use o seed **Cursor completo** (Ctrl+Espaço).",
+      "**Parâmetros**\n- `objeto` (Alfa End) — Variável `Definir Alfa` que recebe o cursor\n\nCriar antes de qualquer outro comando deste cursor. Ordem: Criar → Usar* → DefinirComando → Definir* → Abrir → Fechar → Destruir.",
     isSnippet: true,
+    params: [
+      { name: "objeto", tipo: "Alfa", description: "Variável Alfa End que recebe o cursor. Criar antes dos demais comandos" },
+    ],
   },
   {
     label: "SQL_DefinirComando",
-    insertText: "SQL_DefinirComando(${1:<vaCur>}, ${2:<vaSQL>});",
-    detail: "SQL_DefinirComando(handle, Alfa SQL)",
+    insertText: "SQL_DefinirComando(${1:<objeto>}, ${2:<comando>});",
+    detail: "SQL_DefinirComando(Alfa objeto, Alfa comando)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `vaSQL` (Alfa) — Comando SQL (variável Alfa, sem concatenar na chamada)\n\nDepois: AbrirCursor → loop EOF → Fechar → Destruir.",
+      "**Parâmetros**\n- `objeto` (Alfa) — Cursor criado com `SQL_Criar`\n- `comando` (Alfa) — Comando SQL (SELECT, INSERT ou UPDATE). Variável Alfa, sem concatenar na chamada\n\nSem este comando o cursor abre vazio. Chamar antes de `SQL_AbrirCursor`. `SQL_UsarAbrangencia` e `SQL_UsarSQLSenior2`, se usados, vêm antes desta função.",
     isSnippet: true,
+    params: [
+      { name: "objeto", tipo: "Alfa", description: "Cursor criado com SQL_Criar" },
+      { name: "comando", tipo: "Alfa", description: "Comando SQL que carrega, altera ou insere registros" },
+    ],
   },
   {
     label: "SQL_AbrirCursor",
-    insertText: "SQL_AbrirCursor(${1:<vaCur>});",
-    detail: "SQL_AbrirCursor(handle)",
-    documentation: "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa criado com `SQL_Criar`",
+    insertText: "SQL_AbrirCursor(${1:<Objeto>});",
+    detail: "SQL_AbrirCursor(Alfa Objeto)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor com comando já definido\n\nAbre a transação com o banco e executa o SQL de `SQL_DefinirComando`. Sem comando definido, a execução é interrompida. Binds `SQL_Definir*` vêm antes desta chamada.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. Abre a transação e executa o comando já definido" },
+    ],
   },
   {
     label: "SQL_Proximo",
-    insertText: "SQL_Proximo(${1:<vaCur>});",
-    detail: "SQL_Proximo(handle)",
+    insertText: "SQL_Proximo(${1:<Objeto>});",
+    detail: "SQL_Proximo(Alfa Objeto)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n\nAvança para o próximo registro. Usar dentro do loop `SQL_EOF(...) = 0`.",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor cuja posição avança\n\nPosiciona o foco no próximo registro. Se o cursor já está em EOF, a execução é interrompida. Use dentro de `SQL_EOF(Objeto) = 0`.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. Avança para o próximo registro. Em EOF a execução para" },
+    ],
   },
   {
     label: "SQL_FecharCursor",
-    insertText: "SQL_FecharCursor(${1:<vaCur>});",
-    detail: "SQL_FecharCursor(handle)",
-    documentation: "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n\nFecha o cursor. Depois: `SQL_Destruir`.",
+    insertText: "SQL_FecharCursor(${1:<Objeto>});",
+    detail: "SQL_FecharCursor(Alfa Objeto)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor da transação aberta\n\nFecha a pesquisa e libera a transação. O mesmo comando pode ser aberto de novo sem chamar `SQL_DefinirComando` outra vez. Depois: `SQL_Destruir`.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. Fecha a transação e libera a pesquisa" },
+    ],
   },
   {
     label: "SQL_Destruir",
-    insertText: "SQL_Destruir(${1:<vaCur>});",
-    detail: "SQL_Destruir(handle)",
-    documentation: "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n\nLibera o handle. Sempre após `SQL_FecharCursor`.",
+    insertText: "SQL_Destruir(${1:<objeto>});",
+    detail: "SQL_Destruir(Alfa End objeto)",
+    documentation:
+      "**Parâmetros**\n- `objeto` (Alfa End) — Cursor que sai da memória\n\nChamar quando o cursor não for mais usado, depois de `SQL_FecharCursor`.",
     isSnippet: true,
+    params: [
+      { name: "objeto", tipo: "Alfa", description: "Cursor Alfa End a liberar da memória" },
+    ],
   },
   {
     label: "SQL_EOF",
-    insertText: "SQL_EOF(${1:<vaCur>})",
-    detail: "SQL_EOF(handle) — 0 = há registro",
+    insertText: "SQL_EOF(${1:<Objeto>})",
+    detail: "SQL_EOF(Alfa Objeto) — 1 = EOF",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa do cursor\n\n**Retorno**\n- `0`: há registro (cursor não está em EOF)\n- `1`: cursor no fim (EOF); campos nulos\n\n```lsp\nEnquanto (SQL_EOF(vaCur) = 0) {\n  …\n  SQL_Proximo(vaCur);\n}\n```",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor\n\n**Retorno**\n- `1`: cursor na posição EOF (depois do último registro); campos nulos\n- `0`: ainda há registro",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. 1 se está em EOF, 0 se ainda há registro" },
+    ],
+  },
+  {
+    label: "SQL_BOF",
+    insertText: "SQL_BOF(${1:<Objeto>})",
+    detail: "SQL_BOF(Alfa Objeto) — 1 = posição BOF",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor\n\n**Retorno**\n- `1`: cursor na posição BOF (antes do primeiro registro); campos nulos\n- `0`: cursor não está na posição BOF",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. 1 se está na posição BOF, 0 caso contrário" },
+    ],
+  },
+  {
+    label: "SQL_DefinirAlfa",
+    insertText: 'SQL_DefinirAlfa(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirAlfa(Alfa Objeto, Alfa Campo, Alfa Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Alfa) — Campo, Valor ou Variável que o parâmetro recebe\n\nChamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`. Ao abrir, o comando é executado.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Alfa", description: "Campo, Valor ou Variável Alfa que o parâmetro no comando SQL recebe" },
+    ],
+  },
+  {
+    label: "SQL_DefinirInteiro",
+    insertText: 'SQL_DefinirInteiro(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirInteiro(Alfa Objeto, Alfa Campo, Numero Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Numero) — Campo, Valor ou Variável inteiro que o parâmetro recebe\n\nChamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`. Ao abrir, o comando é executado.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Numero", description: "Campo, Valor ou Variável inteiro que o parâmetro no comando SQL recebe" },
+    ],
+  },
+  {
+    label: "SQL_DefinirData",
+    insertText: 'SQL_DefinirData(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirData(Alfa Objeto, Alfa Campo, Data Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Data) — Campo, Valor ou Variável Data que o parâmetro recebe\n\nAtribua a data (por exemplo com `CodData`) antes da chamada. Chamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Data", description: "Campo, Valor ou Variável Data que o parâmetro no comando SQL recebe" },
+    ],
+  },
+  {
+    label: "SQL_DefinirBlob",
+    insertText: 'SQL_DefinirBlob(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirBlob(Alfa Objeto, Alfa Campo, Alfa Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Alfa) — Campo, Valor ou Variável Alfa com o arquivo blob\n\nChamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`. Ao abrir, o comando é executado.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Alfa", description: "Campo, Valor ou Variável Alfa com o conteúdo do blob" },
+    ],
+  },
+  {
+    label: "SQL_DefinirFlutuante",
+    insertText: 'SQL_DefinirFlutuante(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirFlutuante(Alfa Objeto, Alfa Campo, Numero Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Numero) — Campo, Valor ou Variável fracionado (ex.: 1,5) que o parâmetro recebe\n\nChamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`. Ao abrir, o comando é executado.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Numero", description: "Campo, Valor ou Variável fracionado que o parâmetro no comando SQL recebe" },
+    ],
+  },
+  {
+    label: "SQL_DefinirBoleano",
+    insertText: 'SQL_DefinirBoleano(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_DefinirBoleano(Alfa Objeto, Alfa Campo, Numero Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor que será manipulado\n- `Campo` (Alfa) — Nome do parâmetro no comando SQL, sem `:`. No SQL use `:Campo`\n- `Valor` (Numero) — Campo, Valor ou Variável. `1` verdadeiro, `0` falso\n\nChamar depois de `SQL_DefinirComando` e antes de `SQL_AbrirCursor`. Ao abrir, o comando é executado.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor que será manipulado" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do parâmetro desejado dentro do comando SQL" },
+      { name: "Valor", tipo: "Numero", description: "Campo, Valor ou Variável. 1 verdadeiro, 0 falso" },
+    ],
   },
   {
     label: "SQL_UsarAbrangencia",
-    insertText: "SQL_UsarAbrangencia(${1:<vaCur>}, 0);",
-    detail: "SQL_UsarAbrangencia(handle, 0) — nativo",
+    insertText: "SQL_UsarAbrangencia(${1:<Objeto>}, ${2:<usar>});",
+    detail: "SQL_UsarAbrangencia(Alfa Objeto, Numero usar)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `modo` (Numero) — Abrangência de usuário. Chamar antes de `SQL_DefinirComando`\n  - `0`: desligada (obrigatório com SQL nativo, JOIN e subquery)\n\nJunto com `SQL_UsarSQLSenior2(vaCur, 0)`.",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor\n- `usar` (Numero) — Abrangência de usuário. Chamar antes de `SQL_DefinirComando`\n  - `0`: não aplica\n  - outro número: aplica\n\nO padrão do cursor é aplicar abrangência. Com abrangência ligada, o comando tem de ser SQL Senior 2. SQL nativo exige `usar = 0` e `SQL_UsarSQLSenior2(Objeto, 0)`.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. Chamar antes de SQL_DefinirComando" },
+      {
+        name: "usar",
+        tipo: "Numero",
+        description: "0 não aplica abrangência; qualquer outro número aplica. O padrão do cursor é aplicar",
+      },
+    ],
   },
   {
     label: "SQL_UsarSQLSenior2",
-    insertText: "SQL_UsarSQLSenior2(${1:<vaCur>}, 0);",
-    detail: "SQL_UsarSQLSenior2(handle, 0) — nativo",
+    insertText: "SQL_UsarSQLSenior2(${1:<Objeto>}, ${2:<usar>});",
+    detail: "SQL_UsarSQLSenior2(Alfa Objeto, Numero usar)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `modo` (Numero) — Dialeto do comando. Chamar antes de `SQL_DefinirComando`\n  - `0`: SQL nativo do banco\n  - outro: SQL Senior 2 (padrão do cursor)\n\nJunto com `SQL_UsarAbrangencia(vaCur, 0)` quando for nativo, JOIN ou subquery.",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor\n- `usar` (Numero) — Dialeto do comando. Chamar antes de `SQL_DefinirComando`\n  - `0`: sintaxe nativa do banco\n  - diferente de zero: SQL Senior 2\n\nSe a função não for chamada, o cursor usa SQL Senior 2. `SQL_Criar` não herda a opção global da regra. Com nativo, desligue a abrangência antes (`SQL_UsarAbrangencia(Objeto, 0)`); senão a regra para com erro de abrangência.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor. Chamar antes de SQL_DefinirComando" },
+      {
+        name: "usar",
+        tipo: "Numero",
+        description: "0 sintaxe nativa; diferente de zero SQL Senior 2. O padrão, se não chamar, é Senior 2",
+      },
+    ],
   },
   {
     label: "ExecSQLEx",
@@ -282,27 +412,93 @@ Para o usuário digitar um valor, use \`EntradaValor\`.`,
   },
   {
     label: "SQL_RetornarAlfa",
-    insertText: 'SQL_RetornarAlfa(${1:<vaCur>}, "${2:<CAMPO>}", ${3:<vaDestino>});',
-    detail: "SQL_RetornarAlfa(handle, campo, Alfa End)",
+    insertText: 'SQL_RetornarAlfa(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarAlfa(Alfa Objeto, Alfa Campo, Alfa End Valor)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `CAMPO` (Alfa) — Nome da coluna\n- `vaDestino` (Alfa) — Alfa local de destino (não parâmetro `p*`)",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n- `Valor` (Alfa End) — Variável Alfa local que recebe o valor (não parâmetro `p*`)",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela" },
+      { name: "Valor", tipo: "Alfa", description: "Variável Alfa End que recebe o valor do campo" },
+    ],
   },
   {
     label: "SQL_RetornarInteiro",
-    insertText: 'SQL_RetornarInteiro(${1:<vaCur>}, "${2:<CAMPO>}", ${3:<vnDestino>});',
-    detail: "SQL_RetornarInteiro(handle, campo, Numero End)",
+    insertText: 'SQL_RetornarInteiro(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarInteiro(Alfa Objeto, Alfa Campo, Numero End Valor)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `CAMPO` (Alfa) — Nome da coluna\n- `vnDestino` (Numero) — Numero local de destino (não parâmetro `p*`)",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo no cursor\n- `Valor` (Numero End) — Variável Numero local que recebe a parte inteira (não parâmetro `p*`)\n\nValor fracionado volta só a parte inteira (5,45 vira 5). Para decimais, use `SQL_RetornarFlutuante`.",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo no cursor" },
+      { name: "Valor", tipo: "Numero", description: "Variável Numero End. Fracionado devolve só a parte inteira" },
+    ],
   },
   {
     label: "SQL_RetornarData",
-    insertText: 'SQL_RetornarData(${1:<vaCur>}, "${2:<CAMPO>}", ${3:<vdDestino>});',
-    detail: "SQL_RetornarData(handle, campo, Data End)",
+    insertText: 'SQL_RetornarData(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarData(Alfa Objeto, Alfa Campo, Data End Valor)",
     documentation:
-      "**Parâmetros**\n- `vaCur` (Alfa) — Handle Alfa\n- `CAMPO` (Alfa) — Nome da coluna\n- `vdDestino` (Data) — Data local de destino (não parâmetro)",
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n- `Valor` (Data End) — Variável Data local que recebe o valor (não parâmetro `p*`)",
     isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela" },
+      { name: "Valor", tipo: "Data", description: "Variável Data End que recebe o valor do campo" },
+    ],
+  },
+  {
+    label: "SQL_RetornarFlutuante",
+    insertText: 'SQL_RetornarFlutuante(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarFlutuante(Alfa Objeto, Alfa Campo, Numero End Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n- `Valor` (Numero End) — Variável Numero local que recebe o valor com decimais (não parâmetro `p*`)\n\nCampo Double usa esta função: o valor pode ser maior do que um inteiro.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela" },
+      { name: "Valor", tipo: "Numero", description: "Variável Numero End. Obrigatória para campo Double" },
+    ],
+  },
+  {
+    label: "SQL_RetornarBoleano",
+    insertText: 'SQL_RetornarBoleano(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarBoleano(Alfa Objeto, Alfa Campo, Numero End Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n- `Valor` (Numero End) — Variável Numero local que recebe o flag (não parâmetro `p*`)\n  - `1`: verdadeiro\n  - `0`: falso",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela" },
+      { name: "Valor", tipo: "Numero", description: "Variável Numero End. 1 verdadeiro, 0 falso" },
+    ],
+  },
+  {
+    label: "SQL_RetornarBlob",
+    insertText: 'SQL_RetornarBlob(${1:<Objeto>}, "${2:<Campo>}", ${3:<Valor>});',
+    detail: "SQL_RetornarBlob(Alfa Objeto, Alfa Campo, Alfa End Valor)",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n- `Valor` (Alfa End) — Variável Alfa local que recebe o conteúdo binário (não parâmetro `p*`)",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela" },
+      { name: "Valor", tipo: "Alfa", description: "Variável Alfa End com o conteúdo binário do campo" },
+    ],
+  },
+  {
+    label: "SQL_RetornarSeNulo",
+    insertText: '${1:<vnNulo>} = SQL_RetornarSeNulo(${2:<Objeto>}, "${3:<Campo>}");',
+    detail: "SQL_RetornarSeNulo(Alfa Objeto, Alfa Campo) — 1 = nulo",
+    documentation:
+      "**Parâmetros**\n- `Objeto` (Alfa) — Cursor posicionado no registro\n- `Campo` (Alfa) — Nome do campo na tabela\n\n**Retorno** (por atribuição ou na condição, não por parâmetro End)\n- `1`: o campo é nulo\n- `0`: o campo não é nulo\n\nNão trata Alfa vazio nem número zero como nulo.",
+    isSnippet: true,
+    params: [
+      { name: "Objeto", tipo: "Alfa", description: "Cursor posicionado no registro" },
+      { name: "Campo", tipo: "Alfa", description: "Nome do campo na tabela. 1 se nulo, 0 se não nulo" },
+    ],
   },
   {
     label: "LimpaGerTabAlf",

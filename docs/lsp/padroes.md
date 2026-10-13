@@ -16,7 +16,8 @@
 
 ### Padrão de Nomenclatura de Variáveis
 
-✅ **Utilize nomes descritivos para as variáveis.**
+✅ **Utilize nomes descritivos por extenso para as variáveis.**
+✅ **Campo de banco ou variável de sistema:** manter o nome do campo (`vnCodEmp`, `vnCodFil`, `vaCodPro`). Não expandir para `vnCodigoEmpresa`.
 ✅ **Utilize o padrão CamelCase nos nomes das variáveis.**
 ✅ **Utilize o padrão "v + inicial do tipo de dado" antes do nome da variável:**
 
@@ -53,7 +54,8 @@ Se (<Condição>) {
 ### Comentários
 
 ✅ **Utilize comentários para explicar o código e facilitar a manutenção.**
-✅ **Utilize `@` para comentários de uma linha e `/* */` para comentários de múltiplas linhas.**  
+✅ **Comentário de uma linha abre e fecha com `@` na mesma linha** (`@ texto @`). `@` só na abertura fica incompleto.
+✅ **Utilize `/* */` para comentários de múltiplas linhas.**  
 ❌ **Não** abra com `@` numa linha e feche com `@` noutra (use `/* … */`). O Workbench alerta SYN011.
 
 Exemplo de comentário de uma linha:

@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+# Global – Boas Práticas
+
+- Princípios gerais de engenharia (SOLID, Clean Code, testes, arquitetura antes de código em projetos novos, decomposição de tarefas complexas): seguir as **User Rules** do Cursor.
+- Antes de concluir uma resposta que possa depender de docs locais Senior/LSP: aplicar **MCP – Triagem** (`mcp-triagem-obrigatoria.mdc`) — neste workspace, docs em `docs/` têm prioridade sobre MCP externo. Tabela canônica: `uso-ferramentas-mcp.mdc`.
+- Lacunas de regras e fluxo de memória: `regras-memoria-evolucao.mdc`.

@@ -43,8 +43,9 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 7. **`FormatarData`** — só `Numero`; obter com `DataHora(vn)` antes
 8. **`EstaNulo`** — `EstaNulo(va, vnNulo);` depois `Se (vnNulo = 0)`
 9. **`ExecSQLEx`** — `0` = sucesso, `1` = erro
-10. Terminador `;`; comentários `@ ... @` ou `/* ... */`; indentação 2 espaços
+10. Terminador `;`; comentário de uma linha abre e fecha com `@` na mesma linha (`@ texto @`); várias linhas `/* ... */`; indentação 2 espaços
 11. **Blocos com `{ }`** — não usar `Inicio`/`Fim;` / `FimSe` / `FimEnquanto`
+12. **Cursor** — em cada caminho, abrir uma vez e fechar uma vez. `FecharCursor` / `SQL_FecharCursor` sem o cursor aberto não compila. Fechar dentro de um `Se` e de novo depois do `Se` fecha duas vezes no caminho que entra. Se precisar fechar dentro do `Se`, use um `Numero` de controle e só execute o fechar de fora quando o cursor ainda estiver aberto.
 
 ## Nomenclatura
 
@@ -56,6 +57,8 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 | `vl` | Lista |
 | `Cur_` | Cursor |
 
+Depois do prefixo, nome descritivo por extenso. Campo de banco ou variável de sistema: manter o nome do campo (`vnCodEmp`, `vnCodFil`, `vaCodPro`), sem expandir (`vnCodigoEmpresa`).
+
 ## Checklist pré-entrega
 
 - [ ] Sem `Retorna` / `Break` / `%` / `Chr` / `\n` literal
@@ -65,6 +68,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 - [ ] `Se`/`Enquanto` com `e`/`ou` bem parentizados
 - [ ] SQL longo com `\` ~coluna 80
 - [ ] Nomes de função ≤ 30 caracteres
+- [ ] **Cursor:** um `FecharCursor` / `SQL_FecharCursor` por caminho, só com o cursor aberto. Sem fechar no `Se` e de novo depois, salvo com `Numero` de controle
 
 ## Skills irmãs
 

@@ -9,6 +9,20 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-10-13 — `@` fecha na mesma linha; campo de banco não vai por extenso
+
+- **Contexto:** Comentário de uma linha aberto com `@` ficava sem o `@` de fechamento. A regra de nome descritivo por extenso também expandia campo de banco (`CodEmp` → `CodigoEmpresa`).
+- **Texto canônico:**
+  > Comentário de uma linha: abrir e fechar com `@` na mesma linha (`@ texto @`). Várias linhas: `/* */`. Nome após o prefixo é descritivo por extenso, exceto variável que espelha campo de banco ou variável de sistema: `vnCodEmp`, `vnCodFil`, `vaCodPro`.
+- **Status:** promovido para `lsp-sintaxe.mdc`, skills `lsp-linguagem` / `lsp-revisar`, `docs/lsp/padroes.md` e `docs/lsp/variaveis.md`. O editor fecha `@` ao digitar (`language-configuration.json`).
+
+### 2026-10-13 — FecharCursor só com o cursor aberto
+
+- **Contexto:** `FecharCursor` / `SQL_FecharCursor` sem cursor aberto naquele caminho quebra a compilação. O caso típico: `AbrirCursor`, `FecharCursor` dentro de um `Se`, e outro `FecharCursor` depois do `Se` — o caminho que entra fecha duas vezes. SEM003/SQL003 só alertam quando há mais aberturas do que fechamentos.
+- **Texto canônico:**
+  > Cursor: em cada caminho, abrir uma vez e fechar uma vez, depois do uso. `FecharCursor` / `SQL_FecharCursor` sem abrir não compila. Fechar no `Se` e de novo depois do `Se` também não. Se precisar fechar dentro do `Se`, use um `Numero` de controle e só execute o fechar de fora quando o cursor ainda estiver aberto. SEM003/SQL003 não pegam fechar a mais.
+- **Status:** promovido para `lsp-nucleo.mdc`, `lsp-banco-http.mdc` e skills `lsp-linguagem` / `lsp-gerar` / `lsp-revisar` / `lsp-compilar` / `lsp-depurar` / `lsp-refatorar` (2026-10-13). Analyzer ainda não alerta fechar a mais.
+
 ### 2026-09-23 — Catálogo SQL Senior 2 (dialeto)
 
 - **Contexto:** Doc oficial [funções SQL Senior 2](https://documentacao.senior.com.br/tecnologia/5.10.3/linguagem-sql-senior-2/funcoes.htm) não estava no pacote; só havia ativação/restrições (página “dentro das regras”).

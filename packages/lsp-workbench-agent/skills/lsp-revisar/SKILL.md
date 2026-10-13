@@ -26,10 +26,12 @@ Checklist **curto** depois de implementar. Não substitui o relatório completo.
 - [ ] **Interrupção:** `Cancel(1);` nunca `Retorna`
 - [ ] **CopiarAlfa:** se precisar preservar original
 - [ ] **SQL longo:** `\` ~coluna 80
-- [ ] **Comentário `@`:** só na mesma linha (SYN011); multi-linha → `/* */`
+- [ ] **Comentário `@`:** abre e fecha na mesma linha (`@ texto @`); multi-linha → `/* */` (SYN011)
+- [ ] **Nomes:** descritivos por extenso, exceto campo de banco ou variável de sistema (`vnCodEmp`, `vnCodFil`)
 - [ ] **String `"`:** fechada ou com `\` no fim (SYN012)
 - [ ] **Terminador:** `;` em todo comando
-- [ ] **Cursor/arquivo:** Abrir/Fechar pareados
+- [ ] **Cursor:** cada caminho abre uma vez e fecha uma vez. Sem `FecharCursor`/`SQL_FecharCursor` órfão; sem fechar no `Se` e de novo depois, salvo com `Numero` de controle que impede o fechar de fora (SEM003/SQL003 não pegam fechar a mais)
+- [ ] **Arquivo:** `Abrir`/`Fechar` pareados
 - [ ] **ExecSQLEx:** `0` = sucesso
 - [ ] **WebService:** `Definir caminho.pontuado wsNome;` (não inventar tipo)
 - [ ] **Relatório:** se em projeto `relatorio.json`, lembrar GER* → preferir `/compilar-lsp`

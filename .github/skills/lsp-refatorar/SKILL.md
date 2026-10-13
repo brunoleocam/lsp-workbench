@@ -70,4 +70,5 @@ Para `Inicio`/`Fim` → `{ }` e `\` → `+`, use as transformações desta skill
 
 - Criar função com parâmetro `Alfa`/`Data`/`Lista`
 - Deixar concatenação dentro de chamada
+- Duplicar `FecharCursor` ao envolver um bloco (fechar dentro do `Se` e de novo depois, sem `Numero` de controle)
 - Mudar comportamento SQL/binds sem avisar no relatório

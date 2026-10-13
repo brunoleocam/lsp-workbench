@@ -112,6 +112,45 @@ Funcao exemploCursorCompleto(); {
 
 **Plugin (SQL009):** trate os dois modos em blocos separados. O QF preferido expande um **esqueleto comentado** do modo certo (simples ou completo). Enquanto `.AbrirCursor` ainda estiver no handle de `SQL_Criar`, o plugin **não** empilha `SQL_Destruir` (SQL002) — corrija a API primeiro.
 
+### Fechar só com o cursor aberto
+
+O compilador rejeita `FecharCursor` / `SQL_FecharCursor` quando o cursor não está aberto naquele caminho de execução:
+
+- fechar sem `AbrirCursor` / `SQL_AbrirCursor` do mesmo cursor;
+- fechar dentro de um `Se` e de novo depois do `Se` — o caminho que entra no `Se` fecha duas vezes.
+
+Em cada caminho: abrir uma vez e fechar uma vez, depois do uso. Preferir um único fechamento fora da condicional. Se precisar fechar dentro do `Se`, use um `Numero` de controle e só execute o `FecharCursor` de fora quando o cursor ainda estiver aberto.
+
+```lsp
+@ errado @
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  Cur_Cliente.FecharCursor();
+}
+Cur_Cliente.FecharCursor();
+
+@ certo @
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  vaNome = Cur_Cliente.NOMCLI;
+}
+Cur_Cliente.FecharCursor();
+
+@ certo: fechar dentro do Se, com controle @
+Definir Numero vnCursorFechado;
+vnCursorFechado = 0;
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  Cur_Cliente.FecharCursor();
+  vnCursorFechado = 1;
+}
+Se (vnCursorFechado = 0) {
+  Cur_Cliente.FecharCursor();
+}
+```
+
+SEM003 e SQL003 do analyzer só alertam abertura sem fechamento. Fechar a mais não gera diagnóstico.
+
 ### Vantagens e Desvantagens dos Cursores
 
 #### Cursor Simples

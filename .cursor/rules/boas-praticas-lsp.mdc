@@ -15,7 +15,7 @@ Ordem do bloco inicial `Definir`:
 Inserções automáticas (SEM001, FUN007–008, import) devem respeitar essa ordem (`definir-insert`). Detalhe: `docs/lsp/variaveis.md`.
 
 ## Código limpo
-- Funções curtas e com um propósito; nomes claros (va/vn/vd/vl); evitar duplicação extraindo funções reutilizáveis; comentários só onde agregam.
+- Funções curtas e com um propósito; nomes claros por extenso (va/vn/vd/vl). Campo de banco ou variável de sistema mantém o nome do campo (`vnCodEmp`, `vnCodFil`). Evitar duplicação extraindo funções reutilizáveis; comentários só onde agregam, e comentário `@` abre e fecha na mesma linha.
 
 ## Arquitetura limpa
 - Organizar em camadas lógicas (ex.: regras de negócio vs. acesso a dados vs. chamadas HTTP); funções de orquestração que chamam funções menores; evitar regras gigantes em um único bloco.

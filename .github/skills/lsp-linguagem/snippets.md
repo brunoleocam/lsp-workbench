@@ -39,12 +39,12 @@ Definir Cursor Cur_Dados;
 Cur_Dados.SQL = "SELECT COLUNA \
   FROM TABELA \
   WHERE ID = :vnId";
-Cur_Dados.Abrir();
+Cur_Dados.AbrirCursor();
 Enquanto (Cur_Dados.Achou) {
   vaValor = Cur_Dados.COLUNA;
   Cur_Dados.Proximo();
 }
-Cur_Dados.Fechar();
+Cur_Dados.FecharCursor();
 ```
 
 ## Lista dinâmica

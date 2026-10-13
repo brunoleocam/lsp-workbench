@@ -1,5 +1,16 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.2.16 — 2026-10-13
+
+### Adicionado
+
+- Snippets e hover das funções `SQL_*` descrevem cada parâmetro (tipo e texto). Inclui `SQL_DefinirFlutuante`, `SQL_DefinirBoleano`, `SQL_BOF`, `SQL_RetornarFlutuante`, `SQL_RetornarBoleano`, `SQL_RetornarBlob` e `SQL_RetornarSeNulo`
+- O editor fecha o comentário `@` na mesma linha
+
+### Alterado
+
+- Highlight de `SQL_DefinirFlutuante` e `SQL_DefinirBoleano`
+
 ## 0.2.15 — 2026-10-02
 
 ### Adicionado

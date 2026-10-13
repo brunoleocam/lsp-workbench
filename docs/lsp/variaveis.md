@@ -140,7 +140,8 @@ A LSP utiliza um padrão específico de nomenclatura que facilita a identificaç
 **Regras de Nomenclatura:**
 
 - Use CamelCase após o prefixo
-- Nomes descritivos e significativos
+- Nomes descritivos por extenso
+- Campo de banco ou variável de sistema: manter o nome do campo (`vnCodEmp`, `vnCodFil`, `vaCodPro`). Não expandir para `vnCodigoEmpresa`
 - Máximo de 100 caracteres
 - Pode conter `_` (underscore)
 - Não use acentuação

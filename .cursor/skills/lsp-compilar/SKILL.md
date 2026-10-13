@@ -103,8 +103,10 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 |----|-----------|
 | SEM001 | usados sem `Definir` (exceto `vn*` implícito; E* de Entrada em relatório) |
 | SEM002 | `Abrir`/`Fechar` de arquivo pareados |
-| SEM003 | Cursor `.AbrirCursor` / `.FecharCursor` pareados |
+| SEM003 | `.AbrirCursor` sem `.FecharCursor` (contagem). Fechar a mais quebra a compilação e o analyzer não alerta |
 | SEM004 | `lista.Campo` sem `AdicionarCampo` prévio |
+
+Fechar a mais: `FecharCursor` / `SQL_FecharCursor` sem abrir, ou fechar dentro de um `Se` e de novo depois do `Se` sem `Numero` de controle. Conferir o caminho na revisão; SEM003/SQL003 não pegam esse caso.
 
 ## Checklist SQL
 
@@ -112,7 +114,7 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 |----|-----------|
 | SQL001 | SQL com `+` de variáveis → preferir `:bind` |
 | SQL002 | `SQL_Criar` ↔ `SQL_Destruir` |
-| SQL003 | `SQL_AbrirCursor` ↔ `SQL_FecharCursor` |
+| SQL003 | `SQL_AbrirCursor` sem `SQL_FecharCursor` (contagem). Fechar a mais: mesmo guardrail do SEM003 |
 | SQL004 | `SQL_Criar(x)` — `x` é `Definir Alfa` |
 | SQL005 | `SQL_AbrirCursor` após `SQL_DefinirComando` |
 | SQL006 | `SQL_Usar*` antes de DefinirComando |

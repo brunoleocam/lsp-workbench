@@ -1,6 +1,6 @@
 ---
 description: Funções essenciais LSP (mensagens, conversões, strings, datas, validação, listas, arrays).
-globs: "**/*.{lsp,lspt}"
+globs: "**/*.lsp"
 alwaysApply: false
 ---
 # LSP – Funções essenciais

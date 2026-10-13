@@ -27,11 +27,12 @@ Definir Cursor Cur_Vendas;  @ Cursor SQL @
 - `vd`: Variável Data (data)
 - `vl`: Variável Lista (lista dinâmica)
 - `Cur_`: Cursor SQL
+- Depois do prefixo, nome descritivo por extenso. Campo de banco ou variável de sistema: manter o nome do campo (`vnCodEmp`, `vnCodFil`); não expandir para `vnCodigoEmpresa`.
 
 ### **Terminadores e Estrutura**
 - **Ponto e vírgula obrigatório:** `;` no final de cada comando
 - **Case insensitive:** `vaNome` = `VANOME` = `vanome`
-- **Comentários:** `@ uma linha @` ou `/* múltiplas linhas */`
+- **Comentários:** abrir e fechar `@` na mesma linha (`@ uma linha @`). `@` só na abertura fica incompleto. Várias linhas: `/* */`
 - **Identação:** 2 espaços (padrão Senior)
 - **Blocos:** sempre `{ }`. **Não** usar `Inicio`/`Fim;` (nem `FimSe`/`FimEnquanto`) neste padrão do projeto.
 - **Condições:** Sempre entre parênteses `()`

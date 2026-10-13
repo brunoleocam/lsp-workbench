@@ -172,6 +172,27 @@ describe("function-catalog coverage", () => {
     assert.match(doc("SQL_EOF"), /EOF/);
   });
 
+  it("funções SQL_ inserem parâmetros e descrevem cada um", () => {
+    const sql = LSP_FUNCTION_CATALOG.filter((e) => e.label.startsWith("SQL_"));
+    assert.ok(sql.length >= 20, `SQL_ no catálogo: ${sql.length}`);
+    const gaps: string[] = [];
+    for (const e of sql) {
+      const names = snippetParamNames(e.insertText);
+      if (names.length === 0 || /\$\{\d+\}/.test(e.insertText)) {
+        gaps.push(`${e.label}: snippet sem parâmetros`);
+        continue;
+      }
+      const ordered = orderedCatalogParams(e.documentation, names, e.params);
+      names.forEach((_name, i) => {
+        const p = ordered[i];
+        if (!p?.tipo || !p.documentation.trim()) {
+          gaps.push(`${e.label}[${i}]: sem tipo ou descrição`);
+        }
+      });
+    }
+    assert.deepEqual(gaps, []);
+  });
+
   it("catálogo unificado inclui HCM + ERP (máxima cobertura)", () => {
     assert.ok(
       LSP_FUNCTION_CATALOG.length >= 900,

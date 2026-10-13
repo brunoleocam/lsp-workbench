@@ -21,6 +21,45 @@ Cur_Consulta.FecharCursor;
 
 Placeholders LSP em SQL: `:vnCodigo`, `:vaNome` (conforme tipo).
 
+### FecharCursor só com o cursor aberto
+
+`FecharCursor` / `SQL_FecharCursor` sem o cursor aberto naquele caminho não compila.
+
+- Sem `AbrirCursor` / `SQL_AbrirCursor` do mesmo cursor.
+- Fechar dentro de um `Se` e de novo depois do `Se`: o caminho que entra fecha duas vezes.
+
+Cada caminho abre uma vez e fecha uma vez, depois do uso. Preferir um único fechar fora da condicional. Se precisar fechar dentro do `Se`, marque um `Numero` de controle ao fechar e só execute o `FecharCursor` de fora quando o cursor ainda estiver aberto.
+
+```lsp
+@ errado: entra no Se, fecha, e fecha de novo @
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  Cur_Cliente.FecharCursor();
+}
+Cur_Cliente.FecharCursor();
+
+@ certo: um fechar, depois do uso @
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  vaNome = Cur_Cliente.NOMCLI;
+}
+Cur_Cliente.FecharCursor();
+
+@ certo: fechar dentro do Se, com controle para não fechar de fora @
+Definir Numero vnCursorFechado;
+vnCursorFechado = 0;
+Cur_Cliente.AbrirCursor();
+Se (vnFlag = 1) {
+  Cur_Cliente.FecharCursor();
+  vnCursorFechado = 1;
+}
+Se (vnCursorFechado = 0) {
+  Cur_Cliente.FecharCursor();
+}
+```
+
+O mesmo vale para `SQL_AbrirCursor` / `SQL_FecharCursor`. SEM003 e SQL003 do analyzer só alertam quando há mais aberturas do que fechamentos; fechar a mais não aparece no relatório.
+
 ### SQL Senior 2 (dialeto dentro da string)
 
 Com Senior 2 ativo (padrão do cursor `SQL_Criar`), use funções do dialeto — não nativas do banco:

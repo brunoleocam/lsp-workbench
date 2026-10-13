@@ -1,6 +1,6 @@
 ---
 description: Referência completa da linguagem LSP (sintaxe, limites, funções, padrões). Carregada apenas ao editar arquivos .lsp.
-globs: "**/*.{lsp,lspt}"
+globs: "**/*.lsp"
 alwaysApply: false
 ---
 # LSP - Linguagem Senior de Programação - Regras para IA
@@ -8,7 +8,7 @@ alwaysApply: false
 ## Manutenção e fonte da verdade
 
 - **Edições normativas** (regras que devem prevalecer ao gerar código): preferir os arquivos modulares em `.cursor/rules/` — `lsp-nucleo.mdc`, `lsp-limites.mdc`, `lsp-sintaxe.mdc`, `lsp-validacao-obrigatoria.mdc` e demais `lsp-*.mdc` por domínio.
-- **Este arquivo (`lsp.mdc`)** é referência longa carregada com `globs: "**/*.{lsp,lspt}"`. Evite duplicar alterações aqui e nos módulos; ao atualizar o núcleo, priorize os `.mdc` curtos e, se necessário, resuma ou remova trechos duplicados neste guia de forma incremental.
+- **Este arquivo (`lsp.mdc`)** é referência longa carregada com `globs: "**/*.lsp"`. Evite duplicar alterações aqui e nos módulos; ao atualizar o núcleo, priorize os `.mdc` curtos e, se necessário, resuma ou remova trechos duplicados neste guia de forma incremental.
 
 ## 🎯 **Sintaxe Fundamental**
 
@@ -27,11 +27,12 @@ Definir Cursor Cur_Vendas;  @ Cursor SQL @
 - `vd`: Variável Data (data)
 - `vl`: Variável Lista (lista dinâmica)
 - `Cur_`: Cursor SQL
+- Depois do prefixo, nome descritivo por extenso. Campo de banco ou variável de sistema: manter o nome do campo (`vnCodEmp`, `vnCodFil`); não expandir para `vnCodigoEmpresa`.
 
 ### **Terminadores e Estrutura**
 - **Ponto e vírgula obrigatório:** `;` no final de cada comando
 - **Case insensitive:** `vaNome` = `VANOME` = `vanome`
-- **Comentários:** `@ uma linha @` ou `/* múltiplas linhas */`
+- **Comentários:** abrir e fechar `@` na mesma linha (`@ uma linha @`). `@` só na abertura fica incompleto. Várias linhas: `/* */`
 - **Identação:** 2 espaços (padrão Senior)
 - **Blocos:** sempre `{ }`. **Não** usar `Inicio`/`Fim;` (nem `FimSe`/`FimEnquanto`) neste padrão do projeto.
 - **Condições:** Sempre entre parênteses `()`

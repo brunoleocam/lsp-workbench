@@ -128,7 +128,7 @@ Funcao gerarRelatorioVendas(); {
   
   @ 3. Processa resultado @
   Se (SQL_Proximo(vaSQL) = 1) {
-    SQL_DefinirNumero(vaSQL, "total", vnTotalVendas);
+    SQL_RetornarInteiro(vaSQL, "total", vnTotalVendas);
     
     @ 4. Formata valores @
     IntParaAlfa(vnTotalVendas, vaTotalStr);
