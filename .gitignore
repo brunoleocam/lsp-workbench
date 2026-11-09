@@ -14,11 +14,17 @@ tmp/
 # Conteúdo local privado — não versionar em remoto público
 docs/banco-senior/
 docs/senior/
+# Regras .LSP do Senior soltas na raiz (binárias de cliente); as de teste ficam em docs/senior/regras-binarias/
+/*.[lL][sS][pP]
 packages/lsp-workbench-demobile/
 **/docs/banco-senior/.generated/
 **/docs/banco-senior-base/.generated/
 # Catálogo completo (schema Senior) — só local; no git fica catalog.example.json
 docs/banco-senior-base/catalog.json
+# Catálogo de funções / dicionário extraídos do Senior — só no repo privado (ADR-009)
+**/funcoes.json
+**/dicionario.json
+**/functions/functions.json
 
 # Cópia de rules/skills/commands gerada no prepublish do VSIX
 packages/lsp-workbench/scaffold/

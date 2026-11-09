@@ -104,6 +104,13 @@ export function tokenize(source: string): Token[] {
           break;
         }
         if (c === "\\" && i + 1 < src.length) {
+          // `\` + só espaços até o fim da linha também continua o texto (o compilador Senior aceita)
+          let j = i + 1;
+          while (src[j] === " " || src[j] === "\t" || src[j] === "\r") j++;
+          if (src[j] === "\n") {
+            while (i <= j) value += advance();
+            continue;
+          }
           value += advance();
           value += advance();
           continue;

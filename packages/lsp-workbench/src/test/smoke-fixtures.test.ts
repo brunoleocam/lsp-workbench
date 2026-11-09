@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { analyzeLsp } from "../diagnostics";
 import { IMPLEMENTED_RULE_IDS } from "../rule-catalog";
+import { buildEffectiveFunctionCatalog } from "../effective-function-catalog";
 
 type ManifestFile = {
   path: string;
@@ -12,6 +13,10 @@ type ManifestFile = {
   note?: string;
   /** Simula peers elegíveis (FUN009). */
   scopedExternal?: Record<string, { fileName: string }>;
+  /** Catálogo de funções extra (FUN011/FUN012 só checam assinatura do compilador). */
+  extraFunctions?: string;
+  /** Catálogo de banco mínimo: tabela → campos (DEM002/DEM003). */
+  catalogTables?: Record<string, string[]>;
   /** Contexto de projeto de relatório (GER*). */
   reportContext?: {
     eventKind:
@@ -47,9 +52,24 @@ describe("smoke fixtures (MANIFEST)", () => {
       const scopedExternal = file.scopedExternal
         ? new Map(Object.entries(file.scopedExternal))
         : undefined;
+      const functionCatalog = file.extraFunctions
+        ? buildEffectiveFunctionCatalog(
+            fs.readFileSync(path.join(fixturesDir, file.extraFunctions), "utf8")
+          ).catalog
+        : undefined;
+      const catalogTableColumns = file.catalogTables
+        ? new Map(
+            Object.entries(file.catalogTables).map(([t, cols]) => [
+              t.toUpperCase(),
+              new Set(cols.map((c) => c.toUpperCase())),
+            ])
+          )
+        : undefined;
       const hits = analyzeLsp(src, {
         scopedExternal,
         reportContext: file.reportContext,
+        functionCatalog,
+        catalogTableColumns,
       });
       const found = new Set(hits.map((h) => h.id.toUpperCase()));
 

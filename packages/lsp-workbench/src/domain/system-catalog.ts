@@ -2,12 +2,9 @@
  * Catálogos por sistema adicional (SENIOR/vazio = união completa; HCM/ERP filtram produto).
  */
 
-import {
-  LSP_FUNCTION_CATALOG,
-  LSP_FUNCTION_CATALOG_ERP,
-  LSP_FUNCTION_CATALOG_HCM,
-} from "../function-catalog";
+import { LSP_FUNCTION_CATALOG_ERP, LSP_FUNCTION_CATALOG_HCM } from "../function-catalog";
 import type { LspFunctionEntry } from "../function-catalog.types";
+import { effectiveFunctionCatalog } from "../effective-function-catalog";
 
 export type LspSystem = "" | "HCM" | "ACESSO" | "ERP";
 
@@ -31,22 +28,24 @@ function mergeUnique(base: LspFunctionEntry[], extra: LspFunctionEntry[]): LspFu
  * - `ERP`: plataforma + funções do índice ERP.
  * - `ACESSO`: plataforma (+ stub vazio).
  */
+/** Entrada mesclada com o catálogo extra substitui a versão crua do produto (ADR-009). */
+function preferMerged(list: LspFunctionEntry[], all: LspFunctionEntry[]): LspFunctionEntry[] {
+  const merged = new Map(
+    all.filter((e) => e.origin === "merged").map((e) => [e.label.toLowerCase(), e])
+  );
+  if (!merged.size) return list;
+  return list.map((e) => merged.get(e.label.toLowerCase()) ?? e);
+}
+
 export function catalogForSystem(system: LspSystem | string): LspFunctionEntry[] {
   const sys = (system || "").toUpperCase();
-  if (sys === "HCM") {
-    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
-    return mergeUnique(platform, LSP_FUNCTION_CATALOG_HCM);
-  }
-  if (sys === "ERP") {
-    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
-    return mergeUnique(platform, LSP_FUNCTION_CATALOG_ERP);
-  }
-  if (sys === "ACESSO") {
-    const platform = LSP_FUNCTION_CATALOG.filter((e) => !e.system);
-    return mergeUnique(platform, ACESSO_STUB);
-  }
+  const all = effectiveFunctionCatalog();
+  const platform = () => all.filter((e) => !e.system);
+  if (sys === "HCM") return preferMerged(mergeUnique(platform(), LSP_FUNCTION_CATALOG_HCM), all);
+  if (sys === "ERP") return preferMerged(mergeUnique(platform(), LSP_FUNCTION_CATALOG_ERP), all);
+  if (sys === "ACESSO") return mergeUnique(platform(), ACESSO_STUB);
   // vazio / SENIOR / desconhecido → união completa
-  return LSP_FUNCTION_CATALOG;
+  return all;
 }
 
 export function functionsMatchingPrefixForSystem(

@@ -7,15 +7,13 @@ import {
   type FileSymbols,
   parseFileSymbols,
 } from "./document-symbols";
-import { LSP_FUNCTION_CATALOG } from "./function-catalog";
+import { builtinFunctionNames } from "./function-catalog";
 import { maskCommentsAndStrings } from "./comment-mask";
 
 export type ScopedFunction = CustomFunctionSymbol & {
   uri: string;
   fileName: string;
 };
-
-const builtinNames = new Set(LSP_FUNCTION_CATALOG.map((e) => e.label.toLowerCase()));
 
 const CALL_SKIP = new Set(
   [
@@ -64,7 +62,8 @@ export function indexSource(source: string, uri: string, fileName: string): {
 
 /** Chamadas `nome(` que não são builtin/keyword (ignora comentarios/strings). */
 export function findCustomCalls(
-  source: string
+  source: string,
+  builtinNames: ReadonlySet<string> = builtinFunctionNames()
 ): { name: string; line: number; startCol: number; endCol: number }[] {
   const lines = maskCommentsAndStrings(source.replace(/\r\n/g, "\n")).split("\n");
   const out: { name: string; line: number; startCol: number; endCol: number }[] = [];

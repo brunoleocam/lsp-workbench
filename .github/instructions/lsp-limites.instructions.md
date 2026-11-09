@@ -12,7 +12,7 @@ applyTo: "**/*.lsp"
 - **Campos com ponto (Grid/Lista/Objeto):** não passar `Objeto.Campo` ou `Grid.Campo` diretamente como parâmetro de funções; sempre atribuir a variável intermediária antes (ex.: `vnVal = Grid.Campo;` depois usar `vnVal` na função). Aplica-se a conversões e a qualquer função.
 - **Grids/tabelas:** conversão sempre com variável intermediária; não passar campo direto para função.
 - **Concatenação:** só Alfa + Alfa; converter número com `IntParaAlfa` antes.
-- **Cancel(1):** usar para interromper após erro; não existe `Retorna`.
+- **Cancel(1):** usar para interromper após erro. `Retorna;` sem parênteses não compila; `Retorna(valor)` existe, mas não substitui `Cancel(1)`.
 - **CopiarAlfa:** modifica a variável original; copiar para outra antes se precisar preservar.
 - **Mensagem:** não passar JSON/XML ou strings muito grandes para `Mensagem` (pode travar); usar resumo ou trecho em variável Alfa.
 - **Retorno direto:** a maioria das funções usa parâmetro de retorno; exceções que retornam valor diretamente incluem `ArqExiste(vaCaminho)`, `Abrir(...)`, `CodData(...)`; consulte `docs/lsp/` quando em dúvida.

@@ -50,7 +50,7 @@ Se (vnX < vnY) {
 Regras:
 
 - Se o bloco contiver apenas uma linha, não é necessário informar `{ }`, basta adicionar identado na linha de baixo.
-- **Padrão deste pacote:** delimitar blocos com `{ }`. A linguagem também aceita `Inicio`/`Fim;`, mas **não gerar** essa forma aqui (nem `FimSe`/`FimEnquanto`).
+- **Padrão deste pacote:** delimitar blocos com `{ }` (preferência de estilo). `Inicio`/`Fim;` são válidos (palavras reservadas do compilador) e equivalem a `{ }`; não é preciso convertê-los. `FimSe`/`FimEnquanto` **não existem** (erro SYN016).
 - Todas as condições ou estruturas de repetições devem estar entre parênteses `()`.
 
 Exemplo de estrutura de bloco com apenas uma linha:
@@ -72,12 +72,12 @@ Funcao Somar(Numero pnA, Numero pnB, Numero End pnResultado); {
 }
 ```
 
-Exemplo **a evitar** neste pacote (`Inicio`/`Fim`):
+Exemplo com `Inicio`/`Fim` (válido; ao gerar código novo, preferir `{ }`):
 
 ```lsp
 Se (<Condição>) 
 Inicio
-  @ Evitar neste padrão – usar { } @
+  @ Equivale a { } @
 Fim;
 ```
 

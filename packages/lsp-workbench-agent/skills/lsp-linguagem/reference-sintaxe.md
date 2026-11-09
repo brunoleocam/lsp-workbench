@@ -20,7 +20,7 @@ Definir Data vdNascimento;
 - Toda instrução termina com `;`.
 - String `"` aberta deve fechar na linha ou continuar com `\` (SYN012).
 
-**Blocos:** sempre `{ }`. Não usar `Inicio`/`Fim;` / `FimSe` / `FimEnquanto`.
+**Blocos:** gerar `{ }` (padrão de estilo). `Inicio`/`Fim;` são válidos e equivalem a `{ }`. `FimSe` / `FimEnquanto` não existem (SYN016).
 
 ## WebService
 
@@ -100,10 +100,9 @@ Se (EstaNulo(vaDado) = 0);
 FormatarData(vdData, "dd/MM/yyyy", vaData);
 Mensagem(Retorna, "x" + vnCodigo);
 Retorna;
-Funcao Foo(...);
-Inicio
+Se (vnA > 0) {
   @ ... @
-Fim;
+FimSe;
 ```
 
 ## Interrupção
@@ -126,13 +125,15 @@ Use `\` no fim da linha (preferência ~coluna 80), comum em `.SQL` de cursores.
 
 | Evitar | Usar |
 |--------|------|
-| `Retorna` | `Cancel(1)` |
+| `Retorna;` (sem parênteses não compila) | `Cancel(1)` após erro |
 | `Break` | `Pare` |
 | `%` | `RestoDivisao` |
 | `\n` | `CaracterParaAlfa(13, vaEnter)` |
 | `Chr()` | `CaracterParaAlfa` |
 | `Truncar()` | funções de arredondamento documentadas |
-| `Inicio` / `Fim;` | `{` / `}` |
+| `FimSe` / `FimEnquanto` | `}` (ou `Fim;`) |
+
+`Inicio` / `Fim;` e `Retorna(valor)` são válidos (palavras reservadas do compilador Senior); o padrão de geração continua `{ }` e `Cancel(1)`.
 
 ## Exceções (retorno direto)
 

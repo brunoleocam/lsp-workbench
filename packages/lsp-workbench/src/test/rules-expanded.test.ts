@@ -35,9 +35,6 @@ import {
   applySyn001Fix,
   applySyn002Fix,
   applySyn003Fix,
-  applySyn004InicioFim,
-  applySyn004PairFix,
-  syn004PairLineEdits,
   applySyn005MoveDefinir,
   applySyn007CloseComment,
   applySyn007CloseCommentLine,
@@ -87,6 +84,19 @@ describe("quick-fixes", () => {
     assert.equal(applyRul007Fix("  Retorna;"), "  Cancel(1);");
     assert.equal(applyRul007Fix("  Retorne;"), "  Cancel(1);");
     assert.equal(findRul007Ranges('Mensagem(Retorna, "x");').length, 0);
+    assert.equal(findRul007Ranges("Retorna(1);").length, 0);
+  });
+
+  it("ADR-008: Inicio/Fim sem SYN004; FimSe → SYN016; Retorna(x) sem RUL007", () => {
+    const blocos = analyzeLsp("Definir Numero vnX;\nSe (vnX > 0) Inicio\n  vnX = 1;\nFim;\n");
+    assert.deepEqual(
+      blocos.filter((h) => ["SYN004", "ANL004", "SYN008", "ANL001", "ANL002", "SYN001"].includes(h.id)).map((h) => h.id),
+      []
+    );
+    const fimSe = analyzeLsp("Definir Numero vnX;\nSe (vnX > 0) {\n  vnX = 1;\n}\nFimSe;\n");
+    assert.ok(fimSe.some((h) => h.id === "SYN016" && h.severity === "error"));
+    assert.equal(analyzeLsp("Retorna(1);\n").filter((h) => h.id === "RUL007").length, 0);
+    assert.ok(analyzeLsp("Retorna;\n").some((h) => h.id === "RUL007"));
   });
 
   it("RUL019 Cancel só 1|2|3", () => {
@@ -304,17 +314,6 @@ describe("quick-fixes", () => {
       applySyn003Fix("Se (vnA > 0 e vnB < 10) {"),
       "Se ((vnA > 0) e (vnB < 10)) {"
     );
-    assert.equal(applySyn004InicioFim("Inicio"), "{");
-    assert.equal(applySyn004InicioFim("Fim;"), "}");
-    const pair = applySyn004PairFix("Inicio\n  vnB = 4;\nFim;\n", 0);
-    assert.equal(pair, "{\n  vnB = 4;\n}\n");
-    const pairFromFim = applySyn004PairFix("Inicio\n  vnB = 4;\nFim;\n", 2);
-    assert.equal(pairFromFim, "{\n  vnB = 4;\n}\n");
-    const lineEdits = syn004PairLineEdits("Inicio\n  vnB = 4;\nFim;\n", 0);
-    assert.deepEqual(lineEdits, [
-      { line: 0, text: "{" },
-      { line: 2, text: "}" },
-    ]);
     const moved = applySyn005MoveDefinir(
       "Definir Numero vnA;\nvnA = 1;\nDefinir Numero vnTarde;\n",
       2

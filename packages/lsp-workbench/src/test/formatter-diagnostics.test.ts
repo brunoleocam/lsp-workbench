@@ -11,6 +11,14 @@ describe("formatLsp", () => {
     assert.match(out, /^  Mensagem/m);
   });
 
+  it("EXT-FMT-04 indents Inicio/Fim like braces (ADR-008)", () => {
+    const src = `Se (vnX > 0) Inicio\nvnX = 1;\nFim;\nvnY = 2;`;
+    const out = formatLsp(src, { indentSize: 2 });
+    assert.match(out, /^  vnX = 1;/m);
+    assert.match(out, /^Fim;/m);
+    assert.match(out, /^vnY = 2;/m);
+  });
+
   it("EXT-FMT-03 preserves @ comments", () => {
     const src = `@ comentario @\nDefinir Numero vnX;`;
     const out = formatLsp(src);
@@ -27,6 +35,7 @@ describe("analyzeLsp", () => {
   it("EXT-DIA-02 Retorna", () => {
     const hits = analyzeLsp(`Retorna;`);
     assert.ok(hits.some((h) => h.id === "RUL007"));
+    assert.equal(analyzeLsp(`Retorna(1);`).filter((h) => h.id === "RUL007").length, 0);
   });
 
   it("EXT-DIA-03 compound condition", () => {

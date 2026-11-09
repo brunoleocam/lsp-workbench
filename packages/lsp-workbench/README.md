@@ -135,6 +135,7 @@ Fluxo típico: erro → alerta → Quick Fix → código corrigido:
 - Painel **Problems** (Ctrl+Shift+M) lista todos os alertas.
 - **Quick Fix** (Ctrl+.) aplica correções quando disponíveis.
 - Para ignorar IDs específicos: setting `lsp.diagnostics.ignoreIds`.
+- `Inicio`/`Fim` e `Retorna(valor)` são válidos (palavras reservadas do compilador Senior); SYN004/ANL004 foram revogados. `Retorna;` sem parênteses continua erro (RUL007) e `FimSe`/`FimEnquanto` dão SYN016.
 
 ---
 
@@ -312,7 +313,7 @@ Use quando o workspace tem vários módulos e o Ctrl+Espaço mistura símbolos d
 
 1. No Gerador, use **Visualizar Todas as Regras** e salve o `.lsp` multi-trecho (padrão `Código: N - Descrição: …`).
 2. Abra esse arquivo **ou** Command Palette → **LSP Workbench: Importar Relatório** e escolha o arquivo.
-3. Informe sigla (ex. `RDCG183`), descrição e pasta destino.
+3. Informe sigla (ex. `RDCGXXX`), descrição e pasta destino.
 4. A extensão cria `relatorio.json`, `Definicao/`, `Secoes/<Nome>/` e abre o `README.md`.
 5. Eventos `*_Na Impressão` ficam listados no README (não geram arquivo).
 

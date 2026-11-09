@@ -1,3 +1,4 @@
+import { RUL007_MESSAGE } from "./lint/compiler-messages";
 import type { AstNode, Diagnostic, Token } from "./types";
 
 function walk(node: AstNode, visit: (n: AstNode) => void): void {
@@ -20,12 +21,26 @@ function compoundNeedsParens(inner: string): boolean {
   return true;
 }
 
+/** `Inicio` / `Fim` equivalem a `{` / `}` (ADR-008); `X.Fim` é membro, não bloco. */
+function blockDelta(tokens: Token[], i: number): number {
+  const t = tokens[i];
+  if (t.value === "{") return 1;
+  if (t.value === "}") return -1;
+  if (t.kind !== "keyword" || tokens[i - 1]?.value === ".") return 0;
+  const v = t.value.toLowerCase();
+  if (v === "inicio") return 1;
+  if (v === "fim") return -1;
+  return 0;
+}
+
 function braceDiagnostics(tokens: Token[]): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   let depth = 0;
-  for (const t of tokens) {
-    if (t.value === "{") depth++;
-    if (t.value === "}") {
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    const delta = blockDelta(tokens, i);
+    if (delta > 0) depth++;
+    if (delta < 0) {
       depth--;
       if (depth < 0) {
         diagnostics.push({
@@ -55,7 +70,7 @@ function astDiagnostics(ast: AstNode): Diagnostic[] {
     if (n.kind === "Retorna") {
       diagnostics.push({
         id: "ANL010",
-        message: "Use Cancel(1); em vez de Retorna;/Retorne; para interromper.",
+        message: RUL007_MESSAGE,
         line: n.line,
         severity: "error",
       });
@@ -72,24 +87,6 @@ function astDiagnostics(ast: AstNode): Diagnostic[] {
       }
     }
   });
-  return diagnostics;
-}
-
-/** SYN004 — blocos legado Inicio/Fim* (token). */
-function legacyBlockDiagnostics(tokens: Token[]): Diagnostic[] {
-  const diagnostics: Diagnostic[] = [];
-  for (const t of tokens) {
-    if (t.kind !== "keyword") continue;
-    const v = t.value.toLowerCase();
-    if (v === "inicio" || v === "fim" || v === "fimse" || v === "fimenquanto") {
-      diagnostics.push({
-        id: "ANL004",
-        message: "Use blocos { } em vez de Inicio/Fim;/FimSe/FimEnquanto.",
-        line: t.line,
-        severity: "error",
-      });
-    }
-  }
   return diagnostics;
 }
 
@@ -118,7 +115,6 @@ function controlParenDiagnostics(tokens: Token[]): Diagnostic[] {
 export function collectSemantics(tokens: Token[], ast: AstNode): Diagnostic[] {
   return [
     ...braceDiagnostics(tokens),
-    ...legacyBlockDiagnostics(tokens),
     ...controlParenDiagnostics(tokens),
     ...astDiagnostics(ast),
   ];

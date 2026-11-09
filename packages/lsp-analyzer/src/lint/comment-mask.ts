@@ -49,6 +49,15 @@ export function maskCommentsAndStrings(source: string): string {
       const start = i;
       i++;
       while (i < chars.length && chars[i] !== '"') {
+        if (chars[i] === "\\") {
+          // `\` + espaços até o fim da linha continua a string (igual ao lexer)
+          let j = i + 1;
+          while (chars[j] === " " || chars[j] === "\t") j++;
+          if (chars[j] === "\n") {
+            i = j + 1;
+            continue;
+          }
+        }
         if (chars[i] === "\\" && i + 1 < chars.length) {
           i += 2;
           continue;

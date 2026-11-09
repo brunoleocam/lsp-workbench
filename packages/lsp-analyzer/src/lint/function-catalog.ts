@@ -7,8 +7,16 @@ import { LSP_FUNCTION_CATALOG_HCM } from "./function-catalog.hcm.generated";
 import { LSP_FUNCTION_CATALOG_ERP } from "./function-catalog.erp.generated";
 import { LSP_FUNCTION_CATALOG_OVERRIDES } from "./function-catalog.overrides";
 import type { LspFunctionEntry, LspFunctionParam } from "./function-catalog.types";
+import { withStructuredParams } from "./function-signature";
 
-export type { LspFunctionEntry, LspFunctionParam, LspFunctionSystem } from "./function-catalog.types";
+export type {
+  LspFunctionEntry,
+  LspFunctionOrigin,
+  LspFunctionParam,
+  LspFunctionSystem,
+} from "./function-catalog.types";
+export * from "./function-signature";
+export * from "./function-catalog-extra";
 
 export { LSP_FUNCTION_CATALOG_GENERATED, EXTRACTED_FUNCTION_LABELS } from "./function-catalog.generated";
 export { LSP_FUNCTION_CATALOG_HCM, HCM_FUNCTION_LABELS } from "./function-catalog.hcm.generated";
@@ -32,7 +40,21 @@ function mergeCatalog(): LspFunctionEntry[] {
     const key = e.label.toLowerCase();
     byLabel.set(key, withPreservedTip(e, byLabel.get(key)));
   }
-  return [...byLabel.values()].sort((a, b) => a.label.localeCompare(b.label));
+  const sources = new Map<string, LspFunctionEntry[]>();
+  for (const catalog of [
+    LSP_FUNCTION_CATALOG_HCM,
+    LSP_FUNCTION_CATALOG_ERP,
+    LSP_FUNCTION_CATALOG_GENERATED,
+    LSP_FUNCTION_CATALOG_OVERRIDES,
+  ]) {
+    for (const e of catalog) {
+      const key = e.label.toLowerCase();
+      sources.set(key, [...(sources.get(key) ?? []), e]);
+    }
+  }
+  return [...byLabel.values()]
+    .map((e) => withStructuredParams(e, sources.get(e.label.toLowerCase())))
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 /**
@@ -135,6 +157,20 @@ function angleEntry(entry: LspFunctionEntry): LspFunctionEntry {
 }
 
 export const LSP_FUNCTION_CATALOG: LspFunctionEntry[] = mergeCatalog();
+
+const builtinNamesCache = new WeakMap<readonly LspFunctionEntry[], ReadonlySet<string>>();
+
+/** Nomes (minúsculos) das funções do catálogo efetivo; padrão = embutido. */
+export function builtinFunctionNames(
+  catalog: readonly LspFunctionEntry[] = LSP_FUNCTION_CATALOG
+): ReadonlySet<string> {
+  let names = builtinNamesCache.get(catalog);
+  if (!names) {
+    names = new Set(catalog.map((e) => e.label.toLowerCase()));
+    builtinNamesCache.set(catalog, names);
+  }
+  return names;
+}
 
 /**
  * Doc Senior do parâmetro aceita campo ou variável (Alfa, Numero ou Data).

@@ -14,7 +14,6 @@
         "SYN001",
         "SYN002",
         "SYN003",
-        "SYN004",
         "SYN005",
         "SYN006",
         "SYN007",
@@ -23,13 +22,13 @@
         "SYN010",
         "SYN011",
         "SYN012",
+        "SYN016",
         "RUL008"
       ],
       "quickFixIds": [
         "SYN001",
         "SYN002",
         "SYN003",
-        "SYN004",
         "SYN005",
         "SYN006",
         "SYN007",
@@ -103,6 +102,28 @@
       "path": "smoke-sem004.lsp",
       "expectIds": ["SEM004"],
       "quickFixIds": ["SEM004"]
+    },
+    {
+      "path": "smoke-sem-loops.lsp",
+      "expectIds": ["SEM005", "SEM006"],
+      "quickFixIds": []
+    },
+    {
+      "path": "smoke-fun-chamada.lsp",
+      "extraFunctions": "smoke-fun-chamada.functions.json",
+      "expectIds": ["FUN010", "FUN011", "FUN012", "FUN013", "FUN014"],
+      "quickFixIds": []
+    },
+    {
+      "path": "smoke-typ.lsp",
+      "expectIds": ["TYP001", "TYP002", "TYP003"],
+      "quickFixIds": []
+    },
+    {
+      "path": "smoke-dic.lsp",
+      "catalogTables": { "E075PRO": ["CODEMP", "CODPRO", "DESPRO"] },
+      "expectIds": ["DEM002", "DEM003", "SQL012", "SQL013", "SQL014", "SQL015", "SEM007"],
+      "quickFixIds": []
     },
     {
       "path": "smoke-sql.lsp",

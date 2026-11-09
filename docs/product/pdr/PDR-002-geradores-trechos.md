@@ -18,7 +18,7 @@ vlNome.AdicionarCampo("CAMPO", default);
 vlNome.Adicionar();
 ```
 
-Respeitar nomenclatura `vl*`, blocos `{ }` se houver fluxo, sem `Retorna`.
+Respeitar nomenclatura `vl*`, blocos `{ }` se houver fluxo, sem `Retorna;` (ADR-008: `Retorna(x)` é válido, mas o padrão é `Cancel(1)`).
 
 ## `/gerar-cursor-lsp`
 

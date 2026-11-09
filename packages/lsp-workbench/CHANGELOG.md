@@ -1,5 +1,37 @@
 # Changelog — LSP Workbench (extensão)
 
+## Não lançado
+
+### Alterado
+
+- `Inicio`/`Fim` equivalem a `{`/`}` no balanceamento, no escopo e na formatação. SYN004 e ANL004 foram revogados e o quick fix de conversão saiu; a conversão continua como refactor opcional ([ADR-008](../../docs/product/adr/ADR-008-aceitar-inicio-fim-e-retorna.md))
+- RUL007/ANL010 valem só para `Retorna;`/`Retorne;` sem parênteses, com a mensagem do compilador "falta valor, expressão ou comando". `Retorna(valor)` e `Mensagem(Retorna, …)` não acusam mais
+- `Retorna` volta ao completion como `Retorna($1);`
+
+### Adicionado
+
+- SYN016 (erro): `FimSe` / `FimEnquanto` não existem no compilador Senior
+- F9 (`lsp.compileDocument`) revalida o arquivo e mostra a contagem de erros e avisos; `lsp.compileOnSave` (padrão `true`) revalida ao salvar; a status bar mostra os erros e avisos do arquivo ativo e abre Problemas ao clicar
+- Dicionário de dados (`lsp.dataDictionary`, Ctrl+Alt+D ou botão no título do editor): escolhe a tabela do catálogo local por nome ou descrição (sem acento nem caixa), depois o campo (tipo, tamanho, chave, descrição), e insere `TABELA.CAMPO` no cursor. A palavra sob o cursor, se for tabela, já vem como filtro
+- Dicionário e cursores, com o texto do compilador Senior: SEM007 (atribuição a campo de cursor), SQL012 (campo do cursor fora do SELECT), SQL013 (coluna repetida no SELECT, aviso), SQL014 (`AbrirCursor` sem `.SQL` antes), SQL015 (`:param` do SQL sem variável na regra, aviso). Com catálogo de banco (`lsp.catalog.path`): DEM002 (campo inexistente em `TABELA.CAMPO`) e DEM003 (coluna do SELECT inexistente na tabela, aviso)
+- SEM005 (erro): `Enquanto (X.Achou)` sem `X.Proximo()` no corpo
+- SEM006 (erro): `Continue` dentro de `Enquanto (X.Achou)` sem `X.Proximo()` antes
+- TYP001..TYP003: tipos Alfa × Numero em atribuição, comparação, operador e condição, com o texto do compilador Senior; `Tabela.Campo` usa o tipo do catálogo de banco (`lsp.catalog.path`)
+- FUN010..FUN014: checagem de chamada com o texto do compilador Senior — função não declarada (erro com catálogo extra, aviso sem ele), nº de argumentos (embutidos sempre; catálogo só com assinatura do extra), tipo Alfa × Numero (assinatura do extra, tipo por literal ou `Definir`), parâmetro `End` recebendo expressão, constante ou campo de cursor
+- Catálogo de funções com `End` estruturado (`params[].out`) e tipo normalizado, inferidos da assinatura documentada
+- Regra `.LSP` binária do Senior abre como texto (esquema `lsp-binario`) ao clicar no Explorer; `lsp.binary.autoOpen` (padrão `true`) desliga, e o comando "LSP: Abrir regra .LSP binária como texto" (também no menu do Explorer) abre manualmente. Salvar grava `X.editado.LSP` ao lado e nunca altera o original; reabrir o original com cópia presente abre a cópia e avisa. Caractere fora do Windows-1252 bloqueia o salvamento citando caractere e linha. O documento recebe diagnósticos e completion como um `.lsp` texto; o `file:` binário fica sem diagnóstico nem formatação
+- "LSP: Gerar .LSP para o Senior" (botão no título do editor e paleta, em `.lsp` texto): pede o título, avisa em modal se a regra tem erros, abre "Salvar como" com `NOME.senior.LSP` ao lado do texto e grava um `.LSP` novo no formato do Senior (identificador e chave novos, histórico vazio), conferindo relendo
+- `.lsptxt` abre com a linguagem Senior LSP
+- Catálogo de funções extra (ADR-009): `lsp.functions.path` ou uma extensão que declare `"lspWorkbench": { "functionsCatalog": "…" }`. Assinatura, parâmetros e variantes do extra vencem; a nossa doc complementa o texto. Vale para completion, hover, signature help, diagnóstico e language server. Contrato de exemplo em `docs/product/schema/functions.example.json`
+
+### Corrigido
+
+- Texto com `\` seguido de espaços no fim da linha continua na linha seguinte também no analyzer; antes a string terminava ali e desalinhava os blocos seguintes
+
+### Segurança
+
+- Saíram do repositório o relatório de cliente usado como fixture e as tabelas e campos `USU_` reais dos testes; os testes usam nomes fictícios. `check-proprietary-data` passa a falhar com `USU_` fora da lista de fictícios em qualquer arquivo de texto ([ADR-009](../../docs/product/adr/ADR-009-catalogo-funcoes-proprietario-demobile.md))
+
 ## 0.2.16 — 2026-10-13
 
 ### Adicionado

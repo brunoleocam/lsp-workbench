@@ -12,5 +12,5 @@ Layout via **analyzer** (preferencial) ou checklist. **Não** alterar lógica ne
 ## Passos
 
 1. Use **Format Document** da extensão LSP Workbench.
-2. Se houver `Inicio`/`Fim`, use `/refatorar-lsp`.
+2. `Inicio`/`Fim` são válidos; para convertê-los em `{ }` (opcional), use `/refatorar-lsp`.
 3. Resumir o que mudou.

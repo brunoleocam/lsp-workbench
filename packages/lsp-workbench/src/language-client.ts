@@ -7,6 +7,7 @@ import {
   ServerOptions,
   TransportKind,
 } from "vscode-languageclient/node";
+import { isBinaryRuleFileUri } from "./adapters/vscode/binary-rule-fs";
 
 let client: LanguageClient | undefined;
 
@@ -20,7 +21,8 @@ export function isLanguageServerEnabled(): boolean {
  * Retorna o client, ou undefined se desabilitado / binário ausente.
  */
 export async function startLanguageServer(
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  functionsCatalogPath?: string
 ): Promise<LanguageClient | undefined> {
   if (!isLanguageServerEnabled()) {
     return undefined;
@@ -53,6 +55,12 @@ export async function startLanguageServer(
     documentSelector: [{ scheme: "*", language: "senior-lsp" }],
     synchronize: {
       configurationSection: "lsp",
+    },
+    initializationOptions: { functionsCatalogPath },
+    middleware: {
+      handleDiagnostics(uri, diagnostics, next) {
+        next(uri, isBinaryRuleFileUri(uri) ? [] : diagnostics);
+      },
     },
   };
 

@@ -15,8 +15,10 @@ import { functionsMatchingPrefix, systemVarsMatchingPrefix } from "../function-c
 import { completionOriginLabel } from "../completion-labels";
 
 describe("completion", () => {
-  it("does not offer bare Retorna as a command label", () => {
-    assert.equal(completionLabels().includes("Retorna"), false);
+  it("offers Retorna as embutido with parentheses (ADR-008)", () => {
+    const retorna = getLspCompletionSeeds().find((s) => s.label === "Retorna");
+    assert.ok(retorna);
+    assert.equal(retorna!.insertText, "Retorna($1);");
   });
 
   it("offers Cancel for interruption", () => {

@@ -12,9 +12,9 @@ Escrever teste que falha → implementar o mínimo → refatorar.
 | EXT-FMT-02 | `braceStyle: sameLine` | `{` na mesma linha do `Se` |
 | EXT-FMT-03 | Preservar comentário `@ ... @` | Texto do comentário intacto |
 | EXT-DIA-01 | Falta `;` | Diagnostic `SYN001` |
-| EXT-DIA-02 | Uso de `Retorna` | Diagnostic `RUL007` |
+| EXT-DIA-02 | `Retorna;` sem parênteses | Diagnostic `RUL007`; `Retorna(x)` sem diagnóstico (ADR-008) |
 | EXT-DIA-03 | `Se (a > 0 e b < 10)` | Diagnostic `SYN003` |
-| EXT-REF-01 | `Inicio`/`Fim` → braces | Saída só com `{ }` |
+| EXT-REF-01 | `Inicio`/`Fim` → braces (refactor opcional) | Saída só com `{ }` |
 | EXT-REF-02 | Literal com `\` → `+` | Cadeia concatenada |
 
 ## Casos PDR-003 (símbolos / contexto)

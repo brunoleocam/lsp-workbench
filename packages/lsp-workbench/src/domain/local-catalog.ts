@@ -2,6 +2,7 @@
  * Catálogo local de tabelas (JSON gerado, nunca embutido no VSIX).
  * Path configurável via `lsp.catalog.path` (PDR-009).
  */
+import { catalogColumnValueType, type ValueType } from "@lsp-workbench/analyzer";
 
 export type LocalCatalogEnumValue = {
   key: string;
@@ -196,6 +197,39 @@ export function columnsForTable(
   const p = prefix.toUpperCase();
   const cols = p ? ordered.filter((c) => c.name.toUpperCase().startsWith(p)) : ordered;
   return cols.slice(0, limit);
+}
+
+const columnTypesCache = new WeakMap<LocalCatalog, ReadonlyMap<string, ValueType>>();
+
+/** `TABELA.CAMPO` (maiúsculas) → tipo de valor, para TYP* do analyzer; tipo desconhecido fica de fora. */
+export function catalogColumnTypes(catalog: LocalCatalog): ReadonlyMap<string, ValueType> {
+  let types = columnTypesCache.get(catalog);
+  if (!types) {
+    const map = new Map<string, ValueType>();
+    for (const t of catalog.tables) {
+      for (const c of t.columns) {
+        const v = catalogColumnValueType(c.type);
+        if (v) map.set(`${t.name}.${c.name}`.toUpperCase(), v);
+      }
+    }
+    types = map;
+    columnTypesCache.set(catalog, types);
+  }
+  return types;
+}
+
+const tableColumnsCache = new WeakMap<LocalCatalog, ReadonlyMap<string, ReadonlySet<string>>>();
+
+/** `TABELA` → campos (maiúsculas), para DEM002/DEM003 do analyzer. */
+export function catalogTableColumns(catalog: LocalCatalog): ReadonlyMap<string, ReadonlySet<string>> {
+  let columns = tableColumnsCache.get(catalog);
+  if (!columns) {
+    columns = new Map(
+      catalog.tables.map((t) => [t.name.toUpperCase(), new Set(t.columns.map((c) => c.name.toUpperCase()))])
+    );
+    tableColumnsCache.set(catalog, columns);
+  }
+  return columns;
 }
 
 /** Export para testes — limpa cache. */

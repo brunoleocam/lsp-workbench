@@ -23,14 +23,21 @@ import { parseFileSymbols } from "./document-symbols";
 import { findCustomCalls, localEligibleNames } from "./symbol-scope";
 import { collectGerDiagnostics } from "./ger-diagnostics";
 import type { ReportContext } from "./report-project";
-import { catalogParamAcceptsField, LSP_FUNCTION_CATALOG } from "./function-catalog";
+import {
+  builtinFunctionNames,
+  catalogParamAcceptsField,
+  LSP_FUNCTION_CATALOG,
+  type LspFunctionEntry,
+} from "./function-catalog";
 import { SYSTEM_VAR_NAMES } from "./system-vars";
 import { maskCommentsAndStrings } from "./comment-mask";
 import { matchDefinirWebService } from "./webservice";
-
-const BUILTIN_FUNC_NAMES = new Set(
-  LSP_FUNCTION_CATALOG.map((e) => e.label.toLowerCase())
-);
+import { RUL007_MESSAGE, SYN016_MESSAGE } from "./compiler-messages";
+import { collectCursorLoopHits } from "./cursor-loops";
+import { collectDictionaryHits } from "./dictionary-check";
+import { collectCallHits } from "./call-check";
+import type { ValueType } from "./declared-types";
+import { collectTypeHits } from "./type-check";
 
 const TYPE_WORDS = new Set([
   "alfa",
@@ -184,6 +191,12 @@ export type AnalyzeLspOptions = {
    * do relatório/escopo) — evitam SEM001 falso.
    */
   knownGlobals?: readonly string[];
+  /** Catálogo de funções efetivo (embutido + extra, ADR-009); padrão = embutido. */
+  functionCatalog?: readonly LspFunctionEntry[];
+  /** Tipo de `Tabela.Campo` (chave `TABELA.CAMPO` em maiúsculas) do catálogo de banco (TYP*). */
+  catalogColumnTypes?: ReadonlyMap<string, ValueType>;
+  /** Campos de cada tabela (`TABELA` → `CAMPO`s, em maiúsculas) do catálogo de banco (DEM002, DEM003). */
+  catalogTableColumns?: ReadonlyMap<string, ReadonlySet<string>>;
 };
 
 function stripStringsAndComments(line: string): string {
@@ -300,6 +313,11 @@ function isAtLineOpenOnly(line: string): boolean {
   return /^\s*@/.test(stripAtPairsAndStrings(line));
 }
 
+/** `{` ou `Inicio` (ADR-008: `Inicio`/`Fim` equivalem a `{`/`}`). */
+function isBlockOpenToken(tok: string): boolean {
+  return tok === "{" || /^Inicio$/i.test(tok);
+}
+
 /**
  * Trecho “código LSP” (não continuação de banner `@` multi-linha).
  * Usado para abandonar openAt quando o `@` era só comentário de uma linha.
@@ -410,12 +428,12 @@ export function lineSuppressions(lines: string[]): Map<number, Set<string>> {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     for (const m of line.matchAll(
-      /@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+)\b/gi
+      /@\s*lsp-ignore\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+|TYP\d+)\b/gi
     )) {
       add(i, m[1]);
     }
     for (const m of line.matchAll(
-      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+)\b/gi
+      /@\s*lsp-ignore-next-line\s+(RUL\d+|SYN\d+|FUN\d+|SEM\d+|SQL\d+|ANL\d+|DEM\d+|GER\d+|TYP\d+)\b/gi
     )) {
       add(i + 1, m[1]);
     }
@@ -636,6 +654,7 @@ export function analyzeLsp(
   ignoreIdsOrOpts: string[] | AnalyzeLspOptions = []
 ): DiagnosticHit[] {
   const opts = resolveAnalyzeOpts(ignoreIdsOrOpts);
+  const builtinNames = builtinFunctionNames(opts.functionCatalog);
   const ignore = new Set((opts.ignoreIds ?? []).map((x) => x.toUpperCase()));
   const hits: DiagnosticHit[] = [];
   const normalized = source.replace(/\r\n/g, "\n");
@@ -784,9 +803,11 @@ export function analyzeLsp(
     let badLine = -1;
     let lastCloseLine = -1;
     for (let i = 0; i < maskedLines.length; i++) {
-      for (const ch of maskedLines[i]) {
-        if (ch === "{") braces++;
-        if (ch === "}") {
+      const tokenRe = /[{}]|(?<![.\w])(?:Inicio|Fim)\b/gi;
+      let tm: RegExpExecArray | null;
+      while ((tm = tokenRe.exec(maskedLines[i])) !== null) {
+        if (isBlockOpenToken(tm[0])) braces++;
+        else {
           braces--;
           lastCloseLine = i;
           if (braces < 0 && badLine < 0) badLine = i;
@@ -870,8 +891,8 @@ export function analyzeLsp(
       endsInStr && lineHasTrailingContinuation(trimmed);
 
     // track braces / loops (aproximado)
-    const opens = (code.match(/\{/g) || []).length;
-    const closes = (code.match(/\}/g) || []).length;
+    const opens = (code.match(/\{|(?<![.\w])Inicio\b/gi) || []).length;
+    const closes = (code.match(/\}|(?<![.\w])Fim\b/gi) || []).length;
     const isLoopStart = /^\s*(Enquanto|Para)\b/i.test(trimmed);
     if (isLoopStart) loopDepth++;
     braceDepth += opens;
@@ -1030,7 +1051,7 @@ export function analyzeLsp(
         // cabeçalho de bloco — ok sem `;` / `{` na mesma linha
       } else if (
         /^Funcao\b/i.test(probe) &&
-        nextSignificantProbe(lines, i)?.startsWith("{")
+        /^(\{|Inicio\b)/i.test(nextSignificantProbe(lines, i) ?? "")
       ) {
         // `Funcao Nome(...)\n{` — `{` na linha seguinte
       } else {
@@ -1047,6 +1068,7 @@ export function analyzeLsp(
             !probe.endsWith(";") &&
             !probe.endsWith("{") &&
             !probe.endsWith("}") &&
+            !/\bInicio$/i.test(probe) &&
             !probe.endsWith("\\") &&
             !lineHasTrailingContinuation(trimmed)
           ) {
@@ -1072,22 +1094,18 @@ export function analyzeLsp(
       }
     }
 
-    // SYN004
-    if (
-      /^\s*Inicio\b/i.test(trimmed) ||
-      /^\s*Fim\s*;/i.test(trimmed) ||
-      /\bFimSe\b/i.test(trimmed) ||
-      /\bFimEnquanto\b/i.test(trimmed)
-    ) {
-      push(hits, "SYN004", "Use blocos { } em vez de Inicio/Fim/FimSe/FimEnquanto.", i, "warning");
+    // SYN016 — FimSe/FimEnquanto/FimPara não são reservadas (Inicio/Fim são: ADR-008)
+    if (/\bFim(?:Se|Enquanto|Para)\b/i.test(code)) {
+      const r = findTokenRange(line, /\bFim(?:Se|Enquanto|Para)\b/i);
+      push(hits, "SYN016", SYN016_MESSAGE, i, "error", r?.start, r?.end);
     }
 
-    // RUL007
+    // RUL007 — só `Retorna;`/`Retorne;` sem parênteses
     for (const range of findRul007Ranges(line)) {
       push(
         hits,
         "RUL007",
-        "Use Cancel(1); em vez de Retorna;/Retorne; para interromper.",
+        RUL007_MESSAGE,
         i,
         "error",
         range.start,
@@ -1852,7 +1870,7 @@ export function analyzeLsp(
       if (/^vn/i.test(name)) continue;
       if (BUILTIN_OR_KW.test(name)) continue;
       if (RESERVED_WORDS.has(name)) continue;
-      if (BUILTIN_FUNC_NAMES.has(name)) continue;
+      if (builtinNames.has(name)) continue;
       if (SYSTEM_VAR_NAMES.has(name)) continue;
       if (TYPE_WORDS.has(name)) continue;
       if (isSeniorTableId(name)) continue;
@@ -2000,7 +2018,7 @@ export function analyzeLsp(
     const localOk = localEligibleNames(symbols);
     const external = opts.scopedExternal;
     if (external && external.size > 0) {
-      for (const call of findCustomCalls(source)) {
+      for (const call of findCustomCalls(source, builtinNames)) {
         const key = call.name.toLowerCase();
         if (localOk.has(key)) continue;
         const ext = external.get(key);
@@ -2024,14 +2042,12 @@ export function analyzeLsp(
   const hasRul007 = hits.some((h) => h.id === "RUL007");
   const hasSyn003 = hits.some((h) => h.id === "SYN003");
   const hasSyn008 = hits.some((h) => h.id === "SYN008");
-  const hasSyn004 = hits.some((h) => h.id === "SYN004");
   const hasSyn002 = hits.some((h) => h.id === "SYN002");
   const anlIgnore = [
     ...ignore,
     ...(hasRul007 ? ["ANL010"] : []),
     ...(hasSyn003 ? ["ANL011"] : []),
     ...(hasSyn008 ? ["ANL001", "ANL002"] : []),
-    ...(hasSyn004 ? ["ANL004"] : []),
     ...(hasSyn002 ? ["ANL012"] : []),
   ];
   try {
@@ -2043,6 +2059,21 @@ export function analyzeLsp(
   } catch {
     // analyzer opcional — não quebra heurísticas RUL/SYN/FUN
   }
+
+  try {
+    hits.push(...collectCursorLoopHits(source));
+  } catch {
+    // parser com recovery; falha aqui não derruba as demais regras
+  }
+
+  hits.push(
+    ...collectCallHits(source, {
+      catalog: opts.functionCatalog ?? LSP_FUNCTION_CATALOG,
+      scopedExternal: opts.scopedExternal,
+    })
+  );
+  hits.push(...collectTypeHits(source, { columnTypes: opts.catalogColumnTypes }));
+  hits.push(...collectDictionaryHits(source, { tableColumns: opts.catalogTableColumns }));
 
   // GER* — projeto de relatório (PDR-008)
   if (opts.reportContext) {

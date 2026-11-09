@@ -26,8 +26,9 @@ export function formatLsp(source: string, options: Partial<FormatOptions> = {}):
       continue;
     }
 
-    // Fechar braces diminuem indent antes
-    if (trimmed.startsWith("}")) {
+    // Fechar braces (ou `Fim`, ADR-008) diminuem indent antes
+    const startsWithClose = /^(\}|Fim\b)/i.test(trimmed);
+    if (startsWithClose) {
       depth = Math.max(0, depth - 1);
     }
 
@@ -38,10 +39,10 @@ export function formatLsp(source: string, options: Partial<FormatOptions> = {}):
 
     out.push(indentUnit.repeat(depth) + trimmed);
 
-    const opens = (trimmed.match(/\{/g) || []).length;
-    const closes = (trimmed.match(/\}/g) || []).length;
+    const opens = (trimmed.match(/\{|(?<![.\w])Inicio\b/gi) || []).length;
+    const closes = (trimmed.match(/\}|(?<![.\w])Fim\b/gi) || []).length;
     // Se a linha abre e não é só `}`, depth já foi ajustado para closes no início
-    if (!trimmed.startsWith("}")) {
+    if (!startsWithClose) {
       depth += opens - closes;
     } else {
       depth += opens;

@@ -22,8 +22,8 @@ Checklist **curto** depois de implementar. Não substitui o relatório completo.
 - [ ] **FormatarData:** via `DataHora` + Numero
 - [ ] **Conversões / Grid / ponto:** variável intermediária
 - [ ] **Concatenação:** só Alfa + Alfa; nada dentro de argumentos
-- [ ] **Blocos:** `{ }` (sem `Inicio`/`Fim;`)
-- [ ] **Interrupção:** `Cancel(1);` nunca `Retorna`
+- [ ] **Blocos:** `{ }` em código novo (`Inicio`/`Fim;` existente é válido; sem `FimSe`/`FimEnquanto`)
+- [ ] **Interrupção:** `Cancel(1);` nunca `Retorna;` sem parênteses
 - [ ] **CopiarAlfa:** se precisar preservar original
 - [ ] **SQL longo:** `\` ~coluna 80
 - [ ] **Comentário `@`:** abre e fecha na mesma linha (`@ texto @`); multi-linha → `/* */` (SYN011)

@@ -23,7 +23,7 @@ alwaysApply: false
 - Conversões em grids: sempre variável intermediária.
 - Concatenação: apenas Alfa + Alfa; nunca em parâmetros de funções.
 - Retorno: funções retornam por parâmetro, não por atribuição.
-- Interrupção: `Cancel(1);` após erro, nunca `Retorna`.
+- Interrupção: `Cancel(1);` após erro; nunca `Retorna;` sem parênteses (não compila).
 - **ExecSQLEx:** `0 = sucesso`, `1 = erro`; usar `Se (vnRetorno = 0)` para sucesso (não inverter).
 
 ## Referências

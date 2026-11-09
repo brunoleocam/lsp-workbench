@@ -34,7 +34,7 @@ Definir Cursor Cur_Vendas;  @ Cursor SQL @
 - **Case insensitive:** `vaNome` = `VANOME` = `vanome`
 - **Comentários:** abrir e fechar `@` na mesma linha (`@ uma linha @`). `@` só na abertura fica incompleto. Várias linhas: `/* */`
 - **Identação:** 2 espaços (padrão Senior)
-- **Blocos:** sempre `{ }`. **Não** usar `Inicio`/`Fim;` (nem `FimSe`/`FimEnquanto`) neste padrão do projeto.
+- **Blocos:** gerar `{ }` (padrão de estilo do projeto). `Inicio`/`Fim;` são válidos e equivalem a `{ }`; `FimSe`/`FimEnquanto` não existem (SYN016).
 - **Condições:** Sempre entre parênteses `()`
 - **Quebra de linha em strings:** Use `\` no final da linha (coluna 80)
 
@@ -78,13 +78,13 @@ Se (vnIdade >= 18) {
   Mensagem(Retorna, vaMensagem);
 }
 
-@ Função - corpo com { } (NÃO usar Inicio/Fim) @
+@ Função - corpo com { } (padrão de geração; Inicio/Fim também compila) @
 Funcao Somar(Numero pnA, Numero pnB, Numero End pnResultado); {
   pnResultado = pnA + pnB;
 }
 ```
 
-**Não gerar** `Inicio` / `Fim;` / `FimSe` / `FimEnquanto` — use `{ }`.
+**Gerar** `{ }`. `Inicio` / `Fim;` em código existente são válidos (não converter por obrigação). `FimSe` / `FimEnquanto` não existem.
 ## 🚨 **LIMITAÇÕES CRÍTICAS DA LINGUAGEM LSP**
 
 ### **❌ PARÂMETROS DE FUNÇÃO - RESTRIÇÕES IMPORTANTES**
@@ -484,7 +484,7 @@ Se (operacaoCritica() = 1) {
 
 ### **Interrupção de Fluxo com Cancel**
 ```lsp
-@ ❌ NUNCA USE - NÃO EXISTE NA LSP @
+@ ❌ NÃO COMPILA - Retorna sem parênteses (falta valor, expressão ou comando) @
 Mensagem(Erro, "Dado inválido");
 Retorna;
 
@@ -493,7 +493,7 @@ Mensagem(Erro, "Dado inválido");
 Cancel(1);
 ```
 
-**Explicação:** Em LSP, o comando `Retorna;` não existe. Para interromper a execução de uma função após uma mensagem de erro, use `Cancel(1);`. O parâmetro `1` indica que a execução deve ser cancelada.
+**Explicação:** `Retorna;` sem parênteses não compila (RUL007). `Retorna(valor)` é um comando válido, mas, para interromper a execução após uma mensagem de erro, o padrão do projeto é `Cancel(1);`. O parâmetro `1` indica que a execução deve ser cancelada.
 
 **Exemplo de uso correto:**
 ```lsp

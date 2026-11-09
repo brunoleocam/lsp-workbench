@@ -11,12 +11,12 @@ Cur_Consulta.SQL "SELECT CAMPO1, CAMPO2 \
                   FROM TABELA \
                   WHERE CODIGO = :vnCodigo";
 
-Cur_Consulta.AbrirCursor;
-Enquanto (Cur_Consulta.Achou);
+Cur_Consulta.AbrirCursor();
+Enquanto (Cur_Consulta.Achou) {
   vaCampo = Cur_Consulta.CAMPO1;
-  Cur_Consulta.Proximo;
-FimEnquanto;
-Cur_Consulta.FecharCursor;
+  Cur_Consulta.Proximo();
+}
+Cur_Consulta.FecharCursor();
 ```
 
 Placeholders LSP em SQL: `:vnCodigo`, `:vaNome` (conforme tipo).
@@ -75,12 +75,12 @@ Catálogo de funções do dialeto: [funções oficiais](https://documentacao.sen
 
 ```lsp
 ExecSQLEx(vaComandoSQL, vnRetorno);
-Se (vnRetorno = 0);
+Se (vnRetorno = 0) {
   @ sucesso @
-Senao;
+} Senao {
   @ erro @
   Cancel(1);
-FimSe;
+}
 ```
 
 **Atenção:** `0` = sucesso, `1` = erro (invertido em relação a muitas APIs).
@@ -97,7 +97,7 @@ FimSe;
 1. Tratar LSP como Pascal/Java (atribuir retorno de função)
 2. Concatenar número com string sem `IntParaAlfa`
 3. Passar `Grid.Campo` direto para função
-4. Usar `Retorna` / `Break` / `%`
+4. Usar `Retorna;` sem parênteses / `Break` / `%` / `FimSe` / `FimEnquanto`
 5. Inventar nomes de tabela/coluna do ERP sem documentação do cliente
 6. `FormatarData` com tipo Data em vez de Numero
 

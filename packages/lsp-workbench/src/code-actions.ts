@@ -29,8 +29,6 @@ import {
   applySyn010DefinirStub,
   applySyn009BreakString,
   applySyn011ToBlockComment,
-  applySyn004PairFix,
-  applySyn004InicioFim,
   findSql002Criar,
   findSql003Abrir,
   findSql002DestruirAfterLine,
@@ -838,29 +836,6 @@ function syn009Actions(
   return a ? [a] : [];
 }
 
-function syn004Actions(
-  document: vscode.TextDocument,
-  diagnostic: vscode.Diagnostic
-): vscode.CodeAction[] {
-  const lineNo = diagnostic.range.start.line;
-  const next = applySyn004PairFix(document.getText(), lineNo);
-  if (!next) {
-    // fallback linha única (FimSe isolado etc.)
-    const line = document.lineAt(lineNo);
-    const fixed = applySyn004InicioFim(line.text);
-    const a = lineReplaceAction(document, diagnostic, "Converter Inicio/Fim para { }", fixed);
-    return a ? [a] : [];
-  }
-  return [
-    replaceWholeDocument(
-      document,
-      diagnostic,
-      "Converter par Inicio…Fim; → { … }",
-      next
-    ),
-  ];
-}
-
 function syn010Actions(
   document: vscode.TextDocument,
   diagnostic: vscode.Diagnostic
@@ -1019,7 +994,6 @@ function actionsForDiagnostic(
   if (code === "SQL007") return sql007Actions(document, diagnostic);
   if (code === "SQL008" || code === "SQL011") return sql008Actions(document, diagnostic);
   if (code === "SQL009") return sql009Actions(document, diagnostic);
-  if (code === "SYN004") return syn004Actions(document, diagnostic);
   if (code === "SYN005") return syn005Actions(document, diagnostic);
   if (code === "SYN007") return syn007Actions(document, diagnostic);
   if (code === "SYN009") return syn009Actions(document, diagnostic);

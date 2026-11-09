@@ -3,6 +3,8 @@ import { describe, it } from "node:test";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  catalogColumnTypes,
+  catalogTableColumns,
   clearLocalCatalogCache,
   columnsForTable,
   loadLocalCatalogFromFile,
@@ -105,5 +107,46 @@ describe("local-catalog example", () => {
       filtered.map((c) => c.name),
       ["CodTns", "CodEmp"]
     );
+  });
+
+  it("catalogColumnTypes: TABELA.CAMPO → Alfa/Numero, sem tipo desconhecido", () => {
+    const catalog = parseLocalCatalogJson(
+      JSON.stringify({
+        version: 1,
+        tables: [
+          {
+            name: "e075pro",
+            columns: [
+              { name: "CodPro", type: "Alfa(14)" },
+              { name: "PreUni", type: "Número(15,2)" },
+              { name: "DatCad", type: "Data" },
+              { name: "Obs", type: "?" },
+            ],
+          },
+        ],
+      })
+    )!;
+    const types = catalogColumnTypes(catalog);
+    assert.equal(types.get("E075PRO.CODPRO"), "Alfa");
+    assert.equal(types.get("E075PRO.PREUNI"), "Numero");
+    assert.equal(types.get("E075PRO.DATCAD"), "Numero");
+    assert.equal(types.has("E075PRO.OBS"), false);
+    assert.equal(catalogColumnTypes(catalog), types);
+  });
+
+  it("catalogTableColumns: TABELA → campos em maiúsculas, inclusive sem tipo", () => {
+    const catalog = parseLocalCatalogJson(
+      JSON.stringify({
+        version: 1,
+        tables: [
+          { name: "e075pro", columns: [{ name: "CodPro", type: "Alfa(14)" }, { name: "Obs" }] },
+          { name: "E085CLI", columns: [] },
+        ],
+      })
+    )!;
+    const columns = catalogTableColumns(catalog);
+    assert.deepEqual([...(columns.get("E075PRO") ?? [])], ["CODPRO", "OBS"]);
+    assert.deepEqual([...(columns.get("E085CLI") ?? [])], []);
+    assert.equal(catalogTableColumns(catalog), columns);
   });
 });
