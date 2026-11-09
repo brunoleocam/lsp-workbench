@@ -15,7 +15,7 @@ alwaysApply: false
 ## Terminadores e estrutura
 - Ponto e vírgula `;` no final de cada comando. Case insensitive.
 - Comentário de uma linha: abrir e fechar com `@` na mesma linha (`@ texto @`). `@` só na abertura fica incompleto. Várias linhas: `/* */` (SYN011). Identação: 2 espaços.
-- **Blocos: sempre `{ }`** (não usar `Inicio`/`Fim;`). Condições sempre entre parênteses.
+- **Blocos: gerar `{ }`** (padrão de estilo). `Inicio`/`Fim;` são válidos e equivalem a `{ }`; `FimSe`/`FimEnquanto` não existem. Condições sempre entre parênteses.
 
 ## Múltiplas condições em Se/Enquanto
 Quando houver mais de uma condição (`e`/`ou`), **cada condição entre parênteses** — senão não compila.

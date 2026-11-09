@@ -20,6 +20,10 @@ Projetos de relatório reais: use o comando **Gerar Relatório** / `/gerar-relat
 | `smoke-fun-pdr003.lsp` | FUN007–009 |
 | `smoke-sem.lsp` | SEM001–003 |
 | `smoke-sem004.lsp` | SEM004 |
+| `smoke-sem-loops.lsp` | SEM005, SEM006 |
+| `smoke-fun-chamada.lsp` | FUN010–FUN014 (com `smoke-fun-chamada.functions.json` como catálogo extra) |
+| `smoke-typ.lsp` | TYP001–TYP003 |
+| `smoke-dic.lsp` | DEM002, DEM003, SQL012–SQL015, SEM007 (`catalogTables` no MANIFEST) |
 | `smoke-sql.lsp` | SQL001–009 |
 | `format-if.lsp` | Format Document |
 | `smoke-ger.lsp` / `smoke-ger-pre.lsp` | GER001–GER004 (`reportContext` no MANIFEST) |

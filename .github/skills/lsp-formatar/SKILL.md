@@ -18,7 +18,7 @@ Use **Format Document** da extensão LSP Workbench. O checklist abaixo vale quan
 - Preservar conteúdo de comentários
 - Preservar strings (exceto SQL embutido elegível, se formatar SQL estiver ativo no pedido)
 - Preservar EOL original (CRLF ou LF)
-- Blocos sempre no estilo `{ }` (se houver `Inicio`/`Fim`, **não** converter aqui — indicar `/refatorar-lsp`)
+- `Inicio`/`Fim` indentam como `{ }` e são válidos; **não** converter aqui (conversão opcional em `/refatorar-lsp`)
 
 ## Regras canônicas
 
@@ -48,7 +48,7 @@ Dialeto: genérico SQL; se o usuário citar Oracle/SQL Server, preferir keywords
 
 ## O que NÃO fazer
 
-- Trocar `Inicio`/`Fim` por `{ }` (usar `@lsp-refatorar`)
+- Trocar `Inicio`/`Fim` por `{ }` (refactor opcional: `@lsp-refatorar`)
 - Renomear variáveis
 - Extrair funções
 - “Corrigir” lógica ou tipos

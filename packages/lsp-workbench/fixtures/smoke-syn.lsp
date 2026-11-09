@@ -1,4 +1,4 @@
-@ smoke-syn — SYN001..SYN012 (+ RUL008 via SYN006) — todos com QF (Ctrl+. / Ctrl+Espaço) @
+@ smoke-syn — SYN001..SYN012, SYN016 (+ RUL008 via SYN006) — QF exceto SYN012/SYN016 @
 @ SYN001: falta ponto-e-virgula — QF → acrescentar ; @
 Definir Numero vnA
 Definir Numero vnB;
@@ -17,10 +17,11 @@ Se vnB > 0 {
 Se (vnA > 0 e vnB < 10) {
   vnB = 3;
 }
-@ SYN004: Inicio/Fim legado — QF → chaves @
-Inicio
+@ SYN016: FimSe/FimEnquanto não existem (Inicio/Fim são válidos, ADR-008) — sem QF @
+Se (vnB = 4) Inicio
   vnB = 4;
 Fim;
+FimSe;
 @ SYN009: literal longo sem barra invertida — QF → quebrar linha @
 vaLonga = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 @ SYN008: chave extra — QF → remover chave extra (alerta nesta linha) @

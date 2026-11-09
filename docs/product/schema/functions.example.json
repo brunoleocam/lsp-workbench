@@ -1,0 +1,36 @@
+{
+  "$schema": "lsp-workbench-functions/v1",
+  "generatedAt": "2026-11-06T00:00:00Z",
+  "source": "Exemplo público do contrato (ADR-009). Funções inventadas; não é dado extraído do Senior.",
+  "functions": {
+    "exemplosomar": {
+      "nome": "ExemploSomar",
+      "assinatura": "Funcao ExemploSomar(Numero Parcela1, Numero Parcela2, Numero End Resultado);",
+      "params": [
+        { "tipo": "numero", "saida": false, "nome": "Parcela1" },
+        { "tipo": "numero", "saida": false, "nome": "Parcela2" },
+        { "tipo": "numero", "saida": true, "nome": "Resultado" }
+      ]
+    },
+    "exemplosaudar": {
+      "nome": "ExemploSaudar",
+      "assinatura": "Funcao ExemploSaudar(Alfa Nome, Alfa End Texto);",
+      "params": [
+        { "tipo": "alfa", "saida": false, "nome": "Nome" },
+        { "tipo": "alfa", "saida": true, "nome": "Texto" }
+      ],
+      "variantes": [
+        [
+          { "tipo": "alfa", "saida": false, "nome": "Nome" },
+          { "tipo": "alfa", "saida": true, "nome": "Texto" }
+        ],
+        [{ "tipo": "alfa", "saida": true, "nome": "Texto" }]
+      ]
+    },
+    "exemplolimpar": {
+      "nome": "ExemploLimpar",
+      "assinatura": "Funcao ExemploLimpar();",
+      "params": []
+    }
+  }
+}

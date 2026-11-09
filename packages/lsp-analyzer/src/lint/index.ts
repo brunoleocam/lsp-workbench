@@ -13,3 +13,6 @@ export { collectGerDiagnostics } from "./ger-diagnostics";
 export * from "./comment-mask";
 export * from "./webservice";
 export * from "./system-vars";
+export * from "./compiler-messages";
+export { ARGUMENT_CONSTANTS, BUILTIN_COMMAND_ARITY, catalogHasExtra } from "./call-check";
+export { catalogColumnValueType, type ValueType } from "./declared-types";

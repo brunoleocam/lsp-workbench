@@ -18,7 +18,7 @@ Asserts:
 - [ ] Contém `Definir Lista vlItens` (ou `vl` + Itens)
 - [ ] Contém `AdicionarCampo("CODIGO"`
 - [ ] Contém `AdicionarCampo("NOME"`
-- [ ] Não contém `Retorna`
+- [ ] Não contém `Retorna;` sem parênteses (gera `{ }` e `Cancel(1)`; ADR-008)
 - [ ] Membros de Lista só os de [reference-membros.md](../../packages/lsp-workbench-agent/skills/lsp-linguagem/reference-membros.md)
 
 ### E-AG-02 — Gerar cursor
@@ -32,7 +32,7 @@ Asserts:
 - [ ] SQL com `\` se linha longa
 - [ ] Membros Cursor só os canônicos (reference-membros)
 
-### E-AG-03 — Validar Retorna (analyzer)
+### E-AG-03 — Validar `Retorna;` sem parênteses (analyzer)
 
 Prompt: `/compilar-lsp` **ou** CLI:
 

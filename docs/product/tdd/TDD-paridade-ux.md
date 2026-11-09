@@ -59,7 +59,7 @@ Princípio: teste que falha → mínimo → refatorar. Runner: `packages/lsp-wor
 | ID | Caso | Expectativa |
 |----|------|-------------|
 | ACC-REF-01 | Wrap seleção em `Se` | CodeAction Refactor |
-| ACC-REF-02 | Toggle Inicio/Fim ↔ `{ }` | Equivalente SYN004 + refactor dedicado |
+| ACC-REF-02 | Toggle Inicio/Fim ↔ `{ }` | Refactor dedicado (SYN004 revogado, ADR-008) |
 | ACC-REF-03 | `\` multilinha → `+` | Cadeia concatenada |
 
 Ver também [TDD-extension.md](TDD-extension.md) (casos base + PDR-003).

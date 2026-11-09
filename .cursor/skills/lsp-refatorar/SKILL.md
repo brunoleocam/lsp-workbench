@@ -29,7 +29,7 @@ Para `Inicio`/`Fim` → `{ }` e `\` → `+`, use as transformações desta skill
 | Envolver seleção com bloco `{ }` | Indentação +2 |
 | Envolver com `Se (cond) { }` | Pedir/inferir condição; parentizar |
 | Envolver com `Enquanto` / `Para` | Idem |
-| `Inicio`/`Fim;` → `{ }` | Converter corpo inteiro; remover `FimSe`/`FimEnquanto` |
+| `Inicio`/`Fim;` → `{ }` | Opcional (estilo): `Inicio`/`Fim;` já compilam. Converter corpo inteiro; trocar `FimSe`/`FimEnquanto` (inválidos) por `}` |
 | `{ }` → `Inicio`/`Fim` | Só se o usuário pedir explicitamente (padrão do plugin é braces) |
 
 ### Texto / literais
@@ -43,7 +43,7 @@ Para `Inicio`/`Fim` → `{ }` e `\` → `+`, use as transformações desta skill
 ### Limpeza
 
 - Nomenclatura `va`/`vn`/`vd`/`vl`/`Cur_`
-- Remover `Retorna` → `Cancel(1)` após mensagem
+- `Retorna;` sem parênteses → `Cancel(1);` após mensagem (`Retorna(x)` é válido; não trocar)
 - Comentários de seção para blocos longos (`@ === NOME === @`)
 
 ## Relatório final (obrigatório)

@@ -26,10 +26,21 @@ import {
   stopLanguageServer,
 } from "./language-client";
 import { getLocalCatalog } from "./adapters/vscode/local-catalog-loader";
+import {
+  catalogColumnTypes as columnTypesOf,
+  catalogTableColumns as tableColumnsOf,
+} from "./domain/local-catalog";
 import { registerConfigureWorkspace } from "./configure-workspace";
 import { registerGhostModeCommands } from "./ghost-mode-commands";
 import { registerReportCommands } from "./report-commands";
+import { registerCompileCommands } from "./compile-commands";
+import { registerDataDictionaryCommand } from "./data-dictionary-command";
+import { registerFunctionsCatalog } from "./functions-catalog-loader";
+import { effectiveFunctionCatalog } from "./effective-function-catalog";
 import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
+import { registerBinaryRules } from "./adapters/vscode/binary-rule-open";
+import { isBinaryRuleFileUri } from "./adapters/vscode/binary-rule-fs";
+import { registerGenerateSeniorRule } from "./adapters/vscode/generate-senior-rule";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
 
@@ -58,12 +69,13 @@ export function activate(context: vscode.ExtensionContext): void {
   registerReportCommands(context);
   registerConfigureWorkspace(context);
   registerGhostModeCommands(context);
+  registerBinaryRules(context);
 
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(SENIOR_LSP_LANGUAGE_ID, {
       provideDocumentFormattingEdits(document) {
         const cfg = vscode.workspace.getConfiguration("lsp");
-        if (!cfg.get<boolean>("format.enabled", true)) {
+        if (!cfg.get<boolean>("format.enabled", true) || isBinaryRuleFileUri(document.uri)) {
           return [];
         }
         let text = formatLsp(document.getText(), {
@@ -110,10 +122,14 @@ export function activate(context: vscode.ExtensionContext): void {
     });
   };
 
-  const refresh = (doc: vscode.TextDocument) => {
-    if (lsState.active) return;
+  const refresh = (doc: vscode.TextDocument): Promise<void> => {
+    if (lsState.active) return Promise.resolve();
     if (doc.languageId !== SENIOR_LSP_LANGUAGE_ID) {
-      return;
+      return Promise.resolve();
+    }
+    if (isBinaryRuleFileUri(doc.uri)) {
+      collection.delete(doc.uri);
+      return Promise.resolve();
     }
     const key = doc.uri.toString();
     const seq = (refreshSeqByUri.get(key) ?? 0) + 1;
@@ -127,7 +143,10 @@ export function activate(context: vscode.ExtensionContext): void {
     const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
     const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
     const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
-    const catalogTableNames = getLocalCatalog()?.tables.map((t) => t.name);
+    const localCatalog = getLocalCatalog();
+    const catalogTableNames = localCatalog?.tables.map((t) => t.name);
+    const catalogColumnTypes = localCatalog ? columnTypesOf(localCatalog) : undefined;
+    const catalogTableColumns = localCatalog ? tableColumnsOf(localCatalog) : undefined;
     const reportOpts = loadReportAnalyzeOpts(doc.uri.fsPath);
 
     // 1ª passada síncrona — RUL/FUN/SYN aparecem mesmo se o índice demorar.
@@ -137,7 +156,10 @@ export function activate(context: vscode.ExtensionContext): void {
         lines,
         analyzeLsp(doc.getText(), {
           ignoreIds: ignore,
+          functionCatalog: effectiveFunctionCatalog(),
           catalogTableNames,
+          catalogColumnTypes,
+          catalogTableColumns,
           reportContext: reportOpts?.reportContext,
           knownGlobals: reportOpts?.knownGlobals,
         })
@@ -148,7 +170,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     // 2ª passada — FUN009 / peers (scopedExternal) + SEM001 via Definir dos peers.
-    void (async () => {
+    return (async () => {
       try {
         idx.invalidate(doc.uri);
         let scopedExternal: Map<string, { fileName: string }> | undefined;
@@ -169,8 +191,11 @@ export function activate(context: vscode.ExtensionContext): void {
           lines,
           analyzeLsp(doc.getText(), {
             ignoreIds: ignore,
+            functionCatalog: effectiveFunctionCatalog(),
             scopedExternal,
             catalogTableNames,
+            catalogColumnTypes,
+            catalogTableColumns,
             reportContext: reportOpts?.reportContext,
             knownGlobals: knownGlobals.length ? knownGlobals : undefined,
           })
@@ -198,8 +223,16 @@ export function activate(context: vscode.ExtensionContext): void {
     }, 200);
   };
 
+  const functionsCatalog = registerFunctionsCatalog(context, (found) => {
+    if (lsState.active) {
+      void stopLanguageServer().then(() => startLanguageServer(context, found.path));
+      return;
+    }
+    refreshOpenLspDocuments();
+  });
+
   if (lsState.active) {
-    void startLanguageServer(context).then(
+    void startLanguageServer(context, functionsCatalog.path).then(
       () => {
         /* LS push diagnostics via analyzeLsp (paridade PDR-005). */
       },
@@ -231,6 +264,10 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     )
   );
+
+  registerCompileCommands(context, refresh);
+  registerGenerateSeniorRule(context, refresh);
+  registerDataDictionaryCommand(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand(APPLY_TEXT_EDITS_CMD, applySerializedTextEdits)

@@ -1057,90 +1057,6 @@ export function applyFun003Fix(line: string): string {
   return `${line.slice(0, info.start)}${info.to}${line.slice(info.end)}`;
 }
 
-export function applySyn004InicioFim(line: string): string {
-  if (/^\s*Inicio\b/i.test(line)) return line.replace(/Inicio/i, "{");
-  if (/^\s*Fim\s*;/i.test(line)) return line.replace(/Fim\s*;/i, "}");
-  if (/\bFimSe\b/i.test(line)) return line.replace(/FimSe/gi, "}");
-  if (/\bFimEnquanto\b/i.test(line)) return line.replace(/FimEnquanto/gi, "}");
-  return line;
-}
-
-/**
- * SYN004 preferido: converte o par Inicio…Fim; (e a linha atual FimSe/FimEnquanto).
- * Retorna o fonte inteiro ou null se nada mudou.
- */
-export function applySyn004PairFix(source: string, lineNumber: number): string | null {
-  const edits = syn004PairLineEdits(source, lineNumber);
-  if (!edits || edits.length === 0) return null;
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
-  for (const e of edits) {
-    if (e.line >= 0 && e.line < lines.length) lines[e.line] = e.text;
-  }
-  const next = lines.join("\n");
-  return next === source.replace(/\r\n/g, "\n") ? null : next;
-}
-
-/** Edições por linha do par Inicio/Fim (para completion: range de 1 linha + additionalTextEdits). */
-export function syn004PairLineEdits(
-  source: string,
-  lineNumber: number
-): Array<{ line: number; text: string }> | null {
-  const lines = source.replace(/\r\n/g, "\n").split("\n");
-  if (lineNumber < 0 || lineNumber >= lines.length) return null;
-  const cur = lines[lineNumber];
-
-  if (/\bFimSe\b/i.test(cur) || /\bFimEnquanto\b/i.test(cur)) {
-    const text = applySyn004InicioFim(cur);
-    return text === cur ? null : [{ line: lineNumber, text }];
-  }
-
-  const isInicio = /^\s*Inicio\b/i.test(cur);
-  const isFim = /^\s*Fim\s*;/i.test(cur);
-  if (!isInicio && !isFim) return null;
-
-  let inicioLine = -1;
-  let fimLine = -1;
-
-  if (isInicio) {
-    inicioLine = lineNumber;
-    let depth = 0;
-    for (let i = lineNumber; i < lines.length; i++) {
-      if (/^\s*Inicio\b/i.test(lines[i])) depth++;
-      if (/^\s*Fim\s*;/i.test(lines[i])) {
-        depth--;
-        if (depth === 0) {
-          fimLine = i;
-          break;
-        }
-      }
-    }
-  } else {
-    fimLine = lineNumber;
-    let depth = 0;
-    for (let i = lineNumber; i >= 0; i--) {
-      if (/^\s*Fim\s*;/i.test(lines[i])) depth++;
-      if (/^\s*Inicio\b/i.test(lines[i])) {
-        depth--;
-        if (depth === 0) {
-          inicioLine = i;
-          break;
-        }
-      }
-    }
-  }
-
-  const out: Array<{ line: number; text: string }> = [];
-  if (inicioLine >= 0) {
-    const t = applySyn004InicioFim(lines[inicioLine]);
-    if (t !== lines[inicioLine]) out.push({ line: inicioLine, text: t });
-  }
-  if (fimLine >= 0) {
-    const t = applySyn004InicioFim(lines[fimLine]);
-    if (t !== lines[fimLine]) out.push({ line: fimLine, text: t });
-  }
-  return out.length ? out : null;
-}
-
 /** SYN001: acrescenta `;` no fim da instrução (preserva `@ coment @` no fim). */
 export function applySyn001Fix(line: string): string {
   const m = line.match(/^(.*?)(\s*@[^@]*@\s*)?$/);
@@ -1517,11 +1433,6 @@ export const LINE_FIXERS: Array<{
     id: "SYN003",
     title: "Parentizar cada parte do e/ou",
     apply: applySyn003Fix,
-  },
-  {
-    id: "SYN004",
-    title: "Converter Inicio/Fim para { }",
-    apply: applySyn004InicioFim,
   },
   {
     id: "SYN008",

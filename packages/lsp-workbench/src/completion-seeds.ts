@@ -1,5 +1,6 @@
 import { ROUNDING_FUNCS, TRUNCATE_FUNCS } from "./rule-catalog";
-import { LSP_FUNCTION_CATALOG, type LspFunctionEntry } from "./function-catalog";
+import { type LspFunctionEntry } from "./function-catalog";
+import { effectiveFunctionCatalog } from "./effective-function-catalog";
 
 /** Seeds de autocomplete sem dependência do módulo vscode (testável em node). */
 
@@ -93,6 +94,15 @@ export function getStructuralSeeds(): LspCompletionSeed[] {
       isSnippet: true,
     },
     {
+      label: "Retorna",
+      insertText: "Retorna($1);",
+      kind: "keyword",
+      detail: "Retorna(valor) — embutido (0–1 argumento)",
+      documentation:
+        "`Retorna;` sem parênteses não compila (RUL007). Para interromper após erro, prefira `Cancel(1);`.",
+      isSnippet: true,
+    },
+    {
       label: "Cursor simples",
       insertText:
         'Definir Cursor Cur_${1:Nome};\nCur_${1:Nome}.SQL = "${2:SELECT 1 FROM DUAL}";\nCur_${1:Nome}.AbrirCursor();\nEnquanto (Cur_${1:Nome}.Achou) {\n  ${0}\n  Cur_${1:Nome}.Proximo();\n}\nCur_${1:Nome}.FecharCursor();',
@@ -149,7 +159,7 @@ export function getStructuralSeeds(): LspCompletionSeed[] {
 
 export function getLspCompletionSeeds(): LspCompletionSeed[] {
   const byLabel = new Map<string, LspCompletionSeed>();
-  for (const e of LSP_FUNCTION_CATALOG) {
+  for (const e of effectiveFunctionCatalog()) {
     byLabel.set(e.label.toLowerCase(), entryToSeed(e));
   }
   for (const s of [

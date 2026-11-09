@@ -53,7 +53,7 @@ Histórico de implementação do monorepo (não confundir com o [CHANGELOG da ex
 | Artefato | Versão / estado |
 |----------|-----------------|
 | Extensão `packages/lsp-workbench` | **0.2.0** — lint via analyzer; debounce; refactors no range |
-| Analyzer `packages/lsp-analyzer` | **0.3.0** — `analyzeLsp` + ANL004/012 + lint em `src/lint/` |
+| Analyzer `packages/lsp-analyzer` | **0.3.0** — `analyzeLsp` + ANL004/012 (ANL004 revogado depois pelo ADR-008) + lint em `src/lint/` |
 | Language Server `packages/lsp-language-server` | **0.2.0** — Worker usa `analyzeLsp` (paridade SYN/RUL/…) |
 | Agent | PDR-006 concluído |
 | Catálogo local | PDR-007 concluído |

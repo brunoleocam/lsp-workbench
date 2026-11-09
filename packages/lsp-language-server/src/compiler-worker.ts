@@ -1,8 +1,9 @@
 /**
  * Worker thread — análise completa via analyzeLsp (paridade com a extensão).
  */
-import { parentPort } from "node:worker_threads";
+import { parentPort, workerData } from "node:worker_threads";
 import { analyzeLsp } from "@lsp-workbench/analyzer";
+import { loadFunctionCatalog } from "./functions-catalog";
 import {
   isAnalyzeRequest,
   type AnalyzeResponse,
@@ -12,6 +13,10 @@ import {
 if (!parentPort) {
   throw new Error("compiler-worker must run as a worker_threads Worker");
 }
+
+const { catalog: functionCatalog } = loadFunctionCatalog(
+  (workerData as { functionsCatalogPath?: string } | null)?.functionsCatalogPath
+);
 
 function toWorkerDiags(
   hits: ReturnType<typeof analyzeLsp>
@@ -32,7 +37,7 @@ parentPort.on("message", (msg: unknown) => {
   }
   const { id, source, ignoreIds } = msg;
   try {
-    const hits = analyzeLsp(source, { ignoreIds });
+    const hits = analyzeLsp(source, { ignoreIds, functionCatalog });
     const reply: AnalyzeResponse = { id, diagnostics: toWorkerDiags(hits) };
     parentPort!.postMessage(reply);
   } catch (err) {

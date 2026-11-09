@@ -34,7 +34,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 
 ## Regras de ouro (sempre)
 
-1. **Sem `Retorna`** — após erro: `Mensagem` + `Cancel(1);`
+1. **Sem `Retorna;`** (sem parênteses não compila) — após erro: `Mensagem` + `Cancel(1);`. `Retorna(valor)` é válido
 2. **Parâmetros de função** — só tipo `Numero` (Alfa/Data/Lista via globais ou conversão)
 3. **Retorno** — por parâmetro: `TamanhoAlfa(vaTexto, vnTam);` — não `vn = TamanhoAlfa(va)`
 4. **Concatenação** — só `Alfa + Alfa`; `IntParaAlfa` antes; nunca concatenar dentro de argumento
@@ -44,7 +44,7 @@ Skill base da linguagem. Não inclui dicionário de tabelas nem regras de negóc
 8. **`EstaNulo`** — `EstaNulo(va, vnNulo);` depois `Se (vnNulo = 0)`
 9. **`ExecSQLEx`** — `0` = sucesso, `1` = erro
 10. Terminador `;`; comentário de uma linha abre e fecha com `@` na mesma linha (`@ texto @`); várias linhas `/* ... */`; indentação 2 espaços
-11. **Blocos com `{ }`** — não usar `Inicio`/`Fim;` / `FimSe` / `FimEnquanto`
+11. **Blocos com `{ }`** (padrão de geração) — `Inicio`/`Fim;` são válidos; `FimSe` / `FimEnquanto` não existem
 12. **Cursor** — em cada caminho, abrir uma vez e fechar uma vez. `FecharCursor` / `SQL_FecharCursor` sem o cursor aberto não compila. Fechar dentro de um `Se` e de novo depois do `Se` fecha duas vezes no caminho que entra. Se precisar fechar dentro do `Se`, use um `Numero` de controle e só execute o fechar de fora quando o cursor ainda estiver aberto.
 
 ## Nomenclatura
@@ -61,7 +61,7 @@ Depois do prefixo, nome descritivo por extenso. Campo de banco ou variável de s
 
 ## Checklist pré-entrega
 
-- [ ] Sem `Retorna` / `Break` / `%` / `Chr` / `\n` literal
+- [ ] Sem `Retorna;` / `Break` / `%` / `Chr` / `\n` literal
 - [ ] Blocos com `{ }`
 - [ ] Retorno por parâmetro
 - [ ] Sem concatenação dentro de parâmetros

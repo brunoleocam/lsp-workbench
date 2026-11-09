@@ -45,20 +45,20 @@ MinhaGrid.CampoDecimal = vnValor;
 ### **Regra #5: Interrupção de Fluxo com Cancel**
 
 ```lsp
-@ ❌ NUNCA USE - NÃO EXISTE NA LSP @
+@ ❌ NÃO COMPILA - Retorna sem parênteses @
 Mensagem(Erro, "Dado inválido");
-Retorna;  @ ERRO: Comando não existe @
+Retorna;  @ ERRO: falta valor, expressão ou comando @
 
-@ ❌ TAMBÉM NÃO EXISTE - VARIAÇÃO INCORRETA @
+@ ❌ TAMBÉM NÃO COMPILA - VARIAÇÃO INCORRETA @
 Mensagem(Erro, "Dado inválido");
-Retorne;  @ ERRO: Comando não existe @
+Retorne;  @ ERRO: falta valor, expressão ou comando @
 
 @ ✅ SEMPRE USE - PADRÃO CORRETO @
 Mensagem(Erro, "Dado inválido");
 Cancel(1);
 ```
 
-**Explicação:** Em LSP, os comandos `Retorna;` e `Retorne;` **NÃO EXISTEM**. Para interromper a execução de uma função após uma mensagem de erro, use `Cancel(1);`. O parâmetro `1` indica que a execução deve ser cancelada.
+**Explicação:** `Retorna;` e `Retorne;` **sem parênteses não compilam** (RUL007). `Retorna(valor)` é um comando válido do compilador Senior, e `Retorna` também é constante em `Mensagem(Retorna, …)`. Para interromper a execução após uma mensagem de erro, o padrão é `Cancel(1);`. O parâmetro `1` indica que a execução deve ser cancelada.
 
 **Alternativa:** Se você apenas quer sair de um loop, use `Pare;`. Se quer sair da função completamente, use `Cancel(1);`.
 

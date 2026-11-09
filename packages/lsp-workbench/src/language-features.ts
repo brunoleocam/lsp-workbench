@@ -14,7 +14,8 @@ import {
   signatureOverview,
   snippetParamNames,
 } from "./catalog-param-docs";
-import { LSP_FUNCTION_CATALOG, findSystemVar } from "./function-catalog";
+import { findSystemVar } from "./function-catalog";
+import { effectiveFunctionCatalog } from "./effective-function-catalog";
 import { mergeEligible } from "./symbol-scope";
 
 function wordAt(
@@ -56,7 +57,7 @@ function builtinHoverMarkdown(label: string, detail: string, documentation: stri
 }
 
 function builtinParamHover(name: string, argIndex: number): string | undefined {
-  const builtin = LSP_FUNCTION_CATALOG.find((e) => e.label.toLowerCase() === name.toLowerCase());
+  const builtin = effectiveFunctionCatalog().find((e) => e.label.toLowerCase() === name.toLowerCase());
   if (!builtin) return undefined;
   const names = snippetParamNames(builtin.insertText);
   const param = orderedCatalogParams(
@@ -91,7 +92,7 @@ export function createHoverProvider(): vscode.HoverProvider {
           }
           return new vscode.Hover(md, token.range);
         }
-        const builtin = LSP_FUNCTION_CATALOG.find(
+        const builtin = effectiveFunctionCatalog().find(
           (e) => e.label.toLowerCase() === token.name.toLowerCase()
         );
         if (builtin) {
@@ -122,7 +123,7 @@ export function createHoverProvider(): vscode.HoverProvider {
               symbolMd += `\n\n_Origem: \`${fn.fileName}\`_`;
             }
           } else {
-            const builtin = LSP_FUNCTION_CATALOG.find(
+            const builtin = effectiveFunctionCatalog().find(
               (e) => e.label.toLowerCase() === token.name.toLowerCase()
             );
             if (builtin) {
@@ -171,7 +172,7 @@ export function createSignatureHelpProvider(): vscode.SignatureHelpProvider {
       const all = mergeEligible(local, peers, document.uri.toString());
       const fn = all.find((f) => f.name.toLowerCase() === name.toLowerCase());
       if (!fn) {
-        const builtin = LSP_FUNCTION_CATALOG.find(
+        const builtin = effectiveFunctionCatalog().find(
           (e) => e.label.toLowerCase() === name.toLowerCase()
         );
         if (!builtin) return undefined;

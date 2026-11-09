@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "intparaalfa": {
+      "nome": "IntParaAlfa",
+      "assinatura": "Funcao IntParaAlfa(Numero Origem, Alfa end Retorno);",
+      "params": [
+        { "tipo": "numero", "saida": false, "nome": "Origem" },
+        { "tipo": "alfa", "saida": true, "nome": "Retorno" }
+      ]
+    }
+  }
+}

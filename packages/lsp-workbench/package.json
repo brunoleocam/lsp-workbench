@@ -44,6 +44,13 @@
   },
   "activationEvents": [
     "onLanguage:senior-lsp",
+    "onCommand:lsp.compileDocument",
+    "onCommand:lsp.dataDictionary",
+    "onCommand:lsp.openBinaryRule",
+    "onCommand:lsp.generateSeniorRule",
+    "onFileSystem:lsp-binario",
+    "workspaceContains:**/*.lsp",
+    "workspaceContains:**/*.LSP",
     "onCommand:lspWorkbench.createContext",
     "onCommand:lspWorkbench.editContext",
     "onCommand:lspWorkbench.removeContext",
@@ -87,7 +94,8 @@
         ],
         "extensions": [
           ".lsp",
-          ".lspt"
+          ".lspt",
+          ".lsptxt"
         ],
         "configuration": "./language-configuration.json"
       }
@@ -282,10 +290,25 @@
           "default": true,
           "description": "Highlight de SQL embutido em strings (keywords SELECT/FROM/…, funções TO_DATE/COUNT/…, binds :nome). Entregue via TextMate; o valor fica documentado para compatibilidade."
         },
+        "lsp.compileOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Revalida o arquivo LSP ao salvar, sem esperar o debounce da digitação (PDR-012, REQ-011)."
+        },
+        "lsp.binary.autoOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ao abrir pelo Explorer uma regra .LSP binária do Senior, reabre como texto decodificado. Salvar grava a cópia X.editado.LSP ao lado; o original nunca é alterado. Desligado: use o comando \"LSP: Abrir regra .LSP binária como texto\" (PDR-012, REQ-070)."
+        },
         "lsp.server.enabled": {
           "type": "boolean",
           "default": false,
           "description": "Usa o Language Server + Worker (Opção 3) para diagnósticos do analyzer. Desligado por padrão mantém diagnósticos in-process (Opção 1). Recarregue a janela após alterar."
+        },
+        "lsp.functions.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path de um catálogo de funções extra (lsp-workbench-functions/v1), absoluto ou relativo à pasta do workspace. Vazio = usa a extensão instalada que declarar \"lspWorkbench.functionsCatalog\" no package.json; sem nenhuma, só o catálogo embutido (ADR-009)."
         },
         "lsp.catalog.path": {
           "type": "string",
@@ -295,6 +318,15 @@
       }
     },
     "commands": [
+      {
+        "command": "lsp.openBinaryRule",
+        "title": "LSP: Abrir regra .LSP binária como texto"
+      },
+      {
+        "command": "lsp.generateSeniorRule",
+        "title": "LSP: Gerar .LSP para o Senior (a partir deste texto)",
+        "icon": "$(package)"
+      },
       {
         "command": "lspWorkbench.configureWorkspace",
         "title": "LSP Workbench: Configurar este Workspace"
@@ -362,8 +394,60 @@
       {
         "command": "lspWorkbench.importarRelatorio",
         "title": "LSP Workbench: Importar Relatório"
+      },
+      {
+        "command": "lsp.compileDocument",
+        "title": "LSP Workbench: Compilar Documento"
+      },
+      {
+        "command": "lsp.dataDictionary",
+        "title": "LSP Workbench: Dicionário de Dados (tabelas e campos)",
+        "icon": "$(database)"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "lsp.compileDocument",
+        "key": "f9",
+        "when": "editorLangId == senior-lsp"
+      },
+      {
+        "command": "lsp.dataDictionary",
+        "key": "ctrl+alt+d",
+        "when": "editorLangId == senior-lsp"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "lsp.dataDictionary",
+          "when": "editorLangId == senior-lsp",
+          "group": "navigation@2"
+        },
+        {
+          "command": "lsp.generateSeniorRule",
+          "when": "editorLangId == senior-lsp && resourceScheme == file",
+          "group": "navigation@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "lsp.openBinaryRule",
+          "when": "resourceScheme == file && resourceExtname =~ /^\\.lsp$/i",
+          "group": "navigation@9"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "lsp.dataDictionary",
+          "when": "editorLangId == senior-lsp"
+        },
+        {
+          "command": "lsp.generateSeniorRule",
+          "when": "editorLangId == senior-lsp && resourceScheme == file"
+        }
+      ]
+    }
   },
   "scripts": {
     "extract-functions": "node ../../scripts/extract-lsp-functions.mjs",

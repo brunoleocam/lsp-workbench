@@ -15,3 +15,6 @@ Se ((vnX > 0) e (vnX < 10)) {
 vlOk.Adicionar();
 vlOk.Codigo = vnX;
 vlOk.Gravar();
+Se (vnX > 5) Inicio
+  Retorna(vnX);
+Fim;

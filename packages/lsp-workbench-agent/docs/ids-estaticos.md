@@ -11,11 +11,11 @@ Compatível com extensão **LSP Workbench ≥ 0.2.13**.
 | SYN001 | Stmt termina com `;` (exceto cabeçalhos / string multilinha com `\`) |
 | SYN002 | `Se`/`Enquanto`/`Para` com condição entre `()` |
 | SYN003 | Com `e`/`ou`, cada parte entre `()` |
-| SYN004 | Blocos `{ }` — sem `Inicio`/`Fim;` |
+| SYN004 | Revogado (ADR-008): `Inicio`/`Fim;` são válidos |
 | SYN005 | `Definir` no início (não no meio do fluxo) |
 | SYN006 | Prefixo alinhado ao tipo (`va`/`vn`/`vd`/`vl`/`Cur_`) |
 | SYN007 | `/*` fechado com `*/` |
-| SYN008 | `{`/`}` balanceados |
+| SYN008 | `{`/`}` (e `Inicio`/`Fim`) balanceados |
 | SYN009 | Literal longo: `\` ~coluna 80 |
 | SYN010 | Identificador/tipo solto inválido |
 | SYN011 | `@` comentário só na mesma linha (multi-linha → `/* */`) |
@@ -23,6 +23,7 @@ Compatível com extensão **LSP Workbench ≥ 0.2.13**.
 | SYN013 | Marcador `<...>` de snippet ainda na chamada |
 | SYN014 | `ConverteMascara` tipo 5: origem `0` e destino Alfa |
 | SYN015 | `ConverteMascara`: máscara de CPF ou CGC |
+| SYN016 | `FimSe` / `FimEnquanto` não existem ("falta valor, expressão ou comando") |
 
 ## RUL (ouro)
 
@@ -34,7 +35,7 @@ Compatível com extensão **LSP Workbench ≥ 0.2.13**.
 | RUL004 | `FormatarData` só com `Numero` (`DataHora` antes) |
 | RUL005 | `Obj.Campo` só se a doc do parâmetro não diz Campo/Variável |
 | RUL006 | Não concatenar dentro de argumento de função |
-| RUL007 | Sem `Retorna`/`Retorne` → `Cancel(1);` |
+| RUL007 | `Retorna;`/`Retorne;` sem parênteses → `Cancel(1);` (`Retorna(x)` é válido) |
 | RUL008 | Prefixo alinhado ao tipo |
 | RUL009 | `ExecSQLEx`: `0`=ok, `1`=erro |
 | RUL010 | `Mensagem` sem JSON bruto grande |
@@ -45,7 +46,7 @@ Compatível com extensão **LSP Workbench ≥ 0.2.13**.
 | ID | Equivalente |
 |----|-------------|
 | ANL001/002 | braces |
-| ANL004 | SYN004 |
+| ANL004 | Revogado (ADR-008) |
 | ANL010 | RUL007 |
 | ANL011 | SYN003 |
 | ANL012 | SYN002 |

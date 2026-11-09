@@ -38,7 +38,23 @@ function matchVal(s: ParserState, ...vals: string[]): Token | undefined {
   return undefined;
 }
 
-/** Consome até `;` ou `}` (não consome o `}`). */
+/** `{` ou `Inicio` (ADR-008). */
+function atBlockOpen(s: ParserState): boolean {
+  return isVal(at(s), "{") || (isKw(at(s), "Inicio") && !isVal(s.tokens[s.pos - 1], "."));
+}
+
+/** `}` ou `Fim` (ADR-008); `X.Fim` é membro, não fecha bloco. */
+function atBlockClose(s: ParserState): boolean {
+  return isVal(at(s), "}") || (isKw(at(s), "Fim") && !isVal(s.tokens[s.pos - 1], "."));
+}
+
+/** Consome `}` ou `Fim` (+ `;` opcional depois de `Fim`). */
+function matchBlockClose(s: ParserState): void {
+  if (matchVal(s, "}")) return;
+  if (matchKw(s, "Fim")) matchVal(s, ";");
+}
+
+/** Consome até `;` ou fechamento de bloco (não consome o fechamento). */
 function recover(s: ParserState): void {
   while (!eof(s)) {
     const t = at(s);
@@ -46,7 +62,7 @@ function recover(s: ParserState): void {
       advance(s);
       return;
     }
-    if (isVal(t, "}")) return;
+    if (atBlockClose(s)) return;
     advance(s);
   }
 }
@@ -74,19 +90,19 @@ function parseBalancedParenText(s: ParserState): { text: string; line: number; c
 }
 
 function parseBlock(s: ParserState): AstNode {
-  const open = matchVal(s, "{");
+  const open = matchVal(s, "{") ?? matchKw(s, "Inicio");
   const line = open?.line ?? at(s)?.line ?? 0;
   const column = open?.column ?? 0;
   const children: AstNode[] = [];
-  while (!eof(s) && !isVal(at(s), "}")) {
+  while (!eof(s) && !atBlockClose(s)) {
     const stmt = parseStatement(s);
     if (stmt) children.push(stmt);
     else {
-      if (eof(s) || isVal(at(s), "}")) break;
+      if (eof(s) || atBlockClose(s)) break;
       recover(s);
     }
   }
-  matchVal(s, "}");
+  matchBlockClose(s);
   return { kind: "Block", line, column, children };
 }
 
@@ -127,12 +143,12 @@ function parseDefinir(s: ParserState): AstNode {
 function parseSe(s: ParserState): AstNode {
   const kw = advance(s)!; // Se
   const cond = parseBalancedParenText(s);
-  const thenBody = isVal(at(s), "{")
+  const thenBody = atBlockOpen(s)
     ? parseBlock(s)
     : ({ kind: "Block", line: kw.line, children: [] } as AstNode);
   let elseBody: AstNode | undefined;
   if (matchKw(s, "Senao")) {
-    elseBody = isVal(at(s), "{")
+    elseBody = atBlockOpen(s)
       ? parseBlock(s)
       : ({ kind: "Block", line: kw.line, children: [] } as AstNode);
   }
@@ -150,14 +166,20 @@ function parseSe(s: ParserState): AstNode {
   };
 }
 
-function parseEnquanto(s: ParserState): AstNode {
+/** Corpo de laço: bloco, ou um comando só (sem chaves) embrulhado num Block. */
+function parseLoopBody(s: ParserState, kw: Token): AstNode {
+  if (atBlockOpen(s)) return parseBlock(s);
+  const single = eof(s) || atBlockClose(s) ? null : parseStatement(s);
+  return { kind: "Block", line: kw.line, children: single ? [single] : [] };
+}
+
+/** `Enquanto (…)` e `Para (…)` têm a mesma forma: condição entre parênteses + corpo. */
+function parseLoop(s: ParserState, kind: "Enquanto" | "Para"): AstNode {
   const kw = advance(s)!;
   const cond = parseBalancedParenText(s);
-  const body = isVal(at(s), "{")
-    ? parseBlock(s)
-    : ({ kind: "Block", line: kw.line, children: [] } as AstNode);
+  const body = parseLoopBody(s, kw);
   return {
-    kind: "Enquanto",
+    kind,
     line: kw.line,
     column: kw.column,
     text: cond?.text,
@@ -191,7 +213,7 @@ function parseFuncao(s: ParserState): AstNode {
   if (matchVal(s, ";")) {
     return { kind: "FuncaoDecl", line: kw.line, column: kw.column, name };
   }
-  const body = isVal(at(s), "{")
+  const body = atBlockOpen(s)
     ? parseBlock(s)
     : ({ kind: "Block", line: kw.line, children: [] } as AstNode);
   return {
@@ -208,8 +230,8 @@ function parseSimpleOrRetorna(s: ParserState): AstNode | null {
   const start = at(s);
   if (!start) return null;
 
-  // Retorna; / Retorne;
-  if (isKw(start, "Retorna", "Retorne")) {
+  // Retorna; / Retorne; sem parênteses (Retorna(x) é chamada embutida — ADR-008)
+  if (isKw(start, "Retorna", "Retorne") && !isVal(s.tokens[s.pos + 1], "(")) {
     const kw = advance(s)!;
     matchVal(s, ";");
     return { kind: "Retorna", line: kw.line, column: kw.column, name: kw.value };
@@ -219,7 +241,7 @@ function parseSimpleOrRetorna(s: ParserState): AstNode | null {
   const line = start.line;
   const column = start.column;
   const parts: string[] = [];
-  while (!eof(s) && !isVal(at(s), ";") && !isVal(at(s), "}")) {
+  while (!eof(s) && !isVal(at(s), ";") && !atBlockClose(s)) {
     // nested block shouldn't appear in simple stmt often, but stop before }
     const t = advance(s)!;
     if (parts.length) parts.push(" ");
@@ -233,18 +255,19 @@ function parseSimpleOrRetorna(s: ParserState): AstNode | null {
 
 function parseStatement(s: ParserState): AstNode | null {
   if (eof(s)) return null;
-  if (isVal(at(s), "}")) return null;
+  if (atBlockClose(s)) return null;
 
   if (isKw(at(s), "Definir")) return parseDefinir(s);
   if (isKw(at(s), "Se")) return parseSe(s);
-  if (isKw(at(s), "Enquanto")) return parseEnquanto(s);
+  if (isKw(at(s), "Enquanto")) return parseLoop(s, "Enquanto");
+  if (isKw(at(s), "Para") && isVal(s.tokens[s.pos + 1], "(")) return parseLoop(s, "Para");
   if (isKw(at(s), "Funcao")) return parseFuncao(s);
-  if (isVal(at(s), "{")) return parseBlock(s);
+  if (atBlockOpen(s)) return parseBlock(s);
 
   // Senao solto — recovery
   if (isKw(at(s), "Senao")) {
     const kw = advance(s)!;
-    const body = isVal(at(s), "{") ? parseBlock(s) : undefined;
+    const body = atBlockOpen(s) ? parseBlock(s) : undefined;
     return { kind: "Senao", line: kw.line, column: kw.column, body, children: body ? [body] : [] };
   }
 
@@ -262,9 +285,9 @@ export function parse(tokens: Token[]): AstNode {
       children.push(stmt);
     } else {
       if (eof(s)) break;
-      if (isVal(at(s), "}")) {
-        // } extra — avança para recovery
-        advance(s);
+      if (atBlockClose(s)) {
+        // } / Fim extra — avança para recovery
+        matchBlockClose(s);
         continue;
       }
       recover(s);

@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import { getStructuralSeedsMatching } from "./completion-seeds";
 import { catalogMemberSortText, completionSortText } from "./completion-rank";
 import { completionDetailLine, completionOriginLabel } from "./completion-labels";
-import { functionsMatchingPrefix, systemVarsMatchingPrefix } from "./function-catalog";
+import { systemVarsMatchingPrefix } from "./function-catalog";
+import { effectiveFunctionsMatchingPrefix } from "./effective-function-catalog";
 import { completeMembersAt } from "./application/complete-members";
 import { functionsMatchingPrefixForSystem } from "./domain/system-catalog";
 import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
@@ -51,8 +52,6 @@ import {
   applySyn010DefinirStub,
   applySyn011ToBlockComment,
   applySyn009BreakString,
-  applySyn004InicioFim,
-  syn004PairLineEdits,
   isDefinirCursorHandle,
   isSuppressible,
   LINE_FIXERS,
@@ -954,33 +953,6 @@ function quickFixCompletions(
       continue;
     }
 
-    if (hit.id === "SYN004") {
-      // insertText ≠ "Inicio" → suggest some; aplicar via command (noop + edits).
-      const edits = syn004PairLineEdits(document.getText(), line.lineNumber);
-      if (edits && edits.length) {
-        pushCommandFix(
-          "QF: Converter par Inicio…Fim; → { … }",
-          "LSP · SYN004 — blocos com chaves",
-          "00_QF_SYN004",
-          edits.map((e) => serializeLineReplace(document, e.line, e.text)),
-          "Inicio Fim SYN004"
-        );
-      } else {
-        const fixed = applySyn004InicioFim(line.text);
-        if (fixed !== line.text) {
-          pushLineFix(
-            `QF: ${fixed.trim()}`,
-            "LSP · SYN004 — blocos com chaves",
-            fixed,
-            "00_QF_SYN004",
-            [],
-            true
-          );
-        }
-      }
-      continue;
-    }
-
     if (hit.id === "SYN009") {
       const fixed = applySyn009BreakString(line.text);
       if (fixed === line.text) continue;
@@ -1088,7 +1060,7 @@ function quickFixCompletions(
       continue;
     }
 
-    // RUL*/SYN004/FUN002 via catálogo LINE_FIXERS
+    // RUL*/FUN002 via catálogo LINE_FIXERS
     if (hit.id === "RUL001") {
       const next = applyRul001DocumentFix(src);
       if (next !== src) {
@@ -1171,7 +1143,7 @@ function functionCompletionItems(
 ): vscode.CompletionItem[] {
   if (!word || word.length < 1) return [];
   const fromCatalog = (
-    system ? functionsMatchingPrefixForSystem(word, system) : functionsMatchingPrefix(word)
+    system ? functionsMatchingPrefixForSystem(word, system) : effectiveFunctionsMatchingPrefix(word)
   ).filter((e) => e.kind !== "keyword");
 
   const items: vscode.CompletionItem[] = [];

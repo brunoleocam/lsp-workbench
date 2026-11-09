@@ -483,7 +483,7 @@ const grammar = {
     keywords: {
       name: "keyword.control.lsp",
       match:
-        "(?i)\\b(Definir|Cancel|Mensagem|Retorna|Inicio|Fim|FimSe|FimEnquanto)\\b",
+        "(?i)\\b(Definir|Cancel|Mensagem|Retorna|Inicio|Fim)\\b",
     },
     "types-lista": {
       name: "storage.type.lista.lsp",

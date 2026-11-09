@@ -13,6 +13,13 @@ describe("quick-fixes RUL007", () => {
     assert.equal(applyRul007Fix(line), line);
   });
 
+  it("leaves Retorna(x) / Retorna() untouched (ADR-008)", () => {
+    for (const line of ["  Retorna(1);", "  Retorna();", "  Retorna(vnX);"]) {
+      assert.equal(findRul007Ranges(line).length, 0, line);
+      assert.equal(applyRul007Fix(line), line);
+    }
+  });
+
   it("finds range of Retorna;", () => {
     const ranges = findRul007Ranges("  Retorna;");
     assert.equal(ranges.length, 1);

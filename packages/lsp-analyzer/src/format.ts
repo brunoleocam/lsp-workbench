@@ -49,17 +49,16 @@ export function format(source: string, opts?: FormatOptions): string {
         i++;
         continue;
       }
-      if (!inString && (ch === "{" || ch === "}")) {
-        codeForBrace += ch;
-      }
+      codeForBrace += inString ? " " : ch;
       i++;
     }
 
-    const closes = (codeForBrace.match(/\}/g) || []).length;
-    const opens = (codeForBrace.match(/\{/g) || []).length;
+    // `Inicio` / `Fim` indentam como `{` / `}` (ADR-008)
+    const closes = (codeForBrace.match(/\}|(?<![.\w])Fim\b/gi) || []).length;
+    const opens = (codeForBrace.match(/\{|(?<![.\w])Inicio\b/gi) || []).length;
 
     // linha que começa com } reduz antes de indentar
-    const leadingCloses = /^\s*\}/.test(line) ? 1 : 0;
+    const leadingCloses = /^\s*(\}|Fim\b)/i.test(line) ? 1 : 0;
     const indentDepth = Math.max(0, depth - leadingCloses);
     out.push(trimmed.length === 0 ? "" : pad(indentDepth) + trimmed);
 

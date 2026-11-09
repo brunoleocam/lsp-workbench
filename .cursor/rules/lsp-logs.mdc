@@ -62,4 +62,4 @@ Em todas as funções, usar o mesmo formato de timestamp e o mesmo `vaCaminhoLog
 ## Lembretes LSP
 
 - Concatenação só Alfa + Alfa; converter número com `IntParaAlfa` antes de concatenar na mensagem.
-- Após mensagem de erro usar `Cancel(1);` (não `Retorna`); fechar o handle antes de `Cancel` quando o log já tiver sido aberto.
+- Após mensagem de erro usar `Cancel(1);` (não `Retorna;`); fechar o handle antes de `Cancel` quando o log já tiver sido aberto.

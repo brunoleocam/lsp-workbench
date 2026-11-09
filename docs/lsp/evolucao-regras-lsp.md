@@ -9,6 +9,13 @@ Registro **opcional** e **versionado** de lacunas ou correções que surgiram no
 
 ## Entradas
 
+### 2026-11-06 — ADR-008: `Inicio`/`Fim` e `Retorna(x)` válidos
+
+- **Contexto:** A lista de palavras reservadas do compilador Senior contém `INICIO`, `FIM` e `RETORNA`. A extensão acusava `Inicio`/`Fim` (SYN004/ANL004) e qualquer `Retorna` (RUL007/ANL010), inclusive em código que compila no Senior ([ADR-008](../product/adr/ADR-008-aceitar-inicio-fim-e-retorna.md), [PDR-012](../product/pdr/PDR-012-paridade-compilador-senior.md)).
+- **Texto canônico:**
+  > ADR-008: `Inicio`/`Fim` e `Retorna(x)` são válidos (palavras reservadas do compilador Senior); `Retorna;` sem parênteses continua erro; gerar `{ }` e `Cancel(1)` segue como padrão de estilo; `FimSe`/`FimEnquanto` são erro (SYN016).
+- **Status:** SYN004/ANL004 revogados; RUL007/ANL010 restritos a `Retorna;`/`Retorne;` com a mensagem do compilador; SYN016 criado. Promovido para `lsp-nucleo.mdc`, `lsp.mdc`, `lsp-sintaxe.mdc`, `lsp-limites.mdc`, skills `lsp-*` e `regras-estaticas-lsp.md` (2026-11-06).
+
 ### 2026-10-13 — `@` fecha na mesma linha; campo de banco não vai por extenso
 
 - **Contexto:** Comentário de uma linha aberto com `@` ficava sem o `@` de fechamento. A regra de nome descritivo por extenso também expandia campo de banco (`CodEmp` → `CodigoEmpresa`).

@@ -51,6 +51,6 @@ Corrigir violações críticas (`lsp-validacao-obrigatoria.mdc`).
 - `Se (EstaNulo(...) = 0)` na mesma linha
 - `FormatarData` sem `DataHora` / tipo errado
 - Concatenar dentro de argumento de função
-- `Retorna`; `Inicio`/`Fim;`; `ExecSQLEx` com sucesso/erro invertido
+- `Retorna;` sem parênteses (não compila; usar `Cancel(1);`); `FimSe`/`FimEnquanto` (não existem; gerar `{ }`); `ExecSQLEx` com sucesso/erro invertido
 - Inventar `E*`/`USU_*` sem catálogo/markdown local
 - `FecharCursor` / `SQL_FecharCursor` sem o cursor aberto, ou fechar dentro do `Se` e de novo depois do `Se` sem `Numero` de controle

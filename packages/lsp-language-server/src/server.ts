@@ -16,7 +16,8 @@ import {
   TextDocumentChangeEvent,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { analyzeLsp } from "@lsp-workbench/analyzer";
+import { analyzeLsp, type LspFunctionEntry } from "@lsp-workbench/analyzer";
+import { loadFunctionCatalog } from "./functions-catalog";
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
@@ -30,6 +31,9 @@ const DIAG_SOURCE = "LSP Workbench";
 
 let nextRequestId = 1;
 let worker: Worker | undefined;
+/** ADR-009: path vem do client em `initializationOptions`; mudança reinicia o server. */
+let functionsCatalogPath: string | undefined;
+let functionCatalog: LspFunctionEntry[] | undefined;
 let workerFailed = false;
 const pending = new Map<
   number,
@@ -41,7 +45,7 @@ function workerScriptPath(): string {
 }
 
 function hitsToWorker(source: string, ignoreIds?: string[]): WorkerDiagnostic[] {
-  return analyzeLsp(source, { ignoreIds }).map((h) => ({
+  return analyzeLsp(source, { ignoreIds, functionCatalog }).map((h) => ({
     id: h.id,
     message: h.message,
     line: h.line,
@@ -55,7 +59,7 @@ function ensureWorker(): Worker | undefined {
   if (workerFailed) return undefined;
   if (worker) return worker;
   try {
-    worker = new Worker(workerScriptPath());
+    worker = new Worker(workerScriptPath(), { workerData: { functionsCatalogPath } });
     worker.on("message", (msg: AnalyzeResponse) => {
       const entry = pending.get(msg.id);
       if (!entry) return;
@@ -196,8 +200,14 @@ function scheduleValidate(doc: TextDocument): void {
   );
 }
 
-connection.onInitialize((_params: InitializeParams) => {
+connection.onInitialize((params: InitializeParams) => {
   connection.console.log("LSP Workbench Language Server initializing (analyzeLsp)");
+  const opts = params.initializationOptions as { functionsCatalogPath?: unknown } | undefined;
+  functionsCatalogPath =
+    typeof opts?.functionsCatalogPath === "string" ? opts.functionsCatalogPath : undefined;
+  const loaded = loadFunctionCatalog(functionsCatalogPath);
+  functionCatalog = loaded.catalog;
+  if (loaded.message) connection.console.log(loaded.message);
   return {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Full,

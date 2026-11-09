@@ -23,7 +23,7 @@ applyTo: "**/*.lsp"
 - Convers�es em grids: sempre vari�vel intermedi�ria.
 - Concatena��o: apenas Alfa + Alfa; nunca em par�metros de fun��es.
 - Retorno: fun��es retornam por par�metro, n�o por atribui��o.
-- Interrup��o: `Cancel(1);` ap�s erro, nunca `Retorna`.
+- Interrup��o: `Cancel(1);` ap�s erro; nunca `Retorna;` sem par�nteses (n�o compila).
 - **ExecSQLEx:** `0 = sucesso`, `1 = erro`; usar `Se (vnRetorno = 0)` para sucesso (n�o inverter).
 
 ## Refer�ncias

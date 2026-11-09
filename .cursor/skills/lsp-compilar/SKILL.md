@@ -28,10 +28,10 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 
 | ID | Regra | Correção típica |
 |----|-------|-----------------|
-| ANL001 | `{` sem `}` | Fechar bloco |
-| ANL002 | `}` sem `{` | Remover `}` extra ou abrir bloco |
-| ANL004 | `Inicio`/`Fim*` legado | Usar `{ }` (SYN004) |
-| ANL010 | `Retorna;` / `Retorne;` | `Cancel(1);` (RUL007) |
+| ANL001 | `{`/`Inicio` sem `}`/`Fim` | Fechar bloco |
+| ANL002 | `}`/`Fim` sem `{`/`Inicio` | Remover fechamento extra ou abrir bloco |
+| ANL004 | revogado (ADR-008): `Inicio`/`Fim` são válidos | — |
+| ANL010 | `Retorna;` / `Retorne;` sem parênteses | `Cancel(1);` (RUL007); `Retorna(x)` é válido |
 | ANL011 | `e`/`ou` mal parentizado | Parentizar partes (SYN003) |
 | ANL012 | `Se`/`Enquanto`/`Para` sem `(` | Envolver condição (SYN002) |
 
@@ -49,15 +49,16 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | SYN001 | Stmt sem `;` | Acrescentar `;` |
 | SYN002 | `Se`/`Enquanto`/`Para` sem `()` | `Se (cond) {` |
 | SYN003 | `e`/`ou` sem partes parentizadas | `Se ((a>0) e (b<10))` |
-| SYN004 | `Inicio`/`Fim;`/`FimSe`/`FimEnquanto` | Usar `{ }` |
+| SYN004 | revogado (ADR-008): `Inicio`/`Fim;` são válidos | — |
 | SYN005 | `Definir` no meio do fluxo | Mover `Definir` para o início |
 | SYN006 | Prefixo ≠ tipo | `Definir Alfa vaX;` / `Numero vnX;` etc. |
 | SYN007 | `/*` sem `*/` | Fechar comentário |
-| SYN008 | `{`/`}` desbalanceados | Balancear blocos |
+| SYN008 | `{`/`}` (ou `Inicio`/`Fim`) desbalanceados | Balancear blocos |
 | SYN009 | Literal muito longo sem `\` | Quebrar ~col 80 com `\` |
 | SYN010 | Identificador/tipo solto | Remover ou `Definir Tipo …` |
 | SYN011 | `@` multi-linha (fechamento noutra linha) | Converter para `/* … */` |
 | SYN012 | String `"` aberta sem fechar / sem `\` | Fechar `"` ou continuar com `\` |
+| SYN016 | `FimSe` / `FimEnquanto` (não existem) | Fechar com `}` ou `Fim;` |
 
 ## Checklist RUL
 
@@ -69,7 +70,7 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | RUL004 | `FormatarData(vd…)` → `DataHora(vn); FormatarData(vn,…)` |
 | RUL005 | `Obj.Campo` em parâmetro cuja doc não diz Campo/Variável → variável intermediária |
 | RUL006 | `"x" + va` dentro de arg → montar Alfa antes |
-| RUL007 | `Retorna;` / `Retorne;` → `Cancel(1);` |
+| RUL007 | `Retorna;` / `Retorne;` sem parênteses → `Cancel(1);` (`Retorna(x)` e `Mensagem(Retorna, …)` são válidos) |
 | RUL008 | `Definir Alfa vnX` → prefixo alinhado ao tipo |
 | RUL009 | `ExecSQLEx=1` como sucesso → `0`=ok, `1`=erro |
 | RUL010 | `Mensagem(..., vaJSON)` → resumo Alfa |
@@ -96,6 +97,14 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | FUN007 | `Definir Funcao` sem implementação |
 | FUN008 | `Funcao … { }` sem `Definir Funcao` |
 | FUN009 | chamada só definida em outro arquivo do escopo |
+| FUN010 | função não declarada (erro com catálogo extra, aviso sem ele) |
+| FUN011 | nº de argumentos fora da faixa do embutido ou da assinatura do extra |
+| FUN012 | Alfa × Numero no argumento (assinatura do extra; tipo por literal ou `Definir`) |
+| FUN013 | parâmetro `End` recebendo expressão ou constante |
+| FUN014 | parâmetro `End` recebendo campo de cursor |
+| TYP001 | atribuição Alfa × Numero (tipo por literal, `Definir` ou catálogo de banco) |
+| TYP002 | comparação ou operador misturando Alfa e Numero (inclui `"x" + vn` em argumento) |
+| TYP003 | condição de `Se`/`Enquanto` com Alfa isolado |
 
 ## Checklist SEM (heurística)
 
@@ -105,6 +114,9 @@ Pré-compilação alinhada ao catálogo canônico e à extensão **LSP Workbench
 | SEM002 | `Abrir`/`Fechar` de arquivo pareados |
 | SEM003 | `.AbrirCursor` sem `.FecharCursor` (contagem). Fechar a mais quebra a compilação e o analyzer não alerta |
 | SEM004 | `lista.Campo` sem `AdicionarCampo` prévio |
+| SEM005 | `Enquanto (X.Achou)` sem `X.Proximo()` no corpo (laço infinito) |
+| SEM006 | `Continue` em `Enquanto (X.Achou)` sem `X.Proximo()` antes, no mesmo bloco ou num ancestral |
+| SEM007 | atribuição a campo de cursor (`Cur.CAMPO = …`) |
 
 Fechar a mais: `FecharCursor` / `SQL_FecharCursor` sem abrir, ou fechar dentro de um `Se` e de novo depois do `Se` sem `Numero` de controle. Conferir o caminho na revisão; SEM003/SQL003 não pegam esse caso.
 
@@ -123,12 +135,18 @@ Fechar a mais: `FecharCursor` / `SQL_FecharCursor` sem abrir, ou fechar dentro d
 | SQL009 | não misturar API simples × completa |
 | SQL010 | função nativa (`TO_DATE`/`NVL`/…) → dialeto Senior 2 |
 | SQL011 | agregação no SELECT sob Senior 2 → nativo ou mover |
+| SQL012 | `Cur.CAMPO` está no SELECT do `Cur.SQL` (nome ou apelido); `SELECT *` ou SQL por variável não checa |
+| SQL013 | coluna repetida no mesmo SELECT (aviso) |
+| SQL014 | `Cur.AbrirCursor()` com `Cur.SQL` antes |
+| SQL015 | `:param` do SQL existe como variável da regra (aviso; pode ser variável da tela) |
 
 ## Checklist DEM (se catálogo local existir)
 
 | ID | Verificar |
 |----|-----------|
 | DEM001 | E*/R*/USU_* citados existem no catálogo (`lsp.catalog.path` / PDR-009) |
+| DEM002 | `TABELA.CAMPO`: o campo existe na tabela do catálogo |
+| DEM003 | colunas do SELECT do cursor existem na tabela do FROM (aviso) |
 
 Sem catálogo → não inventar DEM001.
 
@@ -161,7 +179,7 @@ Preferir a extensão (Problems) quando o workspace estiver aberto com LSP Workbe
 ## Diagnósticos
 | ID | Sev | Arquivo:Linha | Mensagem | Correção sugerida |
 |----|-----|---------------|----------|-------------------|
-| RUL007 | erro | regra.lsp:42 | Uso de Retorna | Substituir por Cancel(1); |
+| RUL007 | erro | regra.lsp:42 | falta valor, expressão ou comando (`Retorna;`) | Substituir por Cancel(1); |
 
 ## Correções rápidas propostas
 1. [ID] descrição — aplicar? (sim se o usuário pediu correção)
