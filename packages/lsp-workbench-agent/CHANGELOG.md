@@ -1,5 +1,22 @@
 # Changelog — LSP Workbench Agent
 
+## 1.5.0 — 2026-11-09
+
+### Alterado
+
+- `Inicio`/`Fim` são válidos e equivalem a `{ }`; o padrão de geração continua `{ }`. SYN004 e ANL004 revogados ([ADR-008](../../docs/product/adr/ADR-008-aceitar-inicio-fim-e-retorna.md))
+- RUL007/ANL010 valem só para `Retorna;`/`Retorne;` sem parênteses; `Retorna(valor)` é válido, mas a geração segue com `Cancel(1);`
+
+### Adicionado
+
+- IDs do compilador Senior em `lsp-compilar` e `docs/ids-estaticos.md`: SYN016, FUN010..FUN014, TYP001..TYP003, SEM005..SEM007
+
+### Compatibilidade
+
+| Agent | Extensão IDE |
+|-------|----------------|
+| 1.5.0 | ≥ 0.3.0 |
+
 ## 1.4.2 — 2026-09-28
 
 ### Adicionado

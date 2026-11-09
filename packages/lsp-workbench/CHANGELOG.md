@@ -1,6 +1,6 @@
 # Changelog — LSP Workbench (extensão)
 
-## Não lançado
+## 0.3.0 — 2026-11-09
 
 ### Alterado
 
