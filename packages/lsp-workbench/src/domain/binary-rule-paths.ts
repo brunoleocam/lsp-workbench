@@ -12,6 +12,11 @@ export function binaryRuleDiskPath(authority: string, fsPath: string): string {
   const sep = fsPath.startsWith("/") ? "/" : "\\";
   return `${sep}${sep}${authority}${fsPath}`;
 }
+
+/** Caminho em disco de um documento aberto, inclusive regra binária de compartilhamento de rede. */
+export function documentDiskPath(uri: { scheme: string; authority: string; fsPath: string }): string {
+  return uri.scheme === BINARY_RULE_SCHEME ? binaryRuleDiskPath(uri.authority, uri.fsPath) : uri.fsPath;
+}
 const EDITED_SUFFIX = /\.editado(\.lsp)$/i;
 
 export function isEditedCopyPath(fsPath: string): boolean {

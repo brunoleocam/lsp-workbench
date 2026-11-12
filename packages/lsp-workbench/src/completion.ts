@@ -79,6 +79,9 @@ import {
   type SerializedTextEdit,
 } from "./apply-edits";
 import { getWorkspaceSymbolIndex } from "./workspace-symbol-index";
+import { PerfTrace } from "./domain/perf-trace";
+import { documentDiskPath } from "./domain/binary-rule-paths";
+import { logPerf } from "./adapters/vscode/perf-log";
 import {
   callSnippetFor,
   markdownForFunction,
@@ -1342,285 +1345,306 @@ function customSymbolCompletions(
 export function createLspCompletionProvider(): vscode.CompletionItemProvider {
   return {
     async provideCompletionItems(document, position) {
-      const line = document.lineAt(position);
-      const linePrefix = line.text.slice(0, position.character);
-      const ident = trailingIdent(linePrefix);
-      // Antes de aspas, índice do workspace e quick fixes: senão o catálogo não aparece.
-      if (isTableColumnCompletionContext(linePrefix)) {
-        const columns = buildCatalogColumnItems(document.uri.fsPath, position, linePrefix);
-        if (columns.length) return new vscode.CompletionList(columns, false);
-      }
-      if (looksLikeTablePrefix(ident)) {
-        const identRange = new vscode.Range(
-          position.line,
-          Math.max(0, position.character - ident.length),
-          position.line,
-          position.character
-        );
-        const tables = buildCatalogTableItems(ident, identRange);
-        if (tables.length) return new vscode.CompletionList(tables, false);
-      }
-      const quotes = (linePrefix.match(/"/g) || []).length;
-      const rawWordRange =
-        document.getWordRangeAtPosition(position, /[A-Za-z_][\w]*/) ??
-        new vscode.Range(position, position);
-      const rawWord = document.getText(rawWordRange);
-      // Dentro de literal / token gigante: zera a palavra do filtro senão o suggest
-      // exige casar AAA… e esconde QFs (exceto SEM001 que repetia o token no filter).
-      const inStringOrLong = quotes % 2 === 1 || rawWord.length > 48;
-      const wordRange = inStringOrLong
-        ? new vscode.Range(position, position)
-        : rawWordRange;
-      const word = inStringOrLong ? "" : rawWord;
-
-      const memberSuggestions = completeMembersAt(document.getText(), linePrefix);
-      if (memberSuggestions.length) {
-        const memberItems = memberSuggestions.map((m) => {
-          const kind =
-            m.kind === "method"
-              ? vscode.CompletionItemKind.Method
-              : vscode.CompletionItemKind.Property;
-          const item = new vscode.CompletionItem(m.name, kind);
-          item.label = {
-            label: m.name,
-            description: completionOriginLabel("membro"),
-          };
-          item.detail = completionDetailLine("membro", m.detail);
-          item.documentation = new vscode.MarkdownString(m.documentation);
-          item.sortText = m.name.toLowerCase();
-          if (m.isSnippet) {
-            item.insertText = new vscode.SnippetString(m.insertText);
-          } else {
-            item.insertText = m.insertText;
-          }
-          return item;
-        });
-        return new vscode.CompletionList(memberItems, false);
-      }
-
-      const qfItems = quickFixCompletions(document, line, word, wordRange, position);
-      const lineHasAlerts = qfItems.length > 0;
-
-      let system = "";
+      const name = document.uri.path.split("/").pop() ?? "";
+      const trace = new PerfTrace(`completion ${name} (${document.lineCount} linhas)`, logPerf);
       try {
-        const scoped = await getWorkspaceSymbolIndex().getScopedEligible(document);
-        system = scoped.resolution.system ?? "";
-      } catch {
-        system = "";
+        return await provideLspCompletion(document, position, trace);
+      } finally {
+        trace.end();
       }
-      const fnItems = functionCompletionItems(word, wordRange, system);
-      const cmdItems = commandCompletionItems(word, wordRange);
-      const sysVarItems = systemVarCompletionItems(word, wordRange);
-      const globalItems = reportGlobalCompletionItems(
-        word,
-        wordRange,
-        document.uri.fsPath
-      );
-
-      let customItems: vscode.CompletionItem[] = [];
-      try {
-        const idx = getWorkspaceSymbolIndex();
-        const scoped = await idx.getScopedEligible(document);
-        const merged = mergeEligible(scoped.local, scoped.peers, document.uri.toString());
-        const localSym = await idx.getSymbols(document.uri, document.getText());
-        const vars: { name: string; tipo: string; scope: string; fileName?: string }[] =
-          localSym.variables.map((v) => ({
-            name: v.name,
-            tipo: v.tipo,
-            scope: v.scope,
-          }));
-
-        for (const peerPath of scoped.resolution.peers) {
-          const same =
-            peerPath.replace(/\\/g, "/").toLowerCase() ===
-            document.uri.fsPath.replace(/\\/g, "/").toLowerCase();
-          if (same) continue;
-          const uri = vscode.Uri.file(peerPath);
-          const sym = await idx.getSymbols(uri);
-          const base = peerPath.replace(/\\/g, "/").split("/").pop() ?? peerPath;
-          for (const v of sym.variables) {
-            if (v.scope !== "file") continue;
-            vars.push({ name: v.name, tipo: v.tipo, scope: "file", fileName: base });
-          }
-        }
-
-        customItems = customSymbolCompletions(
-          word,
-          wordRange,
-          merged,
-          vars,
-          document.uri.toString()
-        );
-      } catch {
-        customItems = [];
-      }
-
-      // QFs no fim da lista (não escondem vars/funções/comandos do prefixo).
-      for (const q of qfItems) {
-        const label = typeof q.label === "string" ? q.label : q.label.label;
-        q.sortText = completionSortText("qf", label, word || "_");
-      }
-
-      if (quotes % 2 === 1) {
-        const mask = maskCompletion(line, position);
-        if (mask) {
-          return new vscode.CompletionList([...mask.items, ...qfItems], false);
-        }
-        // Dialeto SQL Senior 2 dentro de literais (DefinirComando / .SQL / SELECT…)
-        if (isSqlStringCompletionContext(line.text, linePrefix)) {
-          const sqlPrefix = (linePrefix.match(/[A-Za-z_][A-Za-z0-9_]*$/) || [""])[0];
-          const sqlRange =
-            sqlPrefix.length > 0
-              ? new vscode.Range(
-                  position.line,
-                  position.character - sqlPrefix.length,
-                  position.line,
-                  position.character
-                )
-              : new vscode.Range(position, position);
-          const sqlItems = filterSenior2Completions(sqlPrefix).map((f, i) => {
-            const item = new vscode.CompletionItem(
-              f.name,
-              f.category === "aggregate"
-                ? vscode.CompletionItemKind.Keyword
-                : vscode.CompletionItemKind.Function
-            );
-            item.detail = f.detail;
-            if (f.documentation) {
-              item.documentation = new vscode.MarkdownString(f.documentation);
-            }
-            item.insertText = new vscode.SnippetString(f.insertText);
-            item.range = sqlRange;
-            item.sortText = `0${String(i).padStart(3, "0")}_${f.name}`;
-            item.filterText = `${sqlPrefix} ${f.name} Senior2 SQL`;
-            return item;
-          });
-          // Operador de concatenação Senior 2
-          if (!sqlPrefix || "||".startsWith(sqlPrefix)) {
-            const concat = new vscode.CompletionItem(
-              "||",
-              vscode.CompletionItemKind.Operator
-            );
-            concat.detail = "SQL Senior 2 · concatenação de texto";
-            concat.insertText = "||";
-            concat.range = sqlRange;
-            concat.sortText = "0999_concat";
-            concat.filterText = `${sqlPrefix} || concat Senior2`;
-            sqlItems.push(concat);
-          }
-          return new vscode.CompletionList([...sqlItems, ...qfItems], false);
-        }
-        // Só QFs da linha — incomplete:false evita o cliente refiltrar e sumir o SYN009.
-        if (lineHasAlerts) {
-          return new vscode.CompletionList(qfItems, false);
-        }
-        return [];
-      }
-
-      if (/^Arredond/i.test(word)) {
-        const rewrite = rewriteItems(document, line, word, "arredondar");
-        return new vscode.CompletionList(
-          [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
-          false
-        );
-      }
-
-      if (/^Truncar/i.test(word)) {
-        const rewrite = rewriteItems(document, line, word, "truncar");
-        return new vscode.CompletionList(
-          [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
-          false
-        );
-      }
-
-      // Após "E012FAM." — somente campos dessa tabela (sem builtins/funções/variáveis).
-      if (isTableColumnCompletionContext(linePrefix)) {
-        const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
-        const catalogColItems = catalogColRaw.map((t, i) => {
-          const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
-          item.insertText = t.insertText;
-          applyCatalogColumnPresentation(item, t, i);
-          const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
-          const suf = m?.[1]?.length ?? 0;
-          item.range = new vscode.Range(
-            position.line,
-            position.character - suf,
-            position.line,
-            position.character
-          );
-          return item;
-        });
-        return new vscode.CompletionList(catalogColItems, false);
-      }
-
-      const defItem = definirCompletion(document, position, word, wordRange);
-      const catalogColRaw = localColumnCompletions(document.uri.fsPath, linePrefix);
-      const catalogColItems = catalogColRaw.map((t, i) => {
-        const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
-        item.insertText = t.insertText;
-        applyCatalogColumnPresentation(item, t, i);
-        if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
-          const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
-          const suf = m?.[1]?.length ?? 0;
-          item.range = new vscode.Range(
-            position.line,
-            position.character - suf,
-            position.line,
-            position.character
-          );
-        } else {
-          item.range = wordRange;
-        }
-        return item;
-      });
-      const catalogTableItems =
-        word.length >= 1 && /^[A-Za-z_]/.test(word)
-          ? localTableCompletions(word).map((t, i) => {
-              const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
-              item.label = {
-                label: t.label,
-                description: completionOriginLabel("catalogo"),
-              };
-              item.detail = completionDetailLine("catalogo", t.detail);
-              if (t.documentation) {
-                item.documentation = t.documentation;
-              }
-              item.range = wordRange;
-              item.sortText = catalogMemberSortText("table", i);
-              return item;
-            })
-          : [];
-
-      // Ordem via sortText: match exato → vars → funções → comandos → outros → QFs.
-      // Tabelas e campos do banco ficam na faixa "outros", na ordem do catálogo (FLDORD).
-      // isIncomplete: true → ao digitar (ex. Cod) o provider é chamado de novo.
-      const base = [
-        ...customItems,
-        ...sysVarItems,
-        ...globalItems,
-        ...fnItems,
-        ...cmdItems,
-        ...(defItem ? [defItem] : []),
-        ...catalogColItems,
-        ...catalogTableItems,
-        ...qfItems,
-      ];
-
-      if (
-        fnItems.length ||
-        cmdItems.length ||
-        defItem ||
-        customItems.length ||
-        sysVarItems.length ||
-        globalItems.length ||
-        catalogTableItems.length ||
-        catalogColItems.length ||
-        qfItems.length
-      ) {
-        return new vscode.CompletionList(base, true);
-      }
-
-      return new vscode.CompletionList([], true);
     },
   };
+}
+
+async function provideLspCompletion(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+  trace: PerfTrace
+): Promise<vscode.CompletionItem[] | vscode.CompletionList> {
+  const filePath = documentDiskPath(document.uri);
+  const line = document.lineAt(position);
+  const linePrefix = line.text.slice(0, position.character);
+  const ident = trailingIdent(linePrefix);
+  // Antes de aspas, índice do workspace e quick fixes: senão o catálogo não aparece.
+  if (isTableColumnCompletionContext(linePrefix)) {
+    const columns = buildCatalogColumnItems(filePath, position, linePrefix);
+    if (columns.length) return new vscode.CompletionList(columns, false);
+  }
+  if (looksLikeTablePrefix(ident)) {
+    const identRange = new vscode.Range(
+      position.line,
+      Math.max(0, position.character - ident.length),
+      position.line,
+      position.character
+    );
+    const tables = buildCatalogTableItems(ident, identRange);
+    if (tables.length) return new vscode.CompletionList(tables, false);
+  }
+  const quotes = (linePrefix.match(/"/g) || []).length;
+  const rawWordRange =
+    document.getWordRangeAtPosition(position, /[A-Za-z_][\w]*/) ??
+    new vscode.Range(position, position);
+  const rawWord = document.getText(rawWordRange);
+  // Dentro de literal / token gigante: zera a palavra do filtro senão o suggest
+  // exige casar AAA… e esconde QFs (exceto SEM001 que repetia o token no filter).
+  const inStringOrLong = quotes % 2 === 1 || rawWord.length > 48;
+  const wordRange = inStringOrLong
+    ? new vscode.Range(position, position)
+    : rawWordRange;
+  const word = inStringOrLong ? "" : rawWord;
+
+  const memberSuggestions = completeMembersAt(document.getText(), linePrefix);
+  if (memberSuggestions.length) {
+    const memberItems = memberSuggestions.map((m) => {
+      const kind =
+        m.kind === "method"
+          ? vscode.CompletionItemKind.Method
+          : vscode.CompletionItemKind.Property;
+      const item = new vscode.CompletionItem(m.name, kind);
+      item.label = {
+        label: m.name,
+        description: completionOriginLabel("membro"),
+      };
+      item.detail = completionDetailLine("membro", m.detail);
+      item.documentation = new vscode.MarkdownString(m.documentation);
+      item.sortText = m.name.toLowerCase();
+      if (m.isSnippet) {
+        item.insertText = new vscode.SnippetString(m.insertText);
+      } else {
+        item.insertText = m.insertText;
+      }
+      return item;
+    });
+    return new vscode.CompletionList(memberItems, false);
+  }
+
+  trace.step("membros");
+  const qfItems = quickFixCompletions(document, line, word, wordRange, position);
+  const lineHasAlerts = qfItems.length > 0;
+  trace.step("quickfix");
+
+  let system = "";
+  try {
+    const scoped = await getWorkspaceSymbolIndex().getScopedEligible(document);
+    system = scoped.resolution.system ?? "";
+  } catch {
+    system = "";
+  }
+  trace.step("escopo");
+  const fnItems = functionCompletionItems(word, wordRange, system);
+  const cmdItems = commandCompletionItems(word, wordRange);
+  const sysVarItems = systemVarCompletionItems(word, wordRange);
+  const globalItems = reportGlobalCompletionItems(
+    word,
+    wordRange,
+    filePath
+  );
+  trace.step("funcoes");
+
+  let customItems: vscode.CompletionItem[] = [];
+  try {
+    const idx = getWorkspaceSymbolIndex();
+    const scoped = await idx.getScopedEligible(document);
+    const merged = mergeEligible(scoped.local, scoped.peers, document.uri.toString());
+    const localSym = await idx.getSymbols(document.uri, document.getText());
+    const vars: { name: string; tipo: string; scope: string; fileName?: string }[] =
+      localSym.variables.map((v) => ({
+        name: v.name,
+        tipo: v.tipo,
+        scope: v.scope,
+      }));
+
+    for (const peerPath of scoped.resolution.peers) {
+      const same =
+        peerPath.replace(/\\/g, "/").toLowerCase() ===
+        filePath.replace(/\\/g, "/").toLowerCase();
+      if (same) continue;
+      const uri = vscode.Uri.file(peerPath);
+      const sym = await idx.getSymbols(uri);
+      const base = peerPath.replace(/\\/g, "/").split("/").pop() ?? peerPath;
+      for (const v of sym.variables) {
+        if (v.scope !== "file") continue;
+        vars.push({ name: v.name, tipo: v.tipo, scope: "file", fileName: base });
+      }
+    }
+
+    customItems = customSymbolCompletions(
+      word,
+      wordRange,
+      merged,
+      vars,
+      document.uri.toString()
+    );
+  } catch {
+    customItems = [];
+  }
+  trace.step("simbolos");
+
+  // QFs no fim da lista (não escondem vars/funções/comandos do prefixo).
+  for (const q of qfItems) {
+    const label = typeof q.label === "string" ? q.label : q.label.label;
+    q.sortText = completionSortText("qf", label, word || "_");
+  }
+
+  if (quotes % 2 === 1) {
+    const mask = maskCompletion(line, position);
+    if (mask) {
+      return new vscode.CompletionList([...mask.items, ...qfItems], false);
+    }
+    // Dialeto SQL Senior 2 dentro de literais (DefinirComando / .SQL / SELECT…)
+    if (isSqlStringCompletionContext(line.text, linePrefix)) {
+      const sqlPrefix = (linePrefix.match(/[A-Za-z_][A-Za-z0-9_]*$/) || [""])[0];
+      const sqlRange =
+        sqlPrefix.length > 0
+          ? new vscode.Range(
+              position.line,
+              position.character - sqlPrefix.length,
+              position.line,
+              position.character
+            )
+          : new vscode.Range(position, position);
+      const sqlItems = filterSenior2Completions(sqlPrefix).map((f, i) => {
+        const item = new vscode.CompletionItem(
+          f.name,
+          f.category === "aggregate"
+            ? vscode.CompletionItemKind.Keyword
+            : vscode.CompletionItemKind.Function
+        );
+        item.detail = f.detail;
+        if (f.documentation) {
+          item.documentation = new vscode.MarkdownString(f.documentation);
+        }
+        item.insertText = new vscode.SnippetString(f.insertText);
+        item.range = sqlRange;
+        item.sortText = `0${String(i).padStart(3, "0")}_${f.name}`;
+        item.filterText = `${sqlPrefix} ${f.name} Senior2 SQL`;
+        return item;
+      });
+      // Operador de concatenação Senior 2
+      if (!sqlPrefix || "||".startsWith(sqlPrefix)) {
+        const concat = new vscode.CompletionItem(
+          "||",
+          vscode.CompletionItemKind.Operator
+        );
+        concat.detail = "SQL Senior 2 · concatenação de texto";
+        concat.insertText = "||";
+        concat.range = sqlRange;
+        concat.sortText = "0999_concat";
+        concat.filterText = `${sqlPrefix} || concat Senior2`;
+        sqlItems.push(concat);
+      }
+      return new vscode.CompletionList([...sqlItems, ...qfItems], false);
+    }
+    // Só QFs da linha — incomplete:false evita o cliente refiltrar e sumir o SYN009.
+    if (lineHasAlerts) {
+      return new vscode.CompletionList(qfItems, false);
+    }
+    return [];
+  }
+
+  if (/^Arredond/i.test(word)) {
+    const rewrite = rewriteItems(document, line, word, "arredondar");
+    return new vscode.CompletionList(
+      [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
+      false
+    );
+  }
+
+  if (/^Truncar/i.test(word)) {
+    const rewrite = rewriteItems(document, line, word, "truncar");
+    return new vscode.CompletionList(
+      [...customItems, ...fnItems, ...cmdItems, ...rewrite.items, ...qfItems],
+      false
+    );
+  }
+
+  // Após "E012FAM." — somente campos dessa tabela (sem builtins/funções/variáveis).
+  if (isTableColumnCompletionContext(linePrefix)) {
+    const catalogColRaw = localColumnCompletions(filePath, linePrefix);
+    const catalogColItems = catalogColRaw.map((t, i) => {
+      const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
+      item.insertText = t.insertText;
+      applyCatalogColumnPresentation(item, t, i);
+      const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
+      const suf = m?.[1]?.length ?? 0;
+      item.range = new vscode.Range(
+        position.line,
+        position.character - suf,
+        position.line,
+        position.character
+      );
+      return item;
+    });
+    return new vscode.CompletionList(catalogColItems, false);
+  }
+
+  const defItem = definirCompletion(document, position, word, wordRange);
+  trace.step("definir");
+  const catalogColRaw = localColumnCompletions(filePath, linePrefix);
+  const catalogColItems = catalogColRaw.map((t, i) => {
+    const item = new vscode.CompletionItem(t.label, columnItemKind(t.type, t.enumeration));
+    item.insertText = t.insertText;
+    applyCatalogColumnPresentation(item, t, i);
+    if (/\.\s*[A-Za-z0-9_]*$/.test(linePrefix)) {
+      const m = linePrefix.match(/([A-Za-z0-9_]*)$/);
+      const suf = m?.[1]?.length ?? 0;
+      item.range = new vscode.Range(
+        position.line,
+        position.character - suf,
+        position.line,
+        position.character
+      );
+    } else {
+      item.range = wordRange;
+    }
+    return item;
+  });
+  const catalogTableItems =
+    word.length >= 1 && /^[A-Za-z_]/.test(word)
+      ? localTableCompletions(word).map((t, i) => {
+          const item = new vscode.CompletionItem(t.label, vscode.CompletionItemKind.Struct);
+          item.label = {
+            label: t.label,
+            description: completionOriginLabel("catalogo"),
+          };
+          item.detail = completionDetailLine("catalogo", t.detail);
+          if (t.documentation) {
+            item.documentation = t.documentation;
+          }
+          item.range = wordRange;
+          item.sortText = catalogMemberSortText("table", i);
+          return item;
+        })
+      : [];
+
+  // Ordem via sortText: match exato → vars → funções → comandos → outros → QFs.
+  // Tabelas e campos do banco ficam na faixa "outros", na ordem do catálogo (FLDORD).
+  // isIncomplete: true → ao digitar (ex. Cod) o provider é chamado de novo.
+  const base = [
+    ...customItems,
+    ...sysVarItems,
+    ...globalItems,
+    ...fnItems,
+    ...cmdItems,
+    ...(defItem ? [defItem] : []),
+    ...catalogColItems,
+    ...catalogTableItems,
+    ...qfItems,
+  ];
+
+  if (
+    fnItems.length ||
+    cmdItems.length ||
+    defItem ||
+    customItems.length ||
+    sysVarItems.length ||
+    globalItems.length ||
+    catalogTableItems.length ||
+    catalogColItems.length ||
+    qfItems.length
+  ) {
+    return new vscode.CompletionList(base, true);
+  }
+
+  return new vscode.CompletionList([], true);
 }

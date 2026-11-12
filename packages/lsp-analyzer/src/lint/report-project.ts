@@ -106,10 +106,13 @@ export function findReportRoot(
     const idx = dir.lastIndexOf("/");
     dir = idx >= 0 ? dir.slice(0, idx) : dir;
   }
+  // Acima de `//servidor/compartilhamento` o Windows consulta o servidor (~360 ms por teste).
+  const uncShareRoot = /^\/\/[^/]+\/[^/]+/.exec(dir)?.[0];
   for (let i = 0; i < 12; i++) {
     if (isReportProjectLayout(dir, exists)) {
       return dir;
     }
+    if (dir === uncShareRoot) break;
     const parent = dir.lastIndexOf("/");
     if (parent <= 0) break;
     dir = dir.slice(0, parent);

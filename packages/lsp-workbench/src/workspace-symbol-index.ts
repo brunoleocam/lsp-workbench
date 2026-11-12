@@ -15,12 +15,15 @@ import {
 import { eligibleFromSymbols, type ScopedFunction } from "./symbol-scope";
 import { SENIOR_LSP_LANGUAGE_ID } from "./language";
 import { loadReportScopeOverlay } from "./domain/report-project-loader";
+import { logPerf } from "./adapters/vscode/perf-log";
+import { documentDiskPath } from "./domain/binary-rule-paths";
 
 type CacheEntry = { symbols: FileSymbols; mtime?: number };
 
 export class WorkspaceSymbolIndex {
   private cache = new Map<string, CacheEntry>();
   private candidates: string[] = [];
+  private scanned = false;
   private scanning: Thenable<void> | undefined;
 
   readSettings(): ScopeSettings {
@@ -38,14 +41,18 @@ export class WorkspaceSymbolIndex {
 
   async ensureCandidates(): Promise<string[]> {
     if (this.scanning) await this.scanning;
-    if (this.candidates.length) return this.candidates;
+    if (this.scanned) return this.candidates;
 
     this.scanning = (async () => {
       const found: string[] = [];
       const folders = vscode.workspace.workspaceFolders ?? [];
       for (const folder of folders) {
         const pattern = new vscode.RelativePattern(folder, "**/*.{lsp,lspt}");
+        const started = performance.now();
         const uris = await vscode.workspace.findFiles(pattern, "**/node_modules/**", 2000);
+        logPerf(
+          `busca de .lsp em ${folder.uri.fsPath}: ${uris.length} arquivo(s) em ${Math.round(performance.now() - started)}ms`
+        );
         for (const u of uris) found.push(u.fsPath);
       }
       // .txt associados à linguagem: documentos abertos
@@ -56,6 +63,7 @@ export class WorkspaceSymbolIndex {
         }
       }
       this.candidates = found;
+      this.scanned = true;
     })();
 
     await this.scanning;
@@ -65,6 +73,7 @@ export class WorkspaceSymbolIndex {
 
   refreshCandidates(): void {
     this.candidates = [];
+    this.scanned = false;
   }
 
   async getSymbols(uri: vscode.Uri, source?: string): Promise<FileSymbols> {
@@ -84,16 +93,24 @@ export class WorkspaceSymbolIndex {
     if (cached) return cached.symbols;
 
     // fs.readFile — NÃO openTextDocument (dispara onDidOpen → refresh em cascata).
+    const started = performance.now();
     try {
       const bytes = await vscode.workspace.fs.readFile(uri);
       const text = Buffer.from(bytes).toString("utf8");
       const symbols = parseFileSymbols(text);
       this.cache.set(key, { symbols });
+      this.logSlowRead(uri, started, "ok");
       return symbols;
     } catch {
+      this.logSlowRead(uri, started, "falhou");
       const empty: FileSymbols = { functions: [], variables: [] };
       return empty;
     }
+  }
+
+  private logSlowRead(uri: vscode.Uri, started: number, result: string): void {
+    const ms = Math.round(performance.now() - started);
+    if (ms >= 100) logPerf(`leitura de ${uri.fsPath} (${result}) em ${ms}ms`);
   }
 
   workspaceRootFor(fileAbs: string): string {
@@ -113,7 +130,7 @@ export class WorkspaceSymbolIndex {
     resolution: ReturnType<typeof resolvePeerFiles>;
   }> {
     const settings = this.readSettings();
-    const current = document.uri.fsPath;
+    const current = documentDiskPath(document.uri);
     const root = this.workspaceRootFor(current);
     let candidates = await this.ensureCandidates();
     if (!candidates.includes(current) && isLspSourcePath(current)) {
@@ -179,7 +196,7 @@ export class WorkspaceSymbolIndex {
   async peerFileScopeGlobalsFor(document: vscode.TextDocument): Promise<string[]> {
     const { resolution } = await this.getScopedEligible(document);
     if (resolution.mode === "singleFile") return [];
-    const current = document.uri.fsPath.replace(/\\/g, "/").toLowerCase();
+    const current = documentDiskPath(document.uri).replace(/\\/g, "/").toLowerCase();
     const names = new Set<string>();
     for (const peerPath of resolution.peers) {
       if (peerPath.replace(/\\/g, "/").toLowerCase() === current) continue;
