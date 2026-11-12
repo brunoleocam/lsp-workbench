@@ -6,7 +6,11 @@ import {
   encodeSeniorBinaryRule,
   isSeniorBinaryRule,
 } from "../../domain/senior-binary-rule";
-import { isEditedCopyPath, resolveBinaryRuleFile } from "../../domain/binary-rule-paths";
+import {
+  binaryRuleDiskPath,
+  isEditedCopyPath,
+  resolveBinaryRuleFile,
+} from "../../domain/binary-rule-paths";
 
 const LSP_EXT = /\.lsp$/i;
 const detectCache = new Map<string, { mtimeMs: number; size: number; binary: boolean }>();
@@ -33,7 +37,9 @@ export function isBinaryRuleFileUri(uri: vscode.Uri): boolean {
 }
 
 function resolve(uri: vscode.Uri) {
-  return resolveBinaryRuleFile(uri.fsPath, (p) => fs.existsSync(p));
+  return resolveBinaryRuleFile(binaryRuleDiskPath(uri.authority, uri.fsPath), (p) =>
+    fs.existsSync(p)
+  );
 }
 
 function readBytes(uri: vscode.Uri, file: string): Buffer {

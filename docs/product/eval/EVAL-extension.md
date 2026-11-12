@@ -49,7 +49,7 @@ O suite `smoke fixtures (MANIFEST)` falha se algum `expectIds` não aparecer ou 
    - Editar e salvar cria `SARG462.editado.LSP` na mesma pasta; o original continua com o mesmo tamanho e data (AC-071)
    - Digitar `→` e salvar mostra erro com o caractere e a linha e não grava; `€` grava (AC-072)
    - Fechar e reabrir `SARG462.LSP` mostra o texto editado e o aviso "Abrindo a cópia editada SARG462.editado.LSP; o original não foi alterado" (AC-074)
-   - Com `lsp.binary.autoOpen` desligado, o clique mostra o arquivo como binário; botão direito → "LSP: Abrir regra .LSP binária como texto" abre a regra (AC-070)
+   - Com `lsp.binary.autoOpen` desligado, o clique mostra o arquivo como binário; botão direito → "Abrir regra .LSP binária" abre a regra (AC-070)
 8. Gerar `.LSP` a partir de texto (PDR-012, etapa 8), num `.lsp` texto salvo (ex.: `minha-regra.lsp`):
    - O botão de pacote no título do editor (ou a paleta) pede o título, com o nome do arquivo como padrão; título vazio, com mais de 70 caracteres ou com `→` é recusado no campo (AC-083)
    - Com erro de compilação, aparece o modal "A regra tem N erro(s)…"; Cancelar não grava nada (AC-082)

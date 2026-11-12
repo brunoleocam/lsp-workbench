@@ -2,6 +2,16 @@
 export const BINARY_RULE_SCHEME = "lsp-binario";
 
 const LSP_EXT = /\.lsp$/i;
+
+/**
+ * Caminho em disco de uma URI `lsp-binario`. Fora do esquema `file`, o `fsPath` do VS Code
+ * descarta o servidor de um caminho UNC (`\\10.0.0.9\...` vira `\...`); aqui ele volta.
+ */
+export function binaryRuleDiskPath(authority: string, fsPath: string): string {
+  if (!authority) return fsPath;
+  const sep = fsPath.startsWith("/") ? "/" : "\\";
+  return `${sep}${sep}${authority}${fsPath}`;
+}
 const EDITED_SUFFIX = /\.editado(\.lsp)$/i;
 
 export function isEditedCopyPath(fsPath: string): boolean {
