@@ -1,5 +1,17 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.3.2 — 2026-11-12
+
+### Corrigido
+
+- Ctrl+Espaço e revalidação lentos (dezenas de segundos) em regra de compartilhamento de rede: a busca do projeto de relatório subia até a raiz do servidor (`\\servidor\relatorio.json`), ~360 ms por teste, várias vezes por tecla. Agora para na raiz do compartilhamento
+- A busca de arquivos `.lsp` do workspace não se repete a cada chamada quando não encontra nenhum
+- Regra `.LSP` binária aberta da rede: completion, escopo de símbolos e diagnóstico usam o caminho com o servidor (antes recebiam `\pasta\...` sem `\\servidor`)
+
+### Adicionado
+
+- Canal de saída "LSP Workbench: desempenho": registra completion acima de 300 ms com o tempo de cada etapa, a busca de `.lsp` do workspace e leituras de arquivo acima de 100 ms
+
 ## 0.3.1 — 2026-11-12
 
 ### Alterado

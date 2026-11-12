@@ -40,6 +40,7 @@ import { effectiveFunctionCatalog } from "./effective-function-catalog";
 import { loadReportAnalyzeOpts } from "./domain/report-project-loader";
 import { registerBinaryRules } from "./adapters/vscode/binary-rule-open";
 import { isBinaryRuleFileUri } from "./adapters/vscode/binary-rule-fs";
+import { documentDiskPath } from "./domain/binary-rule-paths";
 import { registerGenerateSeniorRule } from "./adapters/vscode/generate-senior-rule";
 
 const collection = vscode.languages.createDiagnosticCollection("lsp-workbench");
@@ -139,15 +140,16 @@ export function activate(context: vscode.ExtensionContext): void {
     const globalIgnore = cfg.get<string[]>("diagnostics.ignoreIds", []) ?? [];
     const idx = getWorkspaceSymbolIndex();
     const settings = idx.readSettings();
-    const root = idx.workspaceRootFor(doc.uri.fsPath);
-    const matched = findMatchingContext(doc.uri.fsPath, root, settings.contexts);
+    const docPath = documentDiskPath(doc.uri);
+    const root = idx.workspaceRootFor(docPath);
+    const matched = findMatchingContext(docPath, root, settings.contexts);
     const ignore = mergeIgnoreIds(globalIgnore, matched?.diagnostics?.ignoreIds);
     const lines = doc.getText().replace(/\r\n/g, "\n").split("\n");
     const localCatalog = getLocalCatalog();
     const catalogTableNames = localCatalog?.tables.map((t) => t.name);
     const catalogColumnTypes = localCatalog ? columnTypesOf(localCatalog) : undefined;
     const catalogTableColumns = localCatalog ? tableColumnsOf(localCatalog) : undefined;
-    const reportOpts = loadReportAnalyzeOpts(doc.uri.fsPath);
+    const reportOpts = loadReportAnalyzeOpts(docPath);
 
     // 1ª passada síncrona — RUL/FUN/SYN aparecem mesmo se o índice demorar.
     try {

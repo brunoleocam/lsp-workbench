@@ -40,6 +40,20 @@ describe("report-project paths", () => {
     assert.ok(!isReportProjectLayout("C:/ws/orphan", exists));
   });
 
+  it("findReportRoot não sobe além da raiz do compartilhamento UNC", () => {
+    const checked: string[] = [];
+    const exists = (p: string) => {
+      checked.push(p.replace(/\\/g, "/"));
+      return false;
+    };
+    assert.equal(findReportRoot("\\\\srv\\Arquivos\\Ti\\regra.lsp", exists), undefined);
+    assert.ok(checked.some((p) => p.startsWith("//srv/Arquivos/")));
+    assert.deepEqual(
+      checked.filter((p) => !p.startsWith("//srv/Arquivos/")),
+      []
+    );
+  });
+
   it("parseRelatorioMeta lê contextoExtra", () => {
     const meta = parseRelatorioMeta(
       JSON.stringify({

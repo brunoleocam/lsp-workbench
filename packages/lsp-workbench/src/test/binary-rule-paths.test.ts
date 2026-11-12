@@ -5,6 +5,7 @@ import { join } from "node:path";
 import {
   BINARY_RULE_SCHEME,
   binaryRuleDiskPath,
+  documentDiskPath,
   editedCopyNotice,
   editedCopyPath,
   isEditedCopyPath,
@@ -108,6 +109,19 @@ describe("binaryRuleDiskPath — compartilhamento de rede", () => {
 
   it("mantém o caminho local quando não há servidor", () => {
     assert.equal(binaryRuleDiskPath("", "c:\\r\\SARG008.LSP"), "c:\\r\\SARG008.LSP");
+  });
+});
+
+describe("documentDiskPath", () => {
+  it("lsp-binario em rede volta com o servidor; file: fica como o VS Code entrega", () => {
+    assert.equal(
+      documentDiskPath({ scheme: BINARY_RULE_SCHEME, authority: "srv", fsPath: "\\Arq\\A.LSP" }),
+      "\\\\srv\\Arq\\A.LSP"
+    );
+    assert.equal(
+      documentDiskPath({ scheme: "file", authority: "srv", fsPath: "\\\\srv\\Arq\\a.lsp" }),
+      "\\\\srv\\Arq\\a.lsp"
+    );
   });
 });
 
