@@ -1,5 +1,11 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.3.3 — 2026-11-12
+
+### Corrigido
+
+- Completion de tabelas não acompanhava a digitação: com `E07` + Ctrl+Espaço vinham só as 40 primeiras tabelas, e ao continuar para `E075` a lista não era refeita. Agora é recalculada a cada tecla
+
 ## 0.3.2 — 2026-11-12
 
 ### Corrigido
