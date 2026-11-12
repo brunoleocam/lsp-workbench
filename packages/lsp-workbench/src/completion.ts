@@ -1378,7 +1378,8 @@ async function provideLspCompletion(
       position.character
     );
     const tables = buildCatalogTableItems(ident, identRange);
-    if (tables.length) return new vscode.CompletionList(tables, false);
+    // Lista limitada às primeiras tabelas do prefixo: incompleta para refazer a cada tecla.
+    if (tables.length) return new vscode.CompletionList(tables, true);
   }
   const quotes = (linePrefix.match(/"/g) || []).length;
   const rawWordRange =
