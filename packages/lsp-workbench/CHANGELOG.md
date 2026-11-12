@@ -1,5 +1,15 @@
 # Changelog — LSP Workbench (extensão)
 
+## 0.3.1 — 2026-11-12
+
+### Alterado
+
+- O comando "LSP: Abrir regra .LSP binária como texto" passa a se chamar "Abrir regra .LSP binária"
+
+### Corrigido
+
+- Regra `.LSP` binária em compartilhamento de rede (`\\servidor\pasta\X.LSP`) não abria: o caminho perdia o servidor e o arquivo era dado como inexistente. Falha ao abrir a regra agora mostra a mensagem de erro em vez de não fazer nada
+
 ## 0.3.0 — 2026-11-09
 
 ### Alterado

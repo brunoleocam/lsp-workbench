@@ -25,8 +25,14 @@ async function openBinaryRule(
   }
   const { readsEditedCopy, writePath } = resolveBinaryRuleFile(fsPath, (p) => fs.existsSync(p));
   const target = vscode.Uri.file(fsPath).with({ scheme: BINARY_RULE_SCHEME });
-  const doc = await vscode.workspace.openTextDocument(target);
-  await vscode.window.showTextDocument(doc, options);
+  try {
+    const doc = await vscode.workspace.openTextDocument(target);
+    await vscode.window.showTextDocument(doc, options);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    void vscode.window.showErrorMessage(`LSP: não abriu ${path.basename(fsPath)}. ${message}`);
+    return false;
+  }
   if (readsEditedCopy) void vscode.window.showInformationMessage(editedCopyNotice(writePath));
   return true;
 }

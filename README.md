@@ -50,17 +50,21 @@ Guia completo na extensão: [`packages/lsp-workbench/README.md`](packages/lsp-wo
 
 ## O que a extensão faz
 
-Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`** (e `.txt` se você associar — ver abaixo)
+Language id: **`senior-lsp`** · arquivos **`.lsp`**, **`.lspt`**, **`.lsptxt`** (e `.txt` se você associar — ver abaixo)
 
 - Coloração, snippets e semantic tokens
 - Autocompletar (funções, variáveis, membros de `Cursor` / `Lista`)
 - Modo Ghost opcional: sugestão inline na linguagem LSP (**LSP Workbench: Ativar Modo Ghost** / **Desativar Modo Ghost**)
 - **LSP Workbench: Configurar este Workspace**: copia rules, skills e commands para `.cursor` e `.github` e associa `*.lsp` / `*.lspt`
 - Hover (função e parâmetro atual), signature help, Go to Definition, Outline
-- Diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.)
+- Diagnósticos e quick fixes (Ctrl+Espaço / Ctrl+.), com checagens de tipo, chamada de função e cursor no texto do compilador Senior
+- **F9** compila o documento (erros/avisos na status bar); `lsp.compileOnSave` revalida ao salvar
 - Formatação e refactors
 - Contextos multiarquivo e modo arquivo único
-- Catálogo local de tabelas/campos
+- Catálogo local de tabelas/campos e **Dicionário de dados** (Ctrl+Alt+D insere `TABELA.CAMPO`)
+- Regra `.LSP` binária do Senior abre como texto; salvar grava `X.editado.LSP` sem tocar no original (`lsp.binary.autoOpen` ou **Abrir regra .LSP binária**)
+- **LSP: Gerar .LSP para o Senior**: converte o `.lsp` texto em regra binária nova (`NOME.senior.LSP`)
+- Catálogo de funções extra (`lsp.functions.path`) para assinaturas de funções próprias
 - Projeto de relatório (Gerador Senior)
 
 ---
@@ -257,6 +261,9 @@ O dicionário da empresa **não** vem no Marketplace.
 | `lsp.format.indentSize` | `2` | 2 ou 4 espaços |
 | `lsp.format.embeddedSql.enabled` | `false` | Formatar SQL em `ExecSql` / `.SQL` |
 | `lsp.diagnostics.ignoreIds` | `[]` | Ex.: `["SYN009"]` |
+| `lsp.compileOnSave` | `true` | Revalida ao salvar |
+| `lsp.binary.autoOpen` | `true` | Abre `.LSP` binária como texto ao clicar no Explorer |
+| `lsp.functions.path` | `""` | Catálogo de funções extra (JSON) |
 | `lsp.server.enabled` | `false` | LS externo (avançado; exige build — ver docs de desenvolvedor) |
 
 ---

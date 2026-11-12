@@ -2,7 +2,7 @@
   "name": "lsp-workbench",
   "displayName": "LSP Workbench",
   "description": "Linguagem Senior de Programação (LSP): syntax highlighting, snippets, autocomplete, hover, formatação e validação para Senior Sistemas / Sapiens / HCM.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "brunoleocam",
   "icon": "icon.png",
   "license": "MIT",
@@ -298,7 +298,7 @@
         "lsp.binary.autoOpen": {
           "type": "boolean",
           "default": true,
-          "description": "Ao abrir pelo Explorer uma regra .LSP binária do Senior, reabre como texto decodificado. Salvar grava a cópia X.editado.LSP ao lado; o original nunca é alterado. Desligado: use o comando \"LSP: Abrir regra .LSP binária como texto\" (PDR-012, REQ-070)."
+          "description": "Ao abrir pelo Explorer uma regra .LSP binária do Senior, reabre como texto decodificado. Salvar grava a cópia X.editado.LSP ao lado; o original nunca é alterado. Desligado: use o comando \"Abrir regra .LSP binária\" (PDR-012, REQ-070)."
         },
         "lsp.server.enabled": {
           "type": "boolean",
@@ -320,7 +320,7 @@
     "commands": [
       {
         "command": "lsp.openBinaryRule",
-        "title": "LSP: Abrir regra .LSP binária como texto"
+        "title": "Abrir regra .LSP binária"
       },
       {
         "command": "lsp.generateSeniorRule",

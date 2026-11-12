@@ -18,12 +18,17 @@ Abra um arquivo `.lsp` ou `.lspt` e a extensão ativa automaticamente a linguage
 | **Hover** | Documentação ao passar o mouse em funções |
 | **Ajuda de parâmetros** | Signature help ao digitar argumentos entre `(` `)` |
 | **Diagnósticos** | Validação sintática e de regras (erros/avisos na edição) |
+| **Compilar (F9)** | Revalida o arquivo, mostra erros/avisos e revalida ao salvar |
 | **Quick fixes** | Correções sugeridas (lâmpada / Ctrl+.) |
 | **Snippets** | Atalhos para `Definir`, blocos `{ }`, SQL API, helpers |
 | **Formatador** | Indentação e layout (opcional: SQL embutido) |
 | **Outline** | Visão de funções e símbolos no arquivo |
 | **Ir para definição** | Navegação para funções do projeto |
 | **Catálogo de banco** | Autocomplete de tabelas/campos (com catálogo local) |
+| **Dicionário de dados** | Busca tabela e campo e insere `TABELA.CAMPO` (Ctrl+Alt+D) |
+| **Regra `.LSP` binária** | Abre a regra binária do Senior como texto; salvar grava `X.editado.LSP` |
+| **Gerar `.LSP` para o Senior** | Converte o `.lsp` texto em regra binária nova para importar no Senior |
+| **Catálogo de funções extra** | Assinaturas de funções próprias via `lsp.functions.path` |
 | **Contextos / relatórios** | Escopo de símbolos e comandos de projeto de relatório |
 
 ---
@@ -136,6 +141,13 @@ Fluxo típico: erro → alerta → Quick Fix → código corrigido:
 - **Quick Fix** (Ctrl+.) aplica correções quando disponíveis.
 - Para ignorar IDs específicos: setting `lsp.diagnostics.ignoreIds`.
 - `Inicio`/`Fim` e `Retorna(valor)` são válidos (palavras reservadas do compilador Senior); SYN004/ANL004 foram revogados. `Retorna;` sem parênteses continua erro (RUL007) e `FimSe`/`FimEnquanto` dão SYN016.
+- Checagens com o texto do compilador Senior: tipos Alfa × Numero (`TYP*`), chamadas de função — não declarada, nº e tipo de argumentos, parâmetro `End` (`FUN010`..`FUN014`), cursores (`SEM005`..`SEM007`, `SQL012`..`SQL015`) e, com catálogo de banco, campo ou coluna inexistente (`DEM002`, `DEM003`).
+
+### Compilar (F9)
+
+- **F9** (`LSP Workbench: Compilar Documento`) revalida o arquivo e mostra a contagem de erros e avisos.
+- `lsp.compileOnSave` (padrão `true`) revalida ao salvar.
+- A status bar mostra erros e avisos do arquivo ativo; clique para abrir **Problems**.
 
 ---
 
@@ -172,6 +184,27 @@ Sem catálogo local, a extensão funciona normalmente — só não sugere tabela
 Passo a passo (gerar JSON + `lsp.catalog.path`): [Catálogo de tabelas](#5-catálogo-de-tabelas).
 
 O dicionário da sua empresa **não** vem no pacote do Marketplace.
+
+### Dicionário de dados
+
+**Ctrl+Alt+D** (ou o botão no título do editor): escolha a tabela por nome ou descrição (sem acento nem caixa), depois o campo (tipo, tamanho, chave, descrição). A extensão insere `TABELA.CAMPO` no cursor. Se a palavra sob o cursor for uma tabela, ela já vem como filtro. Requer o catálogo de banco.
+
+---
+
+### Regra `.LSP` binária do Senior
+
+- Clicar numa regra `.LSP` binária no Explorer abre o texto decodificado (esquema `lsp-binario`), com diagnósticos e completion como um `.lsp` texto.
+- `lsp.binary.autoOpen` (padrão `true`) desliga a abertura automática. Para abrir manualmente: **Abrir regra .LSP binária** (paleta ou menu de contexto do Explorer).
+- **Salvar** grava a cópia `X.editado.LSP` ao lado; o original nunca é alterado. Reabrir o original com cópia presente abre a cópia e avisa.
+- Caractere fora do Windows-1252 bloqueia o salvamento, citando o caractere e a linha.
+
+### Gerar `.LSP` para o Senior
+
+Num `.lsp` texto: **LSP: Gerar .LSP para o Senior** (botão no título do editor ou paleta). Pede o título, avisa se a regra tem erros e grava `NOME.senior.LSP` ao lado, no formato do Senior (identificador e chave novos, histórico vazio), conferindo pela releitura.
+
+### Catálogo de funções extra
+
+Funções próprias (ex.: da sua empresa) entram por `lsp.functions.path` ou por uma extensão que declare `"lspWorkbench": { "functionsCatalog": "…" }`. A assinatura do extra vence a nossa; vale para completion, hover, ajuda de parâmetros e diagnósticos. Contrato de exemplo: [`functions.example.json`](https://github.com/brunoleocam/lsp-workbench/blob/main/docs/product/schema/functions.example.json).
 
 ---
 
@@ -375,6 +408,9 @@ Docs: [docs/gerador-relatorios](https://github.com/brunoleocam/lsp-workbench/tre
 | `lsp.contexts` | `[]` | Contextos nomeados |
 | `lsp.fallback.defaultSystem` | `""` | Sistema na status bar |
 | `lsp.catalog.path` | `""` | Path do catálogo JSON |
+| `lsp.functions.path` | `""` | Catálogo de funções extra (JSON) |
+| `lsp.compileOnSave` | `true` | Revalida ao salvar |
+| `lsp.binary.autoOpen` | `true` | Abre `.LSP` binária como texto ao clicar no Explorer |
 | `lsp.server.enabled` | `false` | Language Server externo (experimental) |
 
 ### Language Server (opcional)
@@ -388,6 +424,8 @@ Default: diagnósticos **in-process** (`lsp.server.enabled` = `false`). Para o L
 | Ação | Atalho típico (Windows) |
 |------|-------------------------|
 | Completar | Ctrl+Espaço |
+| Compilar documento | F9 |
+| Dicionário de dados | Ctrl+Alt+D |
 | Modo Ghost | Ctrl+Shift+P → `Modo Ghost` |
 | Configurar workspace | Ctrl+Shift+P → `Configurar este Workspace` |
 | Quick Fix | Ctrl+. |
@@ -402,7 +440,7 @@ Default: diagnósticos **in-process** (`lsp.server.enabled` = `false`). Para o L
 ## Requisitos
 
 - VS Code **1.85+** (ou Cursor compatível)
-- Arquivos `.lsp` / `.lspt`
+- Arquivos `.lsp` / `.lspt` / `.lsptxt`
 
 ---
 
@@ -416,6 +454,7 @@ Default: diagnósticos **in-process** (`lsp.server.enabled` = `false`). Para o L
 | Completion mistura outros módulos | Configure `lsp.contexts` / escopo (passo 3) |
 | Formatação não roda | `lsp.format.enabled` = true |
 | Muitos avisos indesejados | `lsp.diagnostics.ignoreIds` ou ignore por contexto |
+| `.LSP` binária abre como "arquivo binário" | `lsp.binary.autoOpen` = true, ou use **Abrir regra .LSP binária** |
 
 Issues: [github.com/brunoleocam/lsp-workbench/issues](https://github.com/brunoleocam/lsp-workbench/issues)
 

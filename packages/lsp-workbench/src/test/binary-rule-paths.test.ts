@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   BINARY_RULE_SCHEME,
+  binaryRuleDiskPath,
   editedCopyNotice,
   editedCopyPath,
   isEditedCopyPath,
@@ -96,6 +97,20 @@ describe("shouldOpenAsBinaryRule (AC-070)", () => {
   });
 });
 
+describe("binaryRuleDiskPath — compartilhamento de rede", () => {
+  it("devolve o caminho UNC quando a URI lsp-binario tem servidor", () => {
+    assert.equal(
+      binaryRuleDiskPath("10.0.0.9", "\\Arquivos\\Ti\\8 - Diarios\\SARG664.LSP"),
+      "\\\\10.0.0.9\\Arquivos\\Ti\\8 - Diarios\\SARG664.LSP"
+    );
+    assert.equal(binaryRuleDiskPath("srv", "/Arquivos/SARG664.LSP"), "//srv/Arquivos/SARG664.LSP");
+  });
+
+  it("mantém o caminho local quando não há servidor", () => {
+    assert.equal(binaryRuleDiskPath("", "c:\\r\\SARG008.LSP"), "c:\\r\\SARG008.LSP");
+  });
+});
+
 describe("package.json — .LSP binário (D4)", () => {
   const pkg = JSON.parse(readFileSync(join(__dirname, "..", "..", "package.json"), "utf8"));
 
@@ -107,7 +122,7 @@ describe("package.json — .LSP binário (D4)", () => {
 
   it("comando para abrir manualmente, no Explorer só para .lsp", () => {
     const cmd = pkg.contributes.commands.find((c: { command: string }) => c.command === "lsp.openBinaryRule");
-    assert.ok(cmd);
+    assert.equal(cmd?.title, "Abrir regra .LSP binária");
     const menu = pkg.contributes.menus["explorer/context"].find(
       (m: { command: string }) => m.command === "lsp.openBinaryRule"
     );
